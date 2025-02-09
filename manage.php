@@ -255,6 +255,11 @@ $result = $db->query($query);
     </style>
 </head>
 <body>
+<<<<<<< HEAD
+=======
+    <header>
+        
+>>>>>>> 619f1ea (Initial commit:new)
     <div class="top-bar">
         <p>Free domestic shipping on orders above INR 10,000. International shipping available.</p>
     </div>

@@ -112,6 +112,7 @@ header {
 }
 
 /* Navigation Menu */
+<<<<<<< HEAD
 .nav-menu {
   background-color: white;
   padding: 12px 0;
@@ -145,10 +146,48 @@ header {
 
 /* Sub-category Dropdown */
 .nav-menu ul li .sub-category {
+=======
+/* Enhanced Navigation Menu */
+.nav-menu {
+  background-color: white;
+  padding: 0;
+  border-bottom: 1px solid #eee;
+  position: relative;
+  z-index: 100; /* Ensure menu appears above other content */
+}
+
+.main-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative; /* For dropdown positioning */
+}
+
+.main-menu > li {
+  position: relative;
+  padding: 15px 25px;
+}
+
+.main-menu > li > a {
+  text-decoration: none;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  display: block; /* Makes entire area clickable */
+}
+
+/* First level dropdown */
+.dropdown {
+>>>>>>> 619f1ea (Initial commit:new)
   display: none;
   position: absolute;
   top: 100%;
   left: 0;
+<<<<<<< HEAD
   background-color: white;
   border: 1px solid #eee;
   border-radius: 5px;
@@ -179,6 +218,150 @@ header {
   display: block;
 }
 
+=======
+  background: white;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  min-width: 250px; /* Wider dropdown */
+  padding: 12px 0;
+  z-index: 1000;
+  border-radius: 8px;
+  border: 1px solid rgba(141, 15, 143, 0.1);
+  transform-origin: top;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease-in-out;
+}
+
+.main-menu > li:hover .dropdown {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+  animation: dropdownFadeIn 0.3s ease forwards;
+}
+
+.dropdown > li {
+  position: relative;
+  padding: 0;
+}
+
+.dropdown > li > a {
+  text-decoration: none;
+  color: #333;
+  font-size: 14px;
+  display: block;
+  padding: 12px 25px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+/* Second level dropdown */
+.subdropdown {
+  text-decoration: none;
+  display: none;
+  position: absolute;
+  left: 100%;
+  top: 0;
+  background: white;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  min-width: 250px;
+  padding: 12px 0;
+  z-index: 1001;
+  border-radius: 8px;
+  border: 1px solid rgba(141, 15, 143, 0.1);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease-in-out;
+}
+
+.dropdown > li:hover > .subdropdown {
+  text-decoration: none;
+  display: block;
+  opacity: 1;
+  visibility: visible;
+  animation: dropdownFadeIn 0.3s ease forwards;
+}
+
+/* Enhanced hover effects */
+.main-menu > li:hover > a,
+.dropdown > li:hover > a,
+.subdropdown > li:hover > a {
+  color: #8d0f8f;
+  background-color: rgba(141, 15, 143, 0.05);
+  text-decoration: none;
+}
+
+/* Improved arrow indicators */
+.dropdown > li:has(.subdropdown) > a::after {
+  content: "›";
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  transition: transform 0.2s ease;
+  text-decoration: none;
+}
+
+.dropdown > li:has(.subdropdown):hover > a::after {
+  transform: translateY(-50%) rotate(0deg);
+  color: #8d0f8f;
+  text-decoration: none;
+}
+
+/* Smooth animation */
+@keyframes dropdownFadeIn {
+  from {
+      opacity: 0;
+      transform: translateY(10px);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
+
+/* Mobile adjustments */
+@media screen and (max-width: 768px) {
+  .main-menu {
+      flex-direction: column;
+      align-items: stretch;
+  }
+  
+  .main-menu > li {
+      padding: 0;
+  }
+  
+  .main-menu > li > a {
+      padding: 15px 20px;
+  }
+  
+  .dropdown,
+  .subdropdown {
+      position: static;
+      width: 100%;
+      box-shadow: none;
+      border: none;
+      background: #f9f9f9;
+      border-radius: 0;
+      padding: 0;
+      margin: 0;
+  }
+  
+  .dropdown > li > a,
+  .subdropdown > li > a {
+      padding-left: 40px;
+  }
+  
+  .subdropdown > li > a {
+      padding-left: 60px;
+  }
+  
+  .dropdown > li:has(.subdropdown) > a::after {
+      content: "▼";
+      font-size: 12px;
+  }
+}
+>>>>>>> 619f1ea (Initial commit:new)
 /* Hero Section */
 .hero {
   position: relative;

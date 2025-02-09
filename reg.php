@@ -91,9 +91,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     if ($stmt->execute()) {
         $_SESSION['username'] = $username;
+<<<<<<< HEAD
         $_SESSION['role'] = $role; // Store role in session
         
         // Redirect to login page after successful signup
+=======
+        $_SESSION['role'] = $role;
+        
+>>>>>>> 619f1ea (Initial commit:new)
         echo "<script>alert('Signup successful! Please login to continue.'); window.location.href='login.php';</script>";
     }
     
@@ -126,9 +131,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         .container {
             display: flex;
+<<<<<<< HEAD
             width: 80%;
             max-width: 1200px;
             height: 100vh;
+=======
+            width: 90%;
+            max-width: 1200px;
+            height: 130vh;
+>>>>>>> 619f1ea (Initial commit:new)
             background-color: rgb(240, 18, 18);
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -230,6 +241,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             border-radius: 4px;
             font-size: 16px;
             cursor: pointer;
+<<<<<<< HEAD
         }
 
         .btn:hover {
@@ -246,6 +258,48 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         .forgot-password:hover {
             text-decoration: underline;
+=======
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn:not(:disabled) {
+            opacity: 1;
+        }
+
+        .btn:hover:not(:disabled) {
+            background-color: #f705ff;
+        }
+
+        .requirements-list {
+            list-style: none;
+            padding: 0;
+            margin: 5px 0;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .requirements-list li {
+            margin-bottom: 3px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .requirements-list li:before {
+            content: '✕';
+            color: #dc3545;
+            position: absolute;
+            left: 0;
+        }
+
+        .requirements-list li.valid:before {
+            content: '✓';
+            color: #28a745;
+        }
+
+        .requirements-list li.valid {
+            color: #28a745;
+>>>>>>> 619f1ea (Initial commit:new)
         }
 
         .sign-in {
@@ -260,12 +314,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         .sign-in a:hover {
             text-decoration: underline;
+<<<<<<< HEAD
             .password-match {
             color: green;
             font-size: 12px;
             margin-top: 5px;
             display: none;
             }
+=======
+>>>>>>> 619f1ea (Initial commit:new)
         }
     </style>
 </head>
@@ -281,11 +338,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <input type="text" id="username" name="username" placeholder="Enter your username" required>
                         <span id="usernameError" class="error">Username must be at least 3 characters long and contain only letters and numbers.</span>
                     </div>
+<<<<<<< HEAD
+=======
+                    
+>>>>>>> 619f1ea (Initial commit:new)
                     <div class="form-group">
                         <label for="email">E-mail</label>
                         <input type="email" id="email" name="email" placeholder="example@email.com" required>
                         <span id="emailError" class="error">Please enter a valid email address.</span>
                     </div>
+<<<<<<< HEAD
                     <div class="form-group">
                         <label for="phone">Phone Number</label>
                         <input type="text" id="phone" name="phone" placeholder="Enter phone number" required>
@@ -296,13 +358,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <input type="password" id="password" name="password" placeholder="********" required>
                         <span id="passwordError" class="error">Password must be at least 6 characters long.</span>
                     </div>
+=======
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="text" id="phone" name="phone" placeholder="Enter phone number" required>
+                        <span id="phoneError" class="error">Please enter a valid Indian phone number.</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="********" required>
+                        <ul class="requirements-list">
+                            <li id="length">At least 8 characters long</li>
+                            <li id="uppercase">Contains uppercase letter</li>
+                            <li id="lowercase">Contains lowercase letter</li>
+                            <li id="number">Contains number</li>
+                            <li id="special">Contains special character</li>
+                        </ul>
+                    </div>
+                    
+>>>>>>> 619f1ea (Initial commit:new)
                     <div class="form-group">
                         <label for="confirmPassword">Confirm Password</label>
                         <input type="password" id="confirmPassword" name="confirmPassword" placeholder="********" required>
                         <span id="confirmPasswordError" class="error">Passwords do not match.</span>
+<<<<<<< HEAD
                         
                     </div>
                     <button type="submit" class="btn">Sign Up</button>
+=======
+                    </div>
+                    
+                    <button type="submit" class="btn" id="submitBtn" disabled>Sign Up</button>
+>>>>>>> 619f1ea (Initial commit:new)
                 </form>
                 <div class="sign-in">
                     Already have an account? <a href="login.php">Login</a>
@@ -314,12 +403,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <img src="my.png" alt="Image 1" class="active">
                 <img src="image2.png" alt="Image 2">
                 <img src="image1.png" alt="Image 3">
+<<<<<<< HEAD
                 <img src="image3.png" alt="Image 3">
+=======
+                <img src="image3.png" alt="Image 4">
+>>>>>>> 619f1ea (Initial commit:new)
             </div>
         </div>
     </div>
 
     <script>
+<<<<<<< HEAD
         // Form validation function
         function validateForm() {
             const username = document.getElementById("username").value;
@@ -327,11 +421,61 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             const phone = document.getElementById("phone").value;
             const password = document.getElementById("password").value;
             const confirmPassword = document.getElementById("confirmPassword").value;
+=======
+        // Password validation requirements
+        const passwordRequirements = {
+            length: password => password.length >= 8,
+            uppercase: password => /[A-Z]/.test(password),
+            lowercase: password => /[a-z]/.test(password),
+            number: password => /[0-9]/.test(password),
+            special: password => /[!@#$%^&*(),.?":{}|<>]/.test(password)
+        };
+
+        const requirements = {
+            length: document.getElementById('length'),
+            uppercase: document.getElementById('uppercase'),
+            lowercase: document.getElementById('lowercase'),
+            number: document.getElementById('number'),
+            special: document.getElementById('special')
+        };
+
+        function validatePassword() {
+            const password = document.getElementById('password').value;
+            let isValid = true;
+
+            // Check each requirement
+            for (const [requirement, validator] of Object.entries(passwordRequirements)) {
+                const element = requirements[requirement];
+                const valid = validator(password);
+                element.className = valid ? 'valid' : '';
+                if (!valid) isValid = false;
+            }
+
+            return isValid;
+        }
+
+        function validatePasswordMatch() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const confirmError = document.getElementById('confirmPasswordError');
+            
+            const match = password === confirmPassword && confirmPassword !== '';
+            confirmError.style.display = match ? 'none' : 'block';
+            
+            return match;
+        }
+
+        function validateOtherFields() {
+            const username = document.getElementById("username").value;
+            const email = document.getElementById("email").value;
+            const phone = document.getElementById("phone").value;
+>>>>>>> 619f1ea (Initial commit:new)
 
             const usernameRegex = /^[a-zA-Z0-9]{3,}$/;
             const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
             const phoneRegex = /^(?:\+91[-\s]?)?[6-9]\d{9}$/;
 
+<<<<<<< HEAD
             let isValid = true;
 
             if (!usernameRegex.test(username)) {
@@ -420,6 +564,59 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
 
+=======
+            const usernameValid = usernameRegex.test(username);
+            const emailValid = emailRegex.test(email);
+            const phoneValid = phoneRegex.test(phone);
+
+            document.getElementById("usernameError").style.display = usernameValid ? "none" : "block";
+            document.getElementById("emailError").style.display = emailValid ? "none" : "block";
+            document.getElementById("phoneError").style.display = phoneValid ? "none" : "block";
+
+            return usernameValid && emailValid && phoneValid;
+        }
+
+        function updateSubmitButton() {
+            const submitBtn = document.getElementById('submitBtn');
+            const passwordValid = validatePassword();
+            const passwordsMatch = validatePasswordMatch();
+            const otherFieldsValid = validateOtherFields();
+            
+            submitBtn.disabled = !(passwordValid && passwordsMatch && otherFieldsValid);
+        }
+
+        // Event listeners for real-time validation
+        document.getElementById('password').addEventListener('input', function() {
+            validatePassword();
+            validatePasswordMatch();
+            updateSubmitButton();
+        });
+
+        document.getElementById('confirmPassword').addEventListener('input', function() {
+            validatePasswordMatch();
+            updateSubmitButton();
+        });
+
+        document.getElementById("username").addEventListener("input", function() {
+            updateSubmitButton();
+        });
+
+        document.getElementById("email").addEventListener("input", function() {
+            updateSubmitButton();
+        });
+
+        document.getElementById("phone").addEventListener("input", function() {
+            updateSubmitButton();
+        });
+
+        function validateForm() {
+            const passwordValid = validatePassword();
+            const passwordsMatch = validatePasswordMatch();
+            const otherFieldsValid = validateOtherFields();
+
+            return passwordValid && passwordsMatch && otherFieldsValid;
+        }
+>>>>>>> 619f1ea (Initial commit:new)
         // Image carousel (remains the same)
         const images = document.querySelectorAll(".image-container img");
         let currentIndex = 0;

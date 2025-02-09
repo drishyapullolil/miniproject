@@ -1,0 +1,136 @@
+2025-02-05 15:46:24: Received reset request for email: drishyajose2027@mca.ajce.in
+2025-02-05 15:46:24: Generated token: 89edd72c256a17c35af0c3f178ce32dc6de69dcdab5be15d9c64f352231e28a2
+2025-02-05 15:46:24: Expires at: 2025-02-05 16:46:24
+2025-02-05 15:46:24: Token stored in database successfully
+2025-02-05 15:46:29: Reset email sent successfully
+2025-02-05 15:52:24: Received reset request for email: drishyajose2027@mca.ajce.in
+2025-02-05 15:52:24: Generated token: 38883cffcd021ded5347a626d7dd2337d4e0fb146ae37f482dbb124744194791
+2025-02-05 15:52:24: Expires at: 2025-02-05 16:52:24
+2025-02-05 15:52:24: Token stored in database successfully
+2025-02-05 15:52:28: Reset email sent successfully
+2025-02-05 15:52:47: Checking token: 38883cffcd021ded5347a626d7dd2337d4e0fb146ae37f482dbb124744194791
+2025-02-05 15:52:47: Token not found or invalid
+2025-02-05 15:54:02: Received token: ec03dfe5b8bd05a24c2df1ce946f19f4654c248286c13edf97571a1a0410d35b3eedfe5f59fb691717844bbc0b80887af0aa
+2025-02-05 15:54:02: Found 0 matching tokens
+2025-02-05 15:54:02: Token not found in database
+2025-02-05 15:54:03: Received token: ec03dfe5b8bd05a24c2df1ce946f19f4654c248286c13edf97571a1a0410d35b3eedfe5f59fb691717844bbc0b80887af0aa
+2025-02-05 15:54:03: Found 0 matching tokens
+2025-02-05 15:54:03: Token not found in database
+2025-02-05 15:54:03: Received token: ec03dfe5b8bd05a24c2df1ce946f19f4654c248286c13edf97571a1a0410d35b3eedfe5f59fb691717844bbc0b80887af0aa
+2025-02-05 15:54:03: Found 0 matching tokens
+2025-02-05 15:54:03: Token not found in database
+2025-02-05 15:54:03: Received token: ec03dfe5b8bd05a24c2df1ce946f19f4654c248286c13edf97571a1a0410d35b3eedfe5f59fb691717844bbc0b80887af0aa
+2025-02-05 15:54:03: Found 0 matching tokens
+2025-02-05 15:54:03: Token not found in database
+2025-02-05 15:54:04: Received token: ec03dfe5b8bd05a24c2df1ce946f19f4654c248286c13edf97571a1a0410d35b3eedfe5f59fb691717844bbc0b80887af0aa
+2025-02-05 15:54:04: Found 0 matching tokens
+2025-02-05 15:54:04: Token not found in database
+2025-02-05 15:54:04: Received token: ec03dfe5b8bd05a24c2df1ce946f19f4654c248286c13edf97571a1a0410d35b3eedfe5f59fb691717844bbc0b80887af0aa
+2025-02-05 15:54:04: Found 0 matching tokens
+2025-02-05 15:54:04: Token not found in database
+2025-02-05 15:54:09: Received token: 38883cffcd021ded5347a626d7dd2337d4e0fb146ae37f482dbb124744194791
+2025-02-05 15:54:09: Found 0 matching tokens
+2025-02-05 15:54:09: Token found but expired. Expiry time: 2025-02-05 16:52:24
+2025-02-05 15:54:28: Received reset request for email: drishyajose2027@mca.ajce.in
+2025-02-05 15:54:28: Generated token: d33a6b74bfe68504e84ea0b8bf71d79390b714f9ebb7d02647b07c342d053dee
+2025-02-05 15:54:28: Expires at: 2025-02-05 16:54:28
+2025-02-05 15:54:28: Token stored in database successfully
+2025-02-05 15:54:32: Reset email sent successfully
+2025-02-05 15:54:38: Received reset request for email: drishyajose03@gmail.com
+2025-02-05 15:54:38: Generated token: 08485c8d1eeace44089e8214fb8dfedc6934337bc3b948425540a79826bfcbd0
+2025-02-05 15:54:38: Expires at: 2025-02-05 16:54:38
+2025-02-05 15:54:38: Token stored in database successfully
+2025-02-05 15:54:41: Reset email sent successfully
+2025-02-05 15:54:57: Received token: 08485c8d1eeace44089e8214fb8dfedc6934337bc3b948425540a79826bfcbd0
+2025-02-05 15:54:57: Found 0 matching tokens
+2025-02-05 15:54:57: Token found but expired. Expiry time: 2025-02-05 16:54:38
+2025-02-05 15:55:23: Received token: d33a6b74bfe68504e84ea0b8bf71d79390b714f9ebb7d02647b07c342d053dee
+2025-02-05 15:55:23: Found 0 matching tokens
+2025-02-05 15:55:23: Token found but expired. Expiry time: 2025-02-05 16:54:28
+2025-02-05 15:57:33: Received reset request for email: drishyajose03@gmail.com
+2025-02-05 15:57:33: Generated token: 00bdf04cdec1e91394a3c77b76943037739c0f02dabf40a6d2825d9b10d42a00
+2025-02-05 15:57:33: Expires at: 2025-02-06 15:57:33
+2025-02-05 15:57:33: Token stored in database successfully
+2025-02-05 15:57:37: Reset email sent successfully
+2025-02-05 15:57:50: Checking token: 00bdf04cdec1e91394a3c77b76943037739c0f02dabf40a6d2825d9b10d42a00
+2025-02-05 15:58:14: Checking token: 00bdf04cdec1e91394a3c77b76943037739c0f02dabf40a6d2825d9b10d42a00
+2025-02-05 15:58:15: Password updated successfully for email: drishyajose03@gmail.com
+2025-02-05 16:00:33: Received reset request for email: drishyajose2027@mca.ajce.in
+2025-02-05 16:00:33: Generated token: 34238530ed3f4f1b0465dba2349e0db99362d4cd83c9288cd8e2c2630195462d
+2025-02-05 16:00:33: Expires at: 2025-02-06 16:00:33
+2025-02-05 16:00:33: Token stored in database successfully
+2025-02-05 16:00:37: Reset email sent successfully
+2025-02-05 16:00:54: Checking token: 34238530ed3f4f1b0465dba2349e0db99362d4cd83c9288cd8e2c2630195462d
+2025-02-05 16:01:18: Checking token: 34238530ed3f4f1b0465dba2349e0db99362d4cd83c9288cd8e2c2630195462d
+2025-02-05 16:01:18: Password updated successfully for email: drishyajose2027@mca.ajce.in
+2025-02-05 16:05:44: Received reset request for email: silpajose2000@gmail.com
+2025-02-05 16:05:44: Generated token: b38ae3acf009644880ac43efd26f693fe682c6814fad572a6a097264c1e61669
+2025-02-05 16:05:44: Expires at: 2025-02-06 16:05:44
+2025-02-05 16:05:44: Token stored in database successfully
+2025-02-05 16:05:48: Reset email sent successfully
+2025-02-05 16:07:40: Checking token: b38ae3acf009644880ac43efd26f693fe682c6814fad572a6a097264c1e61669
+2025-02-05 16:08:05: Checking token: b38ae3acf009644880ac43efd26f693fe682c6814fad572a6a097264c1e61669
+2025-02-05 16:08:05: Password updated successfully for email: silpajose2000@gmail.com
+2025-02-05 16:13:55: Received reset request for email: drishyajose2027@mca.ajce.in
+2025-02-05 16:13:55: Generated token: d40f00e8bd1fe29b830463e7ed30fc685b0d643b005b4d1c80d09195b53ed41f
+2025-02-05 16:13:55: Expires at: 2025-02-06 16:13:55
+2025-02-05 16:13:55: Token stored in database successfully
+2025-02-05 16:13:59: Reset email sent successfully
+2025-02-05 16:14:33: Checking token: d40f00e8bd1fe29b830463e7ed30fc685b0d643b005b4d1c80d09195b53ed41f
+2025-02-05 16:14:45: Checking token: d40f00e8bd1fe29b830463e7ed30fc685b0d643b005b4d1c80d09195b53ed41f
+2025-02-05 16:14:45: Password updated successfully for email: drishyajose2027@mca.ajce.in
+2025-02-06 04:03:58: Received reset request for email: drishyajose03@gmail.com
+2025-02-06 04:03:58: Generated token: e2b8da46e6a971ee5ed63728f60cf135eee751952f2e99c853f34547902e8a19
+2025-02-06 04:03:58: Expires at: 2025-02-07 04:03:58
+2025-02-06 04:03:58: Token stored in database successfully
+2025-02-06 04:04:04: Reset email sent successfully
+2025-02-06 04:04:25: Checking token: e2b8da46e6a971ee5ed63728f60cf135eee751952f2e99c853f34547902e8a19
+2025-02-06 04:04:36: Checking token: e2b8da46e6a971ee5ed63728f60cf135eee751952f2e99c853f34547902e8a19
+2025-02-06 04:04:36: Password updated successfully for email: drishyajose03@gmail.com
+2025-02-07 11:18:21: Received reset request for email: drishyajose03@gmail.com
+2025-02-07 11:18:21: Generated token: 46ad359f695cf9c25fb7384f1691b6e85ab41bd038c7d4b5bba8eb5a7c84db9b
+2025-02-07 11:18:21: Expires at: 2025-02-08 11:18:21
+2025-02-07 11:18:21: Token stored in database successfully
+2025-02-07 11:18:25: Reset email sent successfully
+2025-02-07 11:18:35: Checking token: 46ad359f695cf9c25fb7384f1691b6e85ab41bd038c7d4b5bba8eb5a7c84db9b
+2025-02-07 11:18:48: Checking token: 46ad359f695cf9c25fb7384f1691b6e85ab41bd038c7d4b5bba8eb5a7c84db9b
+2025-02-07 11:18:48: Password updated successfully for email: drishyajose03@gmail.com
+2025-02-07 11:19:42: Received reset request for email: drishyajose03@gmail.com
+2025-02-07 11:19:42: Generated token: cd4ca36976193b9f7f692aa6b520dcbe380beb7b514a85f1d94d3471e900386d
+2025-02-07 11:19:42: Expires at: 2025-02-08 11:19:42
+2025-02-07 11:19:42: Token stored in database successfully
+2025-02-07 11:19:47: Reset email sent successfully
+2025-02-07 11:20:01: Checking token: cd4ca36976193b9f7f692aa6b520dcbe380beb7b514a85f1d94d3471e900386d
+2025-02-07 11:20:10: Checking token: cd4ca36976193b9f7f692aa6b520dcbe380beb7b514a85f1d94d3471e900386d
+2025-02-07 11:20:10: Password updated successfully for email: drishyajose03@gmail.com
+2025-02-07 11:22:00: Received reset request for email: drishyajose03@gmail.com
+2025-02-07 11:22:00: Generated token: 1b92c378b5f963811c58fafdd745eb0267cd220649ec8c8709cf7e1f014bbe25
+2025-02-07 11:22:00: Expires at: 2025-02-08 11:22:00
+2025-02-07 11:22:00: Token stored in database successfully
+2025-02-07 11:22:03: Reset email sent successfully
+2025-02-07 11:22:14: Checking token: 1b92c378b5f963811c58fafdd745eb0267cd220649ec8c8709cf7e1f014bbe25
+2025-02-07 11:22:24: Checking token: 1b92c378b5f963811c58fafdd745eb0267cd220649ec8c8709cf7e1f014bbe25
+2025-02-07 11:22:24: Password updated successfully for email: drishyajose03@gmail.com
+2025-02-09 07:24:03: Received reset request for email: drishyajose03@gmail.com
+2025-02-09 07:24:03: Generated token: 025085897d7e5bbc556d1755baf7f037decb2d030f07f17901e9bef0a6450b80
+2025-02-09 07:24:03: Expires at: 2025-02-10 07:24:03
+2025-02-09 07:24:03: Token stored in database successfully
+2025-02-09 07:24:07: Reset email sent successfully
+2025-02-09 07:24:17: Checking token: 025085897d7e5bbc556d1755baf7f037decb2d030f07f17901e9bef0a6450b80
+2025-02-09 07:24:28: Checking token: 025085897d7e5bbc556d1755baf7f037decb2d030f07f17901e9bef0a6450b80
+2025-02-09 07:24:28: Password updated successfully for email: drishyajose03@gmail.com
+2025-02-09 07:25:29: Received reset request for email: drishyajose03@gmail.com
+2025-02-09 07:25:29: Generated token: 1da0e6c8df8e42cd746ed10c28d26feba8e99e2480a990c0e06b924764400560
+2025-02-09 07:25:29: Expires at: 2025-02-10 07:25:29
+2025-02-09 07:25:29: Token stored in database successfully
+2025-02-09 07:25:33: Reset email sent successfully
+2025-02-09 07:25:45: Checking token: 1da0e6c8df8e42cd746ed10c28d26feba8e99e2480a990c0e06b924764400560
+2025-02-09 07:25:56: Checking token: 1da0e6c8df8e42cd746ed10c28d26feba8e99e2480a990c0e06b924764400560
+2025-02-09 07:25:56: Password updated successfully for email: drishyajose03@gmail.com
+2025-02-09 07:29:35: Received reset request for email: drishyajose03@gmail.com
+2025-02-09 07:29:35: Generated token: 80338007d053e5b2e8e7cbfe588163b406f96dc4d6baac280813d429f72fd32f
+2025-02-09 07:29:35: Expires at: 2025-02-10 07:29:35
+2025-02-09 07:29:35: Token stored in database successfully
+2025-02-09 07:29:39: Reset email sent successfully
+2025-02-09 07:29:48: Checking token: 80338007d053e5b2e8e7cbfe588163b406f96dc4d6baac280813d429f72fd32f
+2025-02-09 07:30:55: Checking token: 80338007d053e5b2e8e7cbfe588163b406f96dc4d6baac280813d429f72fd32f

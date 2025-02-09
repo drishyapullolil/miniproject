@@ -3870,3 +3870,1393 @@
 [2025-02-02 07:00:50] [info] Table users created or already exists
 [2025-02-02 07:00:50] [info] Table logins created or already exists
 [2025-02-02 07:00:50] [info] Database setup completed successfully
+<<<<<<< HEAD
+=======
+[2025-02-03 09:28:27] [info] Database connection established successfully
+[2025-02-03 09:28:27] [info] Table users created or already exists
+[2025-02-03 09:28:27] [info] Table logins created or already exists
+[2025-02-03 09:28:27] [info] Database setup completed successfully
+[2025-02-03 09:28:52] [info] Database connection established successfully
+[2025-02-03 09:28:52] [info] Table users created or already exists
+[2025-02-03 09:28:52] [info] Table logins created or already exists
+[2025-02-03 09:28:52] [info] Database setup completed successfully
+[2025-02-03 09:28:56] [info] Database connection established successfully
+[2025-02-03 09:28:56] [info] Table users created or already exists
+[2025-02-03 09:28:56] [info] Table logins created or already exists
+[2025-02-03 09:28:56] [info] Database setup completed successfully
+[2025-02-03 09:29:29] [info] Database connection established successfully
+[2025-02-03 09:29:29] [info] Table users created or already exists
+[2025-02-03 09:29:29] [info] Table logins created or already exists
+[2025-02-03 09:29:29] [info] Database setup completed successfully
+[2025-02-03 09:29:31] [info] Database connection established successfully
+[2025-02-03 09:29:31] [info] Table users created or already exists
+[2025-02-03 09:29:31] [info] Table logins created or already exists
+[2025-02-03 09:29:31] [info] Database setup completed successfully
+[2025-02-03 09:29:45] [info] Database connection established successfully
+[2025-02-03 09:29:45] [info] Table users created or already exists
+[2025-02-03 09:29:45] [info] Table logins created or already exists
+[2025-02-03 09:29:45] [info] Database setup completed successfully
+[2025-02-03 09:29:50] [info] Database connection established successfully
+[2025-02-03 09:29:50] [info] Table users created or already exists
+[2025-02-03 09:29:50] [info] Table logins created or already exists
+[2025-02-03 09:29:50] [info] Database setup completed successfully
+[2025-02-03 09:29:52] [info] Database connection established successfully
+[2025-02-03 09:29:52] [info] Table users created or already exists
+[2025-02-03 09:29:52] [info] Table logins created or already exists
+[2025-02-03 09:29:52] [info] Database setup completed successfully
+[2025-02-03 09:30:21] [info] Database connection established successfully
+[2025-02-03 09:30:21] [info] Table users created or already exists
+[2025-02-03 09:30:21] [info] Table logins created or already exists
+[2025-02-03 09:30:21] [info] Database setup completed successfully
+[2025-02-03 09:30:23] [info] Database connection established successfully
+[2025-02-03 09:30:23] [info] Table users created or already exists
+[2025-02-03 09:30:23] [info] Table logins created or already exists
+[2025-02-03 09:30:23] [info] Database setup completed successfully
+[2025-02-03 09:30:35] [info] Database connection established successfully
+[2025-02-03 09:30:35] [info] Table users created or already exists
+[2025-02-03 09:30:35] [info] Table logins created or already exists
+[2025-02-03 09:30:35] [info] Database setup completed successfully
+[2025-02-03 09:31:09] [info] Database connection established successfully
+[2025-02-03 09:31:09] [info] Table users created or already exists
+[2025-02-03 09:31:09] [info] Table logins created or already exists
+[2025-02-03 09:31:09] [info] Database setup completed successfully
+[2025-02-03 09:31:19] [info] Database connection established successfully
+[2025-02-03 09:31:19] [info] Table users created or already exists
+[2025-02-03 09:31:19] [info] Table logins created or already exists
+[2025-02-03 09:31:19] [info] Database setup completed successfully
+[2025-02-03 09:31:22] [info] Database connection established successfully
+[2025-02-03 09:31:22] [info] Table users created or already exists
+[2025-02-03 09:31:22] [info] Table logins created or already exists
+[2025-02-03 09:31:22] [info] Database setup completed successfully
+[2025-02-03 09:31:45] [info] Database connection established successfully
+[2025-02-03 09:31:45] [info] Table users created or already exists
+[2025-02-03 09:31:45] [info] Table logins created or already exists
+[2025-02-03 09:31:45] [info] Database setup completed successfully
+[2025-02-03 10:35:00] [info] Database connection established successfully
+[2025-02-03 10:35:00] [info] Table users created or already exists
+[2025-02-03 10:35:00] [info] Table logins created or already exists
+[2025-02-03 10:35:00] [info] Database setup completed successfully
+[2025-02-03 10:35:11] [info] Database connection established successfully
+[2025-02-03 10:35:11] [info] Table users created or already exists
+[2025-02-03 10:35:11] [info] Table logins created or already exists
+[2025-02-03 10:35:11] [info] Database setup completed successfully
+[2025-02-03 10:35:11] [info] Database connection established successfully
+[2025-02-03 10:35:11] [info] Table users created or already exists
+[2025-02-03 10:35:11] [info] Table logins created or already exists
+[2025-02-03 10:35:11] [info] Database setup completed successfully
+[2025-02-03 10:35:24] [info] Database connection established successfully
+[2025-02-03 10:35:24] [info] Table users created or already exists
+[2025-02-03 10:35:24] [info] Table logins created or already exists
+[2025-02-03 10:35:24] [info] Database setup completed successfully
+[2025-02-03 10:36:06] [info] Database connection established successfully
+[2025-02-03 10:36:06] [info] Table users created or already exists
+[2025-02-03 10:36:06] [info] Table logins created or already exists
+[2025-02-03 10:36:06] [info] Database setup completed successfully
+[2025-02-03 10:36:14] [info] Database connection established successfully
+[2025-02-03 10:36:14] [info] Table users created or already exists
+[2025-02-03 10:36:14] [info] Table logins created or already exists
+[2025-02-03 10:36:14] [info] Database setup completed successfully
+[2025-02-03 10:36:29] [info] Database connection established successfully
+[2025-02-03 10:36:29] [info] Table users created or already exists
+[2025-02-03 10:36:29] [info] Table logins created or already exists
+[2025-02-03 10:36:29] [info] Database setup completed successfully
+[2025-02-03 10:36:47] [info] Database connection established successfully
+[2025-02-03 10:36:47] [info] Table users created or already exists
+[2025-02-03 10:36:47] [info] Table logins created or already exists
+[2025-02-03 10:36:47] [info] Database setup completed successfully
+[2025-02-03 10:36:58] [info] Database connection established successfully
+[2025-02-03 10:36:58] [info] Table users created or already exists
+[2025-02-03 10:36:58] [info] Table logins created or already exists
+[2025-02-03 10:36:58] [info] Database setup completed successfully
+[2025-02-03 10:37:09] [info] Database connection established successfully
+[2025-02-03 10:37:09] [info] Table users created or already exists
+[2025-02-03 10:37:09] [info] Table logins created or already exists
+[2025-02-03 10:37:09] [info] Database setup completed successfully
+[2025-02-03 10:37:20] [info] Database connection established successfully
+[2025-02-03 10:37:20] [info] Table users created or already exists
+[2025-02-03 10:37:20] [info] Table logins created or already exists
+[2025-02-03 10:37:20] [info] Database setup completed successfully
+[2025-02-03 10:37:29] [info] Database connection established successfully
+[2025-02-03 10:37:29] [info] Table users created or already exists
+[2025-02-03 10:37:29] [info] Table logins created or already exists
+[2025-02-03 10:37:29] [info] Database setup completed successfully
+[2025-02-03 10:37:42] [info] Database connection established successfully
+[2025-02-03 10:37:42] [info] Table users created or already exists
+[2025-02-03 10:37:42] [info] Table logins created or already exists
+[2025-02-03 10:37:42] [info] Database setup completed successfully
+[2025-02-03 10:49:20] [info] Database connection established successfully
+[2025-02-03 10:49:20] [info] Table users created or already exists
+[2025-02-03 10:49:20] [info] Table logins created or already exists
+[2025-02-03 10:49:20] [info] Database setup completed successfully
+[2025-02-03 10:49:59] [info] Database connection established successfully
+[2025-02-03 10:49:59] [info] Table users created or already exists
+[2025-02-03 10:49:59] [info] Table logins created or already exists
+[2025-02-03 10:49:59] [info] Database setup completed successfully
+[2025-02-03 10:50:03] [info] Database connection established successfully
+[2025-02-03 10:50:03] [info] Table users created or already exists
+[2025-02-03 10:50:03] [info] Table logins created or already exists
+[2025-02-03 10:50:03] [info] Database setup completed successfully
+[2025-02-03 10:50:16] [info] Database connection established successfully
+[2025-02-03 10:50:16] [info] Table users created or already exists
+[2025-02-03 10:50:16] [info] Table logins created or already exists
+[2025-02-03 10:50:16] [info] Database setup completed successfully
+[2025-02-03 10:51:06] [info] Database connection established successfully
+[2025-02-03 10:51:06] [info] Table users created or already exists
+[2025-02-03 10:51:06] [info] Table logins created or already exists
+[2025-02-03 10:51:06] [info] Database setup completed successfully
+[2025-02-03 10:51:13] [info] Database connection established successfully
+[2025-02-03 10:51:13] [info] Table users created or already exists
+[2025-02-03 10:51:13] [info] Table logins created or already exists
+[2025-02-03 10:51:13] [info] Database setup completed successfully
+[2025-02-03 10:51:14] [info] Database connection established successfully
+[2025-02-03 10:51:14] [info] Table users created or already exists
+[2025-02-03 10:51:14] [info] Table logins created or already exists
+[2025-02-03 10:51:14] [info] Database setup completed successfully
+[2025-02-03 10:51:32] [info] Database connection established successfully
+[2025-02-03 10:51:32] [info] Table users created or already exists
+[2025-02-03 10:51:32] [info] Table logins created or already exists
+[2025-02-03 10:51:32] [info] Database setup completed successfully
+[2025-02-03 11:04:38] [info] Database connection established successfully
+[2025-02-03 11:04:38] [info] Table users created or already exists
+[2025-02-03 11:04:38] [info] Table logins created or already exists
+[2025-02-03 11:04:38] [info] Database setup completed successfully
+[2025-02-03 11:05:43] [info] Database connection established successfully
+[2025-02-03 11:05:43] [info] Table users created or already exists
+[2025-02-03 11:05:43] [info] Table logins created or already exists
+[2025-02-03 11:05:43] [info] Database setup completed successfully
+[2025-02-03 11:05:57] [info] Database connection established successfully
+[2025-02-03 11:05:57] [info] Table users created or already exists
+[2025-02-03 11:05:57] [info] Table logins created or already exists
+[2025-02-03 11:05:57] [info] Database setup completed successfully
+[2025-02-03 11:06:33] [info] Database connection established successfully
+[2025-02-03 11:06:33] [info] Table users created or already exists
+[2025-02-03 11:06:33] [info] Table logins created or already exists
+[2025-02-03 11:06:33] [info] Database setup completed successfully
+[2025-02-03 11:07:59] [info] Database connection established successfully
+[2025-02-03 11:07:59] [info] Table users created or already exists
+[2025-02-03 11:07:59] [info] Table logins created or already exists
+[2025-02-03 11:07:59] [info] Database setup completed successfully
+[2025-02-03 11:08:17] [info] Database connection established successfully
+[2025-02-03 11:08:17] [info] Table users created or already exists
+[2025-02-03 11:08:17] [info] Table logins created or already exists
+[2025-02-03 11:08:17] [info] Database setup completed successfully
+[2025-02-03 11:14:56] [info] Database connection established successfully
+[2025-02-03 11:14:56] [info] Table users created or already exists
+[2025-02-03 11:14:56] [info] Table logins created or already exists
+[2025-02-03 11:14:56] [info] Database setup completed successfully
+[2025-02-03 11:14:58] [info] Database connection established successfully
+[2025-02-03 11:14:58] [info] Table users created or already exists
+[2025-02-03 11:14:58] [info] Table logins created or already exists
+[2025-02-03 11:14:58] [info] Database setup completed successfully
+[2025-02-03 11:15:02] [info] Database connection established successfully
+[2025-02-03 11:15:02] [info] Table users created or already exists
+[2025-02-03 11:15:02] [info] Table logins created or already exists
+[2025-02-03 11:15:02] [info] Database setup completed successfully
+[2025-02-03 11:15:06] [info] Database connection established successfully
+[2025-02-03 11:15:06] [info] Table users created or already exists
+[2025-02-03 11:15:06] [info] Table logins created or already exists
+[2025-02-03 11:15:06] [info] Database setup completed successfully
+[2025-02-03 11:15:30] [info] Database connection established successfully
+[2025-02-03 11:15:30] [info] Table users created or already exists
+[2025-02-03 11:15:30] [info] Table logins created or already exists
+[2025-02-03 11:15:30] [info] Database setup completed successfully
+[2025-02-03 15:20:44] [info] Database connection established successfully
+[2025-02-03 15:20:44] [info] Table users created or already exists
+[2025-02-03 15:20:44] [info] Table logins created or already exists
+[2025-02-03 15:20:44] [info] Database setup completed successfully
+[2025-02-03 15:20:47] [info] Database connection established successfully
+[2025-02-03 15:20:47] [info] Table users created or already exists
+[2025-02-03 15:20:47] [info] Table logins created or already exists
+[2025-02-03 15:20:47] [info] Database setup completed successfully
+[2025-02-04 08:44:04] [info] Database connection established successfully
+[2025-02-04 08:44:04] [info] Table users created or already exists
+[2025-02-04 08:44:04] [info] Table logins created or already exists
+[2025-02-04 08:44:04] [info] Database setup completed successfully
+[2025-02-04 08:57:14] [info] Database connection established successfully
+[2025-02-04 08:57:14] [info] Table users created or already exists
+[2025-02-04 08:57:14] [info] Table logins created or already exists
+[2025-02-04 08:57:14] [info] Database setup completed successfully
+[2025-02-04 14:22:40] [info] Database connection established successfully
+[2025-02-04 14:22:40] [info] Table users created or already exists
+[2025-02-04 14:22:40] [info] Table logins created or already exists
+[2025-02-04 14:22:40] [info] Database setup completed successfully
+[2025-02-04 14:28:53] [info] Database connection established successfully
+[2025-02-04 14:28:53] [info] Table users created or already exists
+[2025-02-04 14:28:53] [info] Table logins created or already exists
+[2025-02-04 14:28:53] [info] Database setup completed successfully
+[2025-02-04 14:32:51] [info] Database connection established successfully
+[2025-02-04 14:32:51] [info] Table users created or already exists
+[2025-02-04 14:32:51] [info] Table logins created or already exists
+[2025-02-04 14:32:51] [info] Database setup completed successfully
+[2025-02-04 14:40:21] [info] Database connection established successfully
+[2025-02-04 14:40:21] [info] Table users created or already exists
+[2025-02-04 14:40:21] [info] Table logins created or already exists
+[2025-02-04 14:40:21] [info] Database setup completed successfully
+[2025-02-04 14:44:02] [info] Database connection established successfully
+[2025-02-04 14:44:02] [info] Table users created or already exists
+[2025-02-04 14:44:02] [info] Table logins created or already exists
+[2025-02-04 14:44:02] [info] Database setup completed successfully
+[2025-02-04 14:44:17] [info] Database connection established successfully
+[2025-02-04 14:44:17] [info] Table users created or already exists
+[2025-02-04 14:44:17] [info] Table logins created or already exists
+[2025-02-04 14:44:17] [info] Database setup completed successfully
+[2025-02-04 14:45:08] [info] Database connection established successfully
+[2025-02-04 14:45:08] [info] Table users created or already exists
+[2025-02-04 14:45:08] [info] Table logins created or already exists
+[2025-02-04 14:45:08] [info] Database setup completed successfully
+[2025-02-04 14:45:10] [info] Database connection established successfully
+[2025-02-04 14:45:10] [info] Table users created or already exists
+[2025-02-04 14:45:10] [info] Table logins created or already exists
+[2025-02-04 14:45:10] [info] Database setup completed successfully
+[2025-02-04 14:46:08] [info] Database connection established successfully
+[2025-02-04 14:46:08] [info] Table users created or already exists
+[2025-02-04 14:46:08] [info] Table logins created or already exists
+[2025-02-04 14:46:08] [info] Database setup completed successfully
+[2025-02-04 14:48:47] [info] Database connection established successfully
+[2025-02-04 14:48:47] [info] Table users created or already exists
+[2025-02-04 14:48:47] [info] Table logins created or already exists
+[2025-02-04 14:48:47] [info] Database setup completed successfully
+[2025-02-04 14:49:20] [info] Database connection established successfully
+[2025-02-04 14:49:20] [info] Table users created or already exists
+[2025-02-04 14:49:20] [info] Table logins created or already exists
+[2025-02-04 14:49:20] [info] Database setup completed successfully
+[2025-02-04 14:54:03] [info] Database connection established successfully
+[2025-02-04 14:54:03] [info] Table users created or already exists
+[2025-02-04 14:54:03] [info] Table logins created or already exists
+[2025-02-04 14:54:03] [info] Database setup completed successfully
+[2025-02-04 14:54:05] [info] Database connection established successfully
+[2025-02-04 14:54:05] [info] Table users created or already exists
+[2025-02-04 14:54:05] [info] Table logins created or already exists
+[2025-02-04 14:54:05] [info] Database setup completed successfully
+[2025-02-04 14:54:25] [info] Database connection established successfully
+[2025-02-04 14:54:25] [info] Table users created or already exists
+[2025-02-04 14:54:25] [info] Table logins created or already exists
+[2025-02-04 14:54:25] [info] Database setup completed successfully
+[2025-02-04 14:54:27] [info] Database connection established successfully
+[2025-02-04 14:54:27] [info] Table users created or already exists
+[2025-02-04 14:54:27] [info] Table logins created or already exists
+[2025-02-04 14:54:27] [info] Database setup completed successfully
+[2025-02-04 14:54:30] [info] Database connection established successfully
+[2025-02-04 14:54:30] [info] Table users created or already exists
+[2025-02-04 14:54:30] [info] Table logins created or already exists
+[2025-02-04 14:54:30] [info] Database setup completed successfully
+[2025-02-04 14:54:33] [info] Database connection established successfully
+[2025-02-04 14:54:33] [info] Table users created or already exists
+[2025-02-04 14:54:33] [info] Table logins created or already exists
+[2025-02-04 14:54:33] [info] Database setup completed successfully
+[2025-02-04 14:54:37] [info] Database connection established successfully
+[2025-02-04 14:54:37] [info] Table users created or already exists
+[2025-02-04 14:54:37] [info] Table logins created or already exists
+[2025-02-04 14:54:37] [info] Database setup completed successfully
+[2025-02-04 15:00:48] [info] Database connection established successfully
+[2025-02-04 15:00:48] [info] Table users created or already exists
+[2025-02-04 15:00:48] [info] Table logins created or already exists
+[2025-02-04 15:00:48] [info] Database setup completed successfully
+[2025-02-04 15:00:55] [info] Database connection established successfully
+[2025-02-04 15:00:55] [info] Table users created or already exists
+[2025-02-04 15:00:55] [info] Table logins created or already exists
+[2025-02-04 15:00:55] [info] Database setup completed successfully
+[2025-02-04 15:01:00] [info] Database connection established successfully
+[2025-02-04 15:01:00] [info] Table users created or already exists
+[2025-02-04 15:01:00] [info] Table logins created or already exists
+[2025-02-04 15:01:00] [info] Database setup completed successfully
+[2025-02-04 15:01:08] [info] Database connection established successfully
+[2025-02-04 15:01:08] [info] Table users created or already exists
+[2025-02-04 15:01:08] [info] Table logins created or already exists
+[2025-02-04 15:01:08] [info] Database setup completed successfully
+[2025-02-04 15:01:10] [info] Database connection established successfully
+[2025-02-04 15:01:10] [info] Table users created or already exists
+[2025-02-04 15:01:10] [info] Table logins created or already exists
+[2025-02-04 15:01:10] [info] Database setup completed successfully
+[2025-02-04 15:01:35] [info] Database connection established successfully
+[2025-02-04 15:01:35] [info] Table users created or already exists
+[2025-02-04 15:01:35] [info] Table logins created or already exists
+[2025-02-04 15:01:35] [info] Database setup completed successfully
+[2025-02-04 15:01:37] [info] Database connection established successfully
+[2025-02-04 15:01:37] [info] Table users created or already exists
+[2025-02-04 15:01:37] [info] Table logins created or already exists
+[2025-02-04 15:01:37] [info] Database setup completed successfully
+[2025-02-04 15:01:47] [info] Database connection established successfully
+[2025-02-04 15:01:47] [info] Table users created or already exists
+[2025-02-04 15:01:47] [info] Table logins created or already exists
+[2025-02-04 15:01:47] [info] Database setup completed successfully
+[2025-02-04 15:11:52] [info] Database connection established successfully
+[2025-02-04 15:11:52] [info] Table users created or already exists
+[2025-02-04 15:11:52] [info] Table logins created or already exists
+[2025-02-04 15:11:52] [info] Database setup completed successfully
+[2025-02-04 15:12:11] [info] Database connection established successfully
+[2025-02-04 15:12:11] [info] Table users created or already exists
+[2025-02-04 15:12:11] [info] Table logins created or already exists
+[2025-02-04 15:12:11] [info] Database setup completed successfully
+[2025-02-04 15:31:29] [info] Database connection established successfully
+[2025-02-04 15:31:29] [info] Table users created or already exists
+[2025-02-04 15:31:29] [info] Table logins created or already exists
+[2025-02-04 15:31:29] [info] Database setup completed successfully
+[2025-02-04 15:31:45] [info] Database connection established successfully
+[2025-02-04 15:31:45] [info] Table users created or already exists
+[2025-02-04 15:31:45] [info] Table logins created or already exists
+[2025-02-04 15:31:45] [info] Database setup completed successfully
+[2025-02-04 15:31:45] [info] Database connection established successfully
+[2025-02-04 15:31:45] [info] Table users created or already exists
+[2025-02-04 15:31:45] [info] Table logins created or already exists
+[2025-02-04 15:31:45] [info] Database setup completed successfully
+[2025-02-04 15:31:50] [info] Database connection established successfully
+[2025-02-04 15:31:50] [info] Table users created or already exists
+[2025-02-04 15:31:50] [info] Table logins created or already exists
+[2025-02-04 15:31:50] [info] Database setup completed successfully
+[2025-02-04 15:32:15] [info] Database connection established successfully
+[2025-02-04 15:32:15] [info] Table users created or already exists
+[2025-02-04 15:32:15] [info] Table logins created or already exists
+[2025-02-04 15:32:15] [info] Database setup completed successfully
+[2025-02-04 15:32:17] [info] Database connection established successfully
+[2025-02-04 15:32:17] [info] Table users created or already exists
+[2025-02-04 15:32:17] [info] Table logins created or already exists
+[2025-02-04 15:32:17] [info] Database setup completed successfully
+[2025-02-04 15:32:44] [info] Database connection established successfully
+[2025-02-04 15:32:44] [info] Table users created or already exists
+[2025-02-04 15:32:44] [info] Table logins created or already exists
+[2025-02-04 15:32:44] [info] Database setup completed successfully
+[2025-02-04 15:32:46] [info] Database connection established successfully
+[2025-02-04 15:32:46] [info] Table users created or already exists
+[2025-02-04 15:32:46] [info] Table logins created or already exists
+[2025-02-04 15:32:46] [info] Database setup completed successfully
+[2025-02-04 15:32:59] [info] Database connection established successfully
+[2025-02-04 15:32:59] [info] Table users created or already exists
+[2025-02-04 15:32:59] [info] Table logins created or already exists
+[2025-02-04 15:32:59] [info] Database setup completed successfully
+[2025-02-04 15:33:03] [info] Database connection established successfully
+[2025-02-04 15:33:03] [info] Table users created or already exists
+[2025-02-04 15:33:03] [info] Table logins created or already exists
+[2025-02-04 15:33:03] [info] Database setup completed successfully
+[2025-02-04 15:33:07] [info] Database connection established successfully
+[2025-02-04 15:33:07] [info] Table users created or already exists
+[2025-02-04 15:33:07] [info] Table logins created or already exists
+[2025-02-04 15:33:07] [info] Database setup completed successfully
+[2025-02-04 15:33:07] [info] Database connection established successfully
+[2025-02-04 15:33:07] [info] Table users created or already exists
+[2025-02-04 15:33:07] [info] Table logins created or already exists
+[2025-02-04 15:33:07] [info] Database setup completed successfully
+[2025-02-04 15:33:20] [info] Database connection established successfully
+[2025-02-04 15:33:20] [info] Table users created or already exists
+[2025-02-04 15:33:20] [info] Table logins created or already exists
+[2025-02-04 15:33:20] [info] Database setup completed successfully
+[2025-02-04 15:34:31] [info] Database connection established successfully
+[2025-02-04 15:34:31] [info] Table users created or already exists
+[2025-02-04 15:34:31] [info] Table logins created or already exists
+[2025-02-04 15:34:31] [info] Database setup completed successfully
+[2025-02-04 15:34:42] [info] Database connection established successfully
+[2025-02-04 15:34:42] [info] Table users created or already exists
+[2025-02-04 15:34:42] [info] Table logins created or already exists
+[2025-02-04 15:34:42] [info] Database setup completed successfully
+[2025-02-04 15:35:13] [info] Database connection established successfully
+[2025-02-04 15:35:13] [info] Table users created or already exists
+[2025-02-04 15:35:13] [info] Table logins created or already exists
+[2025-02-04 15:35:13] [info] Database setup completed successfully
+[2025-02-04 15:35:49] [info] Database connection established successfully
+[2025-02-04 15:35:49] [info] Table users created or already exists
+[2025-02-04 15:35:49] [info] Table logins created or already exists
+[2025-02-04 15:35:49] [info] Database setup completed successfully
+[2025-02-04 15:36:17] [info] Database connection established successfully
+[2025-02-04 15:36:17] [info] Table users created or already exists
+[2025-02-04 15:36:17] [info] Table logins created or already exists
+[2025-02-04 15:36:17] [info] Database setup completed successfully
+[2025-02-04 15:39:45] [info] Database connection established successfully
+[2025-02-04 15:39:45] [info] Table users created or already exists
+[2025-02-04 15:39:45] [info] Table logins created or already exists
+[2025-02-04 15:39:45] [info] Database setup completed successfully
+[2025-02-04 15:40:38] [info] Database connection established successfully
+[2025-02-04 15:40:38] [info] Table users created or already exists
+[2025-02-04 15:40:38] [info] Table logins created or already exists
+[2025-02-04 15:40:38] [info] Database setup completed successfully
+[2025-02-04 15:40:45] [info] Database connection established successfully
+[2025-02-04 15:40:45] [info] Table users created or already exists
+[2025-02-04 15:40:45] [info] Table logins created or already exists
+[2025-02-04 15:40:45] [info] Database setup completed successfully
+[2025-02-04 15:41:00] [info] Database connection established successfully
+[2025-02-04 15:41:00] [info] Table users created or already exists
+[2025-02-04 15:41:00] [info] Table logins created or already exists
+[2025-02-04 15:41:00] [info] Database setup completed successfully
+[2025-02-05 03:54:58] [info] Database connection established successfully
+[2025-02-05 03:54:58] [info] Table users created or already exists
+[2025-02-05 03:54:58] [info] Table logins created or already exists
+[2025-02-05 03:54:58] [info] Database setup completed successfully
+[2025-02-05 03:55:05] [info] Database connection established successfully
+[2025-02-05 03:55:05] [info] Table users created or already exists
+[2025-02-05 03:55:05] [info] Table logins created or already exists
+[2025-02-05 03:55:05] [info] Database setup completed successfully
+[2025-02-05 04:13:08] [info] Database connection established successfully
+[2025-02-05 04:13:08] [info] Table users created or already exists
+[2025-02-05 04:13:08] [info] Table logins created or already exists
+[2025-02-05 04:13:08] [info] Database setup completed successfully
+[2025-02-05 04:13:45] [info] Database connection established successfully
+[2025-02-05 04:13:45] [info] Table users created or already exists
+[2025-02-05 04:13:45] [info] Table logins created or already exists
+[2025-02-05 04:13:45] [info] Database setup completed successfully
+[2025-02-05 04:22:29] [info] Database connection established successfully
+[2025-02-05 04:22:29] [info] Table users created or already exists
+[2025-02-05 04:22:29] [info] Table logins created or already exists
+[2025-02-05 04:22:29] [info] Database setup completed successfully
+[2025-02-05 04:55:35] [info] Database connection established successfully
+[2025-02-05 04:55:35] [info] Table users created or already exists
+[2025-02-05 04:55:35] [info] Table logins created or already exists
+[2025-02-05 04:55:35] [info] Database setup completed successfully
+[2025-02-05 04:55:47] [info] Database connection established successfully
+[2025-02-05 04:55:47] [info] Table users created or already exists
+[2025-02-05 04:55:47] [info] Table logins created or already exists
+[2025-02-05 04:55:47] [info] Database setup completed successfully
+[2025-02-05 05:03:00] [info] Database connection established successfully
+[2025-02-05 05:03:00] [info] Table users created or already exists
+[2025-02-05 05:03:00] [info] Table logins created or already exists
+[2025-02-05 05:03:00] [info] Database setup completed successfully
+[2025-02-05 08:32:57] [info] Database connection established successfully
+[2025-02-05 08:32:57] [info] Table users created or already exists
+[2025-02-05 08:32:57] [info] Table logins created or already exists
+[2025-02-05 08:32:57] [info] Database setup completed successfully
+[2025-02-05 08:37:11] [info] Database connection established successfully
+[2025-02-05 08:37:11] [info] Table users created or already exists
+[2025-02-05 08:37:11] [info] Table logins created or already exists
+[2025-02-05 08:37:11] [info] Database setup completed successfully
+[2025-02-05 08:37:22] [info] Database connection established successfully
+[2025-02-05 08:37:22] [info] Table users created or already exists
+[2025-02-05 08:37:22] [info] Table logins created or already exists
+[2025-02-05 08:37:22] [info] Database setup completed successfully
+[2025-02-05 09:18:28] [info] Database connection established successfully
+[2025-02-05 09:18:28] [info] Table users created or already exists
+[2025-02-05 09:18:28] [info] Table logins created or already exists
+[2025-02-05 09:18:28] [info] Database setup completed successfully
+[2025-02-05 09:19:07] [critical] Critical Database Setup Error: No connection could be made because the target machine actively refused it
+[2025-02-05 09:19:24] [critical] Critical Database Setup Error: No connection could be made because the target machine actively refused it
+[2025-02-05 09:19:36] [info] Database connection established successfully
+[2025-02-05 09:19:36] [info] Table users created or already exists
+[2025-02-05 09:19:36] [info] Table logins created or already exists
+[2025-02-05 09:19:36] [info] Database setup completed successfully
+[2025-02-05 09:31:54] [info] Database connection established successfully
+[2025-02-05 09:31:54] [info] Table users created or already exists
+[2025-02-05 09:31:54] [info] Table logins created or already exists
+[2025-02-05 09:31:54] [info] Database setup completed successfully
+[2025-02-05 09:32:04] [info] Database connection established successfully
+[2025-02-05 09:32:04] [info] Table users created or already exists
+[2025-02-05 09:32:04] [info] Table logins created or already exists
+[2025-02-05 09:32:04] [info] Database setup completed successfully
+[2025-02-05 09:34:52] [info] Database connection established successfully
+[2025-02-05 09:34:52] [info] Table users created or already exists
+[2025-02-05 09:34:52] [info] Table logins created or already exists
+[2025-02-05 09:34:52] [info] Database setup completed successfully
+[2025-02-05 09:41:39] [info] Database connection established successfully
+[2025-02-05 09:41:39] [info] Table users created or already exists
+[2025-02-05 09:41:39] [info] Table logins created or already exists
+[2025-02-05 09:41:39] [info] Database setup completed successfully
+[2025-02-05 09:47:51] [info] Database connection established successfully
+[2025-02-05 09:47:51] [info] Table users created or already exists
+[2025-02-05 09:47:51] [info] Table logins created or already exists
+[2025-02-05 09:47:51] [info] Database setup completed successfully
+[2025-02-05 09:47:56] [info] Database connection established successfully
+[2025-02-05 09:47:56] [info] Table users created or already exists
+[2025-02-05 09:47:56] [info] Table logins created or already exists
+[2025-02-05 09:47:56] [info] Database setup completed successfully
+[2025-02-05 09:48:01] [info] Database connection established successfully
+[2025-02-05 09:48:01] [info] Table users created or already exists
+[2025-02-05 09:48:01] [info] Table logins created or already exists
+[2025-02-05 09:48:01] [info] Database setup completed successfully
+[2025-02-05 09:48:13] [info] Database connection established successfully
+[2025-02-05 09:48:13] [info] Table users created or already exists
+[2025-02-05 09:48:13] [info] Table logins created or already exists
+[2025-02-05 09:48:13] [info] Database setup completed successfully
+[2025-02-05 09:52:31] [info] Database connection established successfully
+[2025-02-05 09:52:31] [info] Table users created or already exists
+[2025-02-05 09:52:31] [info] Table logins created or already exists
+[2025-02-05 09:52:31] [info] Database setup completed successfully
+[2025-02-05 09:52:45] [info] Database connection established successfully
+[2025-02-05 09:52:45] [info] Table users created or already exists
+[2025-02-05 09:52:45] [info] Table logins created or already exists
+[2025-02-05 09:52:45] [info] Database setup completed successfully
+[2025-02-05 10:33:49] [info] Database connection established successfully
+[2025-02-05 10:33:49] [info] Table users created or already exists
+[2025-02-05 10:33:49] [info] Table logins created or already exists
+[2025-02-05 10:33:49] [info] Database setup completed successfully
+[2025-02-05 10:33:55] [info] Database connection established successfully
+[2025-02-05 10:33:55] [info] Table users created or already exists
+[2025-02-05 10:33:55] [info] Table logins created or already exists
+[2025-02-05 10:33:55] [info] Database setup completed successfully
+[2025-02-05 10:34:02] [info] Database connection established successfully
+[2025-02-05 10:34:02] [info] Table users created or already exists
+[2025-02-05 10:34:02] [info] Table logins created or already exists
+[2025-02-05 10:34:02] [info] Database setup completed successfully
+[2025-02-05 10:34:34] [info] Database connection established successfully
+[2025-02-05 10:34:34] [info] Table users created or already exists
+[2025-02-05 10:34:34] [info] Table logins created or already exists
+[2025-02-05 10:34:34] [info] Database setup completed successfully
+[2025-02-05 10:43:22] [info] Database connection established successfully
+[2025-02-05 10:43:22] [info] Table users created or already exists
+[2025-02-05 10:43:22] [info] Table logins created or already exists
+[2025-02-05 10:43:22] [info] Database setup completed successfully
+[2025-02-05 10:43:28] [info] Database connection established successfully
+[2025-02-05 10:43:28] [info] Table users created or already exists
+[2025-02-05 10:43:28] [info] Table logins created or already exists
+[2025-02-05 10:43:28] [info] Database setup completed successfully
+[2025-02-05 10:43:33] [info] Database connection established successfully
+[2025-02-05 10:43:33] [info] Table users created or already exists
+[2025-02-05 10:43:33] [info] Table logins created or already exists
+[2025-02-05 10:43:33] [info] Database setup completed successfully
+[2025-02-05 10:43:46] [info] Database connection established successfully
+[2025-02-05 10:43:46] [info] Table users created or already exists
+[2025-02-05 10:43:46] [info] Table logins created or already exists
+[2025-02-05 10:43:46] [info] Database setup completed successfully
+[2025-02-05 10:44:00] [info] Database connection established successfully
+[2025-02-05 10:44:00] [info] Table users created or already exists
+[2025-02-05 10:44:00] [info] Table logins created or already exists
+[2025-02-05 10:44:00] [info] Database setup completed successfully
+[2025-02-05 10:44:06] [info] Database connection established successfully
+[2025-02-05 10:44:06] [info] Table users created or already exists
+[2025-02-05 10:44:06] [info] Table logins created or already exists
+[2025-02-05 10:44:06] [info] Database setup completed successfully
+[2025-02-05 10:44:08] [info] Database connection established successfully
+[2025-02-05 10:44:08] [info] Table users created or already exists
+[2025-02-05 10:44:08] [info] Table logins created or already exists
+[2025-02-05 10:44:08] [info] Database setup completed successfully
+[2025-02-05 10:45:37] [info] Database connection established successfully
+[2025-02-05 10:45:37] [info] Table users created or already exists
+[2025-02-05 10:45:37] [info] Table logins created or already exists
+[2025-02-05 10:45:37] [info] Database setup completed successfully
+[2025-02-05 10:47:09] [info] Database connection established successfully
+[2025-02-05 10:47:09] [info] Table users created or already exists
+[2025-02-05 10:47:09] [info] Table logins created or already exists
+[2025-02-05 10:47:09] [info] Database setup completed successfully
+[2025-02-05 10:47:24] [info] Database connection established successfully
+[2025-02-05 10:47:24] [info] Table users created or already exists
+[2025-02-05 10:47:24] [info] Table logins created or already exists
+[2025-02-05 10:47:24] [info] Database setup completed successfully
+[2025-02-05 10:47:42] [info] Database connection established successfully
+[2025-02-05 10:47:42] [info] Table users created or already exists
+[2025-02-05 10:47:42] [info] Table logins created or already exists
+[2025-02-05 10:47:42] [info] Database setup completed successfully
+[2025-02-05 14:08:55] [info] Database connection established successfully
+[2025-02-05 14:08:55] [info] Table users created or already exists
+[2025-02-05 14:08:55] [info] Table logins created or already exists
+[2025-02-05 14:08:55] [info] Database setup completed successfully
+[2025-02-05 14:09:02] [info] Database connection established successfully
+[2025-02-05 14:09:02] [info] Table users created or already exists
+[2025-02-05 14:09:02] [info] Table logins created or already exists
+[2025-02-05 14:09:02] [info] Database setup completed successfully
+[2025-02-05 14:13:03] [info] Database connection established successfully
+[2025-02-05 14:13:03] [info] Table users created or already exists
+[2025-02-05 14:13:03] [info] Table logins created or already exists
+[2025-02-05 14:13:03] [info] Database setup completed successfully
+[2025-02-05 14:15:57] [info] Database connection established successfully
+[2025-02-05 14:15:57] [info] Table users created or already exists
+[2025-02-05 14:15:57] [info] Table logins created or already exists
+[2025-02-05 14:15:57] [info] Database setup completed successfully
+[2025-02-05 14:16:05] [info] Database connection established successfully
+[2025-02-05 14:16:05] [info] Table users created or already exists
+[2025-02-05 14:16:05] [info] Table logins created or already exists
+[2025-02-05 14:16:05] [info] Database setup completed successfully
+[2025-02-05 14:17:45] [info] Database connection established successfully
+[2025-02-05 14:17:45] [info] Table users created or already exists
+[2025-02-05 14:17:45] [info] Table logins created or already exists
+[2025-02-05 14:17:45] [info] Database setup completed successfully
+[2025-02-05 14:18:16] [info] Database connection established successfully
+[2025-02-05 14:18:16] [info] Table users created or already exists
+[2025-02-05 14:18:16] [info] Table logins created or already exists
+[2025-02-05 14:18:16] [info] Database setup completed successfully
+[2025-02-05 14:18:19] [info] Database connection established successfully
+[2025-02-05 14:18:19] [info] Table users created or already exists
+[2025-02-05 14:18:19] [info] Table logins created or already exists
+[2025-02-05 14:18:19] [info] Database setup completed successfully
+[2025-02-05 14:18:28] [info] Database connection established successfully
+[2025-02-05 14:18:28] [info] Table users created or already exists
+[2025-02-05 14:18:28] [info] Table logins created or already exists
+[2025-02-05 14:18:28] [info] Database setup completed successfully
+[2025-02-05 14:31:35] [info] Database connection established successfully
+[2025-02-05 14:31:35] [info] Table users created or already exists
+[2025-02-05 14:31:35] [info] Table logins created or already exists
+[2025-02-05 14:31:35] [info] Database setup completed successfully
+[2025-02-05 14:31:47] [info] Database connection established successfully
+[2025-02-05 14:31:47] [info] Table users created or already exists
+[2025-02-05 14:31:47] [info] Table logins created or already exists
+[2025-02-05 14:31:47] [info] Database setup completed successfully
+[2025-02-05 15:03:47] [info] Database connection established successfully
+[2025-02-05 15:03:47] [info] Table users created or already exists
+[2025-02-05 15:03:47] [info] Table logins created or already exists
+[2025-02-05 15:03:47] [info] Database setup completed successfully
+[2025-02-05 15:03:47] [info] Database connection established successfully
+[2025-02-05 15:03:47] [info] Table users created or already exists
+[2025-02-05 15:03:47] [info] Table logins created or already exists
+[2025-02-05 15:03:47] [info] Database setup completed successfully
+[2025-02-05 15:03:49] [info] Database connection established successfully
+[2025-02-05 15:03:49] [info] Table users created or already exists
+[2025-02-05 15:03:49] [info] Table logins created or already exists
+[2025-02-05 15:03:49] [info] Database setup completed successfully
+[2025-02-05 15:04:46] [info] Database connection established successfully
+[2025-02-05 15:04:46] [info] Table users created or already exists
+[2025-02-05 15:04:46] [info] Table logins created or already exists
+[2025-02-05 15:04:46] [info] Database setup completed successfully
+[2025-02-05 15:19:20] [info] Database connection established successfully
+[2025-02-05 15:19:20] [info] Table users created or already exists
+[2025-02-05 15:19:20] [info] Table logins created or already exists
+[2025-02-05 15:19:20] [info] Database setup completed successfully
+[2025-02-05 15:24:55] [info] Database connection established successfully
+[2025-02-05 15:24:55] [info] Table users created or already exists
+[2025-02-05 15:24:55] [info] Table logins created or already exists
+[2025-02-05 15:24:55] [info] Database setup completed successfully
+[2025-02-05 15:25:07] [info] Database connection established successfully
+[2025-02-05 15:25:07] [info] Table users created or already exists
+[2025-02-05 15:25:07] [info] Table logins created or already exists
+[2025-02-05 15:25:07] [info] Database setup completed successfully
+[2025-02-05 15:25:46] [info] Database connection established successfully
+[2025-02-05 15:25:46] [info] Table users created or already exists
+[2025-02-05 15:25:46] [info] Table logins created or already exists
+[2025-02-05 15:25:46] [info] Database setup completed successfully
+[2025-02-05 15:26:04] [info] Database connection established successfully
+[2025-02-05 15:26:04] [info] Table users created or already exists
+[2025-02-05 15:26:04] [info] Table logins created or already exists
+[2025-02-05 15:26:04] [info] Database setup completed successfully
+[2025-02-05 15:29:30] [info] Database connection established successfully
+[2025-02-05 15:29:30] [info] Table users created or already exists
+[2025-02-05 15:29:30] [info] Table logins created or already exists
+[2025-02-05 15:29:30] [info] Database setup completed successfully
+[2025-02-05 15:31:19] [info] Database connection established successfully
+[2025-02-05 15:31:19] [info] Table users created or already exists
+[2025-02-05 15:31:19] [info] Table logins created or already exists
+[2025-02-05 15:31:19] [info] Database setup completed successfully
+[2025-02-05 15:31:24] [info] Database connection established successfully
+[2025-02-05 15:31:24] [info] Table users created or already exists
+[2025-02-05 15:31:24] [info] Table logins created or already exists
+[2025-02-05 15:31:24] [info] Database setup completed successfully
+[2025-02-05 15:32:08] [info] Database connection established successfully
+[2025-02-05 15:32:08] [info] Table users created or already exists
+[2025-02-05 15:32:08] [info] Table logins created or already exists
+[2025-02-05 15:32:08] [info] Database setup completed successfully
+[2025-02-05 15:37:15] [info] Database connection established successfully
+[2025-02-05 15:37:15] [info] Table users created or already exists
+[2025-02-05 15:37:15] [info] Table logins created or already exists
+[2025-02-05 15:37:15] [info] Database setup completed successfully
+[2025-02-05 15:38:09] [info] Database connection established successfully
+[2025-02-05 15:38:09] [info] Table users created or already exists
+[2025-02-05 15:38:09] [info] Table logins created or already exists
+[2025-02-05 15:38:09] [info] Database setup completed successfully
+[2025-02-05 15:40:36] [info] Database connection established successfully
+[2025-02-05 15:40:36] [info] Table users created or already exists
+[2025-02-05 15:40:36] [info] Table logins created or already exists
+[2025-02-05 15:40:36] [info] Database setup completed successfully
+[2025-02-05 15:46:18] [info] Database connection established successfully
+[2025-02-05 15:46:18] [info] Table users created or already exists
+[2025-02-05 15:46:18] [info] Table logins created or already exists
+[2025-02-05 15:46:18] [info] Database setup completed successfully
+[2025-02-05 15:50:46] [info] Database connection established successfully
+[2025-02-05 15:50:46] [info] Table users created or already exists
+[2025-02-05 15:50:46] [info] Table logins created or already exists
+[2025-02-05 15:50:46] [info] Database setup completed successfully
+[2025-02-05 15:52:20] [info] Database connection established successfully
+[2025-02-05 15:52:20] [info] Table users created or already exists
+[2025-02-05 15:52:20] [info] Table logins created or already exists
+[2025-02-05 15:52:20] [info] Database setup completed successfully
+[2025-02-05 15:52:24] [info] Database connection established successfully
+[2025-02-05 15:52:24] [info] Table users created or already exists
+[2025-02-05 15:52:24] [info] Table logins created or already exists
+[2025-02-05 15:52:24] [info] Database setup completed successfully
+[2025-02-05 15:52:47] [info] Database connection established successfully
+[2025-02-05 15:52:47] [info] Table users created or already exists
+[2025-02-05 15:52:47] [info] Table logins created or already exists
+[2025-02-05 15:52:47] [info] Database setup completed successfully
+[2025-02-05 15:54:02] [info] Database connection established successfully
+[2025-02-05 15:54:02] [info] Table users created or already exists
+[2025-02-05 15:54:02] [info] Table logins created or already exists
+[2025-02-05 15:54:02] [info] Database setup completed successfully
+[2025-02-05 15:54:03] [info] Database connection established successfully
+[2025-02-05 15:54:03] [info] Table users created or already exists
+[2025-02-05 15:54:03] [info] Table logins created or already exists
+[2025-02-05 15:54:03] [info] Database setup completed successfully
+[2025-02-05 15:54:03] [info] Database connection established successfully
+[2025-02-05 15:54:03] [info] Table users created or already exists
+[2025-02-05 15:54:03] [info] Table logins created or already exists
+[2025-02-05 15:54:03] [info] Database setup completed successfully
+[2025-02-05 15:54:03] [info] Database connection established successfully
+[2025-02-05 15:54:03] [info] Table users created or already exists
+[2025-02-05 15:54:03] [info] Table logins created or already exists
+[2025-02-05 15:54:03] [info] Database setup completed successfully
+[2025-02-05 15:54:04] [info] Database connection established successfully
+[2025-02-05 15:54:04] [info] Table users created or already exists
+[2025-02-05 15:54:04] [info] Table logins created or already exists
+[2025-02-05 15:54:04] [info] Database setup completed successfully
+[2025-02-05 15:54:04] [info] Database connection established successfully
+[2025-02-05 15:54:04] [info] Table users created or already exists
+[2025-02-05 15:54:04] [info] Table logins created or already exists
+[2025-02-05 15:54:04] [info] Database setup completed successfully
+[2025-02-05 15:54:09] [info] Database connection established successfully
+[2025-02-05 15:54:09] [info] Table users created or already exists
+[2025-02-05 15:54:09] [info] Table logins created or already exists
+[2025-02-05 15:54:09] [info] Database setup completed successfully
+[2025-02-05 15:54:28] [info] Database connection established successfully
+[2025-02-05 15:54:28] [info] Table users created or already exists
+[2025-02-05 15:54:28] [info] Table logins created or already exists
+[2025-02-05 15:54:28] [info] Database setup completed successfully
+[2025-02-05 15:54:38] [info] Database connection established successfully
+[2025-02-05 15:54:38] [info] Table users created or already exists
+[2025-02-05 15:54:38] [info] Table logins created or already exists
+[2025-02-05 15:54:38] [info] Database setup completed successfully
+[2025-02-05 15:54:57] [info] Database connection established successfully
+[2025-02-05 15:54:57] [info] Table users created or already exists
+[2025-02-05 15:54:57] [info] Table logins created or already exists
+[2025-02-05 15:54:57] [info] Database setup completed successfully
+[2025-02-05 15:55:23] [info] Database connection established successfully
+[2025-02-05 15:55:23] [info] Table users created or already exists
+[2025-02-05 15:55:23] [info] Table logins created or already exists
+[2025-02-05 15:55:23] [info] Database setup completed successfully
+[2025-02-05 15:56:22] [info] Database connection established successfully
+[2025-02-05 15:56:22] [info] Table users created or already exists
+[2025-02-05 15:56:22] [info] Table logins created or already exists
+[2025-02-05 15:56:22] [info] Database setup completed successfully
+[2025-02-05 15:57:26] [info] Database connection established successfully
+[2025-02-05 15:57:26] [info] Table users created or already exists
+[2025-02-05 15:57:26] [info] Table logins created or already exists
+[2025-02-05 15:57:26] [info] Database setup completed successfully
+[2025-02-05 15:57:33] [info] Database connection established successfully
+[2025-02-05 15:57:33] [info] Table users created or already exists
+[2025-02-05 15:57:33] [info] Table logins created or already exists
+[2025-02-05 15:57:33] [info] Database setup completed successfully
+[2025-02-05 15:57:50] [info] Database connection established successfully
+[2025-02-05 15:57:50] [info] Table users created or already exists
+[2025-02-05 15:57:50] [info] Table logins created or already exists
+[2025-02-05 15:57:50] [info] Database setup completed successfully
+[2025-02-05 15:58:14] [info] Database connection established successfully
+[2025-02-05 15:58:14] [info] Table users created or already exists
+[2025-02-05 15:58:14] [info] Table logins created or already exists
+[2025-02-05 15:58:14] [info] Database setup completed successfully
+[2025-02-05 15:58:23] [info] Database connection established successfully
+[2025-02-05 15:58:23] [info] Table users created or already exists
+[2025-02-05 15:58:23] [info] Table logins created or already exists
+[2025-02-05 15:58:23] [info] Database setup completed successfully
+[2025-02-05 15:58:43] [info] Database connection established successfully
+[2025-02-05 15:58:43] [info] Table users created or already exists
+[2025-02-05 15:58:43] [info] Table logins created or already exists
+[2025-02-05 15:58:43] [info] Database setup completed successfully
+[2025-02-05 15:58:43] [info] Database connection established successfully
+[2025-02-05 15:58:43] [info] Table users created or already exists
+[2025-02-05 15:58:43] [info] Table logins created or already exists
+[2025-02-05 15:58:43] [info] Database setup completed successfully
+[2025-02-05 15:59:55] [info] Database connection established successfully
+[2025-02-05 15:59:55] [info] Table users created or already exists
+[2025-02-05 15:59:55] [info] Table logins created or already exists
+[2025-02-05 15:59:55] [info] Database setup completed successfully
+[2025-02-05 15:59:55] [info] Database connection established successfully
+[2025-02-05 15:59:55] [info] Table users created or already exists
+[2025-02-05 15:59:55] [info] Table logins created or already exists
+[2025-02-05 15:59:55] [info] Database setup completed successfully
+[2025-02-05 15:59:58] [info] Database connection established successfully
+[2025-02-05 15:59:58] [info] Table users created or already exists
+[2025-02-05 15:59:58] [info] Table logins created or already exists
+[2025-02-05 15:59:58] [info] Database setup completed successfully
+[2025-02-05 16:00:33] [info] Database connection established successfully
+[2025-02-05 16:00:33] [info] Table users created or already exists
+[2025-02-05 16:00:33] [info] Table logins created or already exists
+[2025-02-05 16:00:33] [info] Database setup completed successfully
+[2025-02-05 16:00:54] [info] Database connection established successfully
+[2025-02-05 16:00:54] [info] Table users created or already exists
+[2025-02-05 16:00:54] [info] Table logins created or already exists
+[2025-02-05 16:00:54] [info] Database setup completed successfully
+[2025-02-05 16:01:18] [info] Database connection established successfully
+[2025-02-05 16:01:18] [info] Table users created or already exists
+[2025-02-05 16:01:18] [info] Table logins created or already exists
+[2025-02-05 16:01:18] [info] Database setup completed successfully
+[2025-02-05 16:01:28] [info] Database connection established successfully
+[2025-02-05 16:01:28] [info] Table users created or already exists
+[2025-02-05 16:01:28] [info] Table logins created or already exists
+[2025-02-05 16:01:28] [info] Database setup completed successfully
+[2025-02-05 16:02:17] [info] Database connection established successfully
+[2025-02-05 16:02:17] [info] Table users created or already exists
+[2025-02-05 16:02:17] [info] Table logins created or already exists
+[2025-02-05 16:02:17] [info] Database setup completed successfully
+[2025-02-05 16:02:44] [info] Database connection established successfully
+[2025-02-05 16:02:44] [info] Table users created or already exists
+[2025-02-05 16:02:44] [info] Table logins created or already exists
+[2025-02-05 16:02:44] [info] Database setup completed successfully
+[2025-02-05 16:02:46] [info] Database connection established successfully
+[2025-02-05 16:02:46] [info] Table users created or already exists
+[2025-02-05 16:02:46] [info] Table logins created or already exists
+[2025-02-05 16:02:46] [info] Database setup completed successfully
+[2025-02-05 16:05:04] [info] Database connection established successfully
+[2025-02-05 16:05:04] [info] Table users created or already exists
+[2025-02-05 16:05:04] [info] Table logins created or already exists
+[2025-02-05 16:05:04] [info] Database setup completed successfully
+[2025-02-05 16:05:07] [info] Database connection established successfully
+[2025-02-05 16:05:07] [info] Table users created or already exists
+[2025-02-05 16:05:07] [info] Table logins created or already exists
+[2025-02-05 16:05:07] [info] Database setup completed successfully
+[2025-02-05 16:05:10] [info] Database connection established successfully
+[2025-02-05 16:05:10] [info] Table users created or already exists
+[2025-02-05 16:05:10] [info] Table logins created or already exists
+[2025-02-05 16:05:10] [info] Database setup completed successfully
+[2025-02-05 16:05:10] [info] Database connection established successfully
+[2025-02-05 16:05:10] [info] Table users created or already exists
+[2025-02-05 16:05:10] [info] Table logins created or already exists
+[2025-02-05 16:05:10] [info] Database setup completed successfully
+[2025-02-05 16:05:23] [info] Database connection established successfully
+[2025-02-05 16:05:23] [info] Table users created or already exists
+[2025-02-05 16:05:23] [info] Table logins created or already exists
+[2025-02-05 16:05:23] [info] Database setup completed successfully
+[2025-02-05 16:05:28] [info] Database connection established successfully
+[2025-02-05 16:05:28] [info] Table users created or already exists
+[2025-02-05 16:05:28] [info] Table logins created or already exists
+[2025-02-05 16:05:28] [info] Database setup completed successfully
+[2025-02-05 16:05:31] [info] Database connection established successfully
+[2025-02-05 16:05:31] [info] Table users created or already exists
+[2025-02-05 16:05:31] [info] Table logins created or already exists
+[2025-02-05 16:05:31] [info] Database setup completed successfully
+[2025-02-05 16:05:43] [info] Database connection established successfully
+[2025-02-05 16:05:43] [info] Table users created or already exists
+[2025-02-05 16:05:43] [info] Table logins created or already exists
+[2025-02-05 16:05:43] [info] Database setup completed successfully
+[2025-02-05 16:07:40] [info] Database connection established successfully
+[2025-02-05 16:07:40] [info] Table users created or already exists
+[2025-02-05 16:07:40] [info] Table logins created or already exists
+[2025-02-05 16:07:40] [info] Database setup completed successfully
+[2025-02-05 16:08:05] [info] Database connection established successfully
+[2025-02-05 16:08:05] [info] Table users created or already exists
+[2025-02-05 16:08:05] [info] Table logins created or already exists
+[2025-02-05 16:08:05] [info] Database setup completed successfully
+[2025-02-05 16:08:10] [info] Database connection established successfully
+[2025-02-05 16:08:10] [info] Table users created or already exists
+[2025-02-05 16:08:10] [info] Table logins created or already exists
+[2025-02-05 16:08:10] [info] Database setup completed successfully
+[2025-02-05 16:08:20] [info] Database connection established successfully
+[2025-02-05 16:08:20] [info] Table users created or already exists
+[2025-02-05 16:08:20] [info] Table logins created or already exists
+[2025-02-05 16:08:20] [info] Database setup completed successfully
+[2025-02-05 16:12:41] [info] Database connection established successfully
+[2025-02-05 16:12:41] [info] Table users created or already exists
+[2025-02-05 16:12:41] [info] Table logins created or already exists
+[2025-02-05 16:12:41] [info] Database setup completed successfully
+[2025-02-05 16:12:43] [info] Database connection established successfully
+[2025-02-05 16:12:43] [info] Table users created or already exists
+[2025-02-05 16:12:43] [info] Table logins created or already exists
+[2025-02-05 16:12:43] [info] Database setup completed successfully
+[2025-02-05 16:13:55] [info] Database connection established successfully
+[2025-02-05 16:13:55] [info] Table users created or already exists
+[2025-02-05 16:13:55] [info] Table logins created or already exists
+[2025-02-05 16:13:55] [info] Database setup completed successfully
+[2025-02-05 16:14:33] [info] Database connection established successfully
+[2025-02-05 16:14:33] [info] Table users created or already exists
+[2025-02-05 16:14:33] [info] Table logins created or already exists
+[2025-02-05 16:14:33] [info] Database setup completed successfully
+[2025-02-05 16:14:45] [info] Database connection established successfully
+[2025-02-05 16:14:45] [info] Table users created or already exists
+[2025-02-05 16:14:45] [info] Table logins created or already exists
+[2025-02-05 16:14:45] [info] Database setup completed successfully
+[2025-02-05 16:14:48] [info] Database connection established successfully
+[2025-02-05 16:14:48] [info] Table users created or already exists
+[2025-02-05 16:14:48] [info] Table logins created or already exists
+[2025-02-05 16:14:48] [info] Database setup completed successfully
+[2025-02-05 16:15:04] [info] Database connection established successfully
+[2025-02-05 16:15:04] [info] Table users created or already exists
+[2025-02-05 16:15:04] [info] Table logins created or already exists
+[2025-02-05 16:15:04] [info] Database setup completed successfully
+[2025-02-05 16:15:07] [info] Database connection established successfully
+[2025-02-05 16:15:07] [info] Table users created or already exists
+[2025-02-05 16:15:07] [info] Table logins created or already exists
+[2025-02-05 16:15:07] [info] Database setup completed successfully
+[2025-02-06 04:03:01] [info] Database connection established successfully
+[2025-02-06 04:03:01] [info] Table users created or already exists
+[2025-02-06 04:03:01] [info] Table logins created or already exists
+[2025-02-06 04:03:01] [info] Database setup completed successfully
+[2025-02-06 04:03:14] [info] Database connection established successfully
+[2025-02-06 04:03:14] [info] Table users created or already exists
+[2025-02-06 04:03:14] [info] Table logins created or already exists
+[2025-02-06 04:03:14] [info] Database setup completed successfully
+[2025-02-06 04:03:14] [info] Database connection established successfully
+[2025-02-06 04:03:14] [info] Table users created or already exists
+[2025-02-06 04:03:14] [info] Table logins created or already exists
+[2025-02-06 04:03:14] [info] Database setup completed successfully
+[2025-02-06 04:03:24] [info] Database connection established successfully
+[2025-02-06 04:03:24] [info] Table users created or already exists
+[2025-02-06 04:03:24] [info] Table logins created or already exists
+[2025-02-06 04:03:24] [info] Database setup completed successfully
+[2025-02-06 04:03:24] [info] Database connection established successfully
+[2025-02-06 04:03:24] [info] Table users created or already exists
+[2025-02-06 04:03:24] [info] Table logins created or already exists
+[2025-02-06 04:03:24] [info] Database setup completed successfully
+[2025-02-06 04:03:29] [info] Database connection established successfully
+[2025-02-06 04:03:29] [info] Table users created or already exists
+[2025-02-06 04:03:29] [info] Table logins created or already exists
+[2025-02-06 04:03:29] [info] Database setup completed successfully
+[2025-02-06 04:03:58] [info] Database connection established successfully
+[2025-02-06 04:03:58] [info] Table users created or already exists
+[2025-02-06 04:03:58] [info] Table logins created or already exists
+[2025-02-06 04:03:58] [info] Database setup completed successfully
+[2025-02-06 04:04:25] [info] Database connection established successfully
+[2025-02-06 04:04:25] [info] Table users created or already exists
+[2025-02-06 04:04:25] [info] Table logins created or already exists
+[2025-02-06 04:04:25] [info] Database setup completed successfully
+[2025-02-06 04:04:36] [info] Database connection established successfully
+[2025-02-06 04:04:36] [info] Table users created or already exists
+[2025-02-06 04:04:36] [info] Table logins created or already exists
+[2025-02-06 04:04:36] [info] Database setup completed successfully
+[2025-02-06 04:04:39] [info] Database connection established successfully
+[2025-02-06 04:04:39] [info] Table users created or already exists
+[2025-02-06 04:04:39] [info] Table logins created or already exists
+[2025-02-06 04:04:39] [info] Database setup completed successfully
+[2025-02-06 04:04:48] [info] Database connection established successfully
+[2025-02-06 04:04:48] [info] Table users created or already exists
+[2025-02-06 04:04:48] [info] Table logins created or already exists
+[2025-02-06 04:04:48] [info] Database setup completed successfully
+[2025-02-06 04:05:05] [info] Database connection established successfully
+[2025-02-06 04:05:05] [info] Table users created or already exists
+[2025-02-06 04:05:05] [info] Table logins created or already exists
+[2025-02-06 04:05:05] [info] Database setup completed successfully
+[2025-02-06 10:05:37] [info] Database connection established successfully
+[2025-02-06 10:05:37] [info] Table users created or already exists
+[2025-02-06 10:05:37] [info] Table logins created or already exists
+[2025-02-06 10:05:37] [info] Database setup completed successfully
+[2025-02-06 10:05:47] [info] Database connection established successfully
+[2025-02-06 10:05:47] [info] Table users created or already exists
+[2025-02-06 10:05:47] [info] Table logins created or already exists
+[2025-02-06 10:05:47] [info] Database setup completed successfully
+[2025-02-06 10:33:50] [info] Database connection established successfully
+[2025-02-06 10:33:50] [info] Table users created or already exists
+[2025-02-06 10:33:50] [info] Table logins created or already exists
+[2025-02-06 10:33:50] [info] Database setup completed successfully
+[2025-02-06 10:53:17] [info] Database connection established successfully
+[2025-02-06 10:53:17] [info] Table users created or already exists
+[2025-02-06 10:53:17] [info] Table logins created or already exists
+[2025-02-06 10:53:17] [info] Database setup completed successfully
+[2025-02-06 11:05:29] [info] Database connection established successfully
+[2025-02-06 11:05:29] [info] Table users created or already exists
+[2025-02-06 11:05:29] [info] Table logins created or already exists
+[2025-02-06 11:05:29] [info] Database setup completed successfully
+[2025-02-06 16:27:09] [info] Database connection established successfully
+[2025-02-06 16:27:09] [info] Table users created or already exists
+[2025-02-06 16:27:09] [info] Table logins created or already exists
+[2025-02-06 16:27:09] [info] Database setup completed successfully
+[2025-02-06 16:27:18] [info] Database connection established successfully
+[2025-02-06 16:27:18] [info] Table users created or already exists
+[2025-02-06 16:27:18] [info] Table logins created or already exists
+[2025-02-06 16:27:18] [info] Database setup completed successfully
+[2025-02-06 16:29:54] [info] Database connection established successfully
+[2025-02-06 16:29:54] [info] Table users created or already exists
+[2025-02-06 16:29:54] [info] Table logins created or already exists
+[2025-02-06 16:29:54] [info] Database setup completed successfully
+[2025-02-06 16:30:20] [info] Database connection established successfully
+[2025-02-06 16:30:20] [info] Table users created or already exists
+[2025-02-06 16:30:20] [info] Table logins created or already exists
+[2025-02-06 16:30:20] [info] Database setup completed successfully
+[2025-02-06 16:30:25] [info] Database connection established successfully
+[2025-02-06 16:30:25] [info] Table users created or already exists
+[2025-02-06 16:30:25] [info] Table logins created or already exists
+[2025-02-06 16:30:25] [info] Database setup completed successfully
+[2025-02-06 16:32:39] [info] Database connection established successfully
+[2025-02-06 16:32:39] [info] Table users created or already exists
+[2025-02-06 16:32:39] [info] Table logins created or already exists
+[2025-02-06 16:32:39] [info] Database setup completed successfully
+[2025-02-06 16:32:40] [info] Database connection established successfully
+[2025-02-06 16:32:40] [info] Table users created or already exists
+[2025-02-06 16:32:40] [info] Table logins created or already exists
+[2025-02-06 16:32:40] [info] Database setup completed successfully
+[2025-02-06 16:32:40] [info] Database connection established successfully
+[2025-02-06 16:32:40] [info] Table users created or already exists
+[2025-02-06 16:32:40] [info] Table logins created or already exists
+[2025-02-06 16:32:40] [info] Database setup completed successfully
+[2025-02-06 16:32:40] [info] Database connection established successfully
+[2025-02-06 16:32:40] [info] Table users created or already exists
+[2025-02-06 16:32:40] [info] Table logins created or already exists
+[2025-02-06 16:32:40] [info] Database setup completed successfully
+[2025-02-06 16:32:40] [info] Database connection established successfully
+[2025-02-06 16:32:40] [info] Table users created or already exists
+[2025-02-06 16:32:40] [info] Table logins created or already exists
+[2025-02-06 16:32:40] [info] Database setup completed successfully
+[2025-02-06 16:32:40] [info] Database connection established successfully
+[2025-02-06 16:32:40] [info] Table users created or already exists
+[2025-02-06 16:32:40] [info] Table logins created or already exists
+[2025-02-06 16:32:40] [info] Database setup completed successfully
+[2025-02-06 16:32:41] [info] Database connection established successfully
+[2025-02-06 16:32:41] [info] Table users created or already exists
+[2025-02-06 16:32:41] [info] Table logins created or already exists
+[2025-02-06 16:32:41] [info] Database setup completed successfully
+[2025-02-06 16:32:41] [info] Database connection established successfully
+[2025-02-06 16:32:41] [info] Table users created or already exists
+[2025-02-06 16:32:41] [info] Table logins created or already exists
+[2025-02-06 16:32:41] [info] Database setup completed successfully
+[2025-02-06 16:32:42] [info] Database connection established successfully
+[2025-02-06 16:32:42] [info] Table users created or already exists
+[2025-02-06 16:32:42] [info] Table logins created or already exists
+[2025-02-06 16:32:42] [info] Database setup completed successfully
+[2025-02-06 16:32:42] [info] Database connection established successfully
+[2025-02-06 16:32:42] [info] Table users created or already exists
+[2025-02-06 16:32:42] [info] Table logins created or already exists
+[2025-02-06 16:32:42] [info] Database setup completed successfully
+[2025-02-06 16:41:02] [info] Database connection established successfully
+[2025-02-06 16:41:02] [info] Table users created or already exists
+[2025-02-06 16:41:02] [info] Table logins created or already exists
+[2025-02-06 16:41:02] [info] Database setup completed successfully
+[2025-02-06 16:41:09] [info] Database connection established successfully
+[2025-02-06 16:41:09] [info] Table users created or already exists
+[2025-02-06 16:41:09] [info] Table logins created or already exists
+[2025-02-06 16:41:09] [info] Database setup completed successfully
+[2025-02-06 16:43:17] [info] Database connection established successfully
+[2025-02-06 16:43:17] [info] Table users created or already exists
+[2025-02-06 16:43:17] [info] Table logins created or already exists
+[2025-02-06 16:43:17] [info] Database setup completed successfully
+[2025-02-06 17:02:28] [info] Database connection established successfully
+[2025-02-06 17:02:28] [info] Table users created or already exists
+[2025-02-06 17:02:28] [info] Table logins created or already exists
+[2025-02-06 17:02:28] [info] Database setup completed successfully
+[2025-02-06 17:02:32] [info] Database connection established successfully
+[2025-02-06 17:02:32] [info] Table users created or already exists
+[2025-02-06 17:02:32] [info] Table logins created or already exists
+[2025-02-06 17:02:32] [info] Database setup completed successfully
+[2025-02-06 17:02:39] [info] Database connection established successfully
+[2025-02-06 17:02:39] [info] Table users created or already exists
+[2025-02-06 17:02:39] [info] Table logins created or already exists
+[2025-02-06 17:02:39] [info] Database setup completed successfully
+[2025-02-07 08:43:37] [info] Database connection established successfully
+[2025-02-07 08:43:37] [info] Table users created or already exists
+[2025-02-07 08:43:37] [info] Table logins created or already exists
+[2025-02-07 08:43:37] [info] Database setup completed successfully
+[2025-02-07 08:43:49] [info] Database connection established successfully
+[2025-02-07 08:43:49] [info] Table users created or already exists
+[2025-02-07 08:43:49] [info] Table logins created or already exists
+[2025-02-07 08:43:49] [info] Database setup completed successfully
+[2025-02-07 08:43:56] [critical] Critical Database Setup Error: No connection could be made because the target machine actively refused it
+[2025-02-07 08:44:21] [info] Database connection established successfully
+[2025-02-07 08:44:21] [info] Table users created or already exists
+[2025-02-07 08:44:21] [info] Table logins created or already exists
+[2025-02-07 08:44:21] [info] Database setup completed successfully
+[2025-02-07 08:44:27] [info] Database connection established successfully
+[2025-02-07 08:44:27] [info] Table users created or already exists
+[2025-02-07 08:44:27] [info] Table logins created or already exists
+[2025-02-07 08:44:27] [info] Database setup completed successfully
+[2025-02-07 08:53:11] [info] Database connection established successfully
+[2025-02-07 08:53:11] [info] Table users created or already exists
+[2025-02-07 08:53:11] [info] Table logins created or already exists
+[2025-02-07 08:53:11] [info] Database setup completed successfully
+[2025-02-07 08:56:31] [info] Database connection established successfully
+[2025-02-07 08:56:31] [info] Table users created or already exists
+[2025-02-07 08:56:31] [info] Table logins created or already exists
+[2025-02-07 08:56:31] [info] Database setup completed successfully
+[2025-02-07 08:56:48] [info] Database connection established successfully
+[2025-02-07 08:56:48] [info] Table users created or already exists
+[2025-02-07 08:56:48] [info] Table logins created or already exists
+[2025-02-07 08:56:48] [info] Database setup completed successfully
+[2025-02-07 08:57:01] [info] Database connection established successfully
+[2025-02-07 08:57:01] [info] Table users created or already exists
+[2025-02-07 08:57:01] [info] Table logins created or already exists
+[2025-02-07 08:57:01] [info] Database setup completed successfully
+[2025-02-07 08:58:46] [info] Database connection established successfully
+[2025-02-07 08:58:46] [info] Table users created or already exists
+[2025-02-07 08:58:46] [info] Table logins created or already exists
+[2025-02-07 08:58:46] [info] Database setup completed successfully
+[2025-02-07 09:13:47] [info] Database connection established successfully
+[2025-02-07 09:13:47] [info] Table users created or already exists
+[2025-02-07 09:13:47] [info] Table logins created or already exists
+[2025-02-07 09:13:47] [info] Database setup completed successfully
+[2025-02-07 09:13:59] [info] Database connection established successfully
+[2025-02-07 09:13:59] [info] Table users created or already exists
+[2025-02-07 09:13:59] [info] Table logins created or already exists
+[2025-02-07 09:13:59] [info] Database setup completed successfully
+[2025-02-07 09:14:08] [info] Database connection established successfully
+[2025-02-07 09:14:08] [info] Table users created or already exists
+[2025-02-07 09:14:08] [info] Table logins created or already exists
+[2025-02-07 09:14:08] [info] Database setup completed successfully
+[2025-02-07 09:18:32] [info] Database connection established successfully
+[2025-02-07 09:18:32] [info] Table users created or already exists
+[2025-02-07 09:18:32] [info] Table logins created or already exists
+[2025-02-07 09:18:32] [info] Database setup completed successfully
+[2025-02-07 09:18:43] [info] Database connection established successfully
+[2025-02-07 09:18:43] [info] Table users created or already exists
+[2025-02-07 09:18:43] [info] Table logins created or already exists
+[2025-02-07 09:18:43] [info] Database setup completed successfully
+[2025-02-07 09:20:10] [info] Database connection established successfully
+[2025-02-07 09:20:10] [info] Table users created or already exists
+[2025-02-07 09:20:10] [info] Table logins created or already exists
+[2025-02-07 09:20:10] [info] Database setup completed successfully
+[2025-02-07 09:20:20] [info] Database connection established successfully
+[2025-02-07 09:20:20] [info] Table users created or already exists
+[2025-02-07 09:20:20] [info] Table logins created or already exists
+[2025-02-07 09:20:20] [info] Database setup completed successfully
+[2025-02-07 09:53:42] [info] Database connection established successfully
+[2025-02-07 09:53:42] [info] Table users created or already exists
+[2025-02-07 09:53:42] [info] Table logins created or already exists
+[2025-02-07 09:53:42] [info] Database setup completed successfully
+[2025-02-07 09:53:49] [info] Database connection established successfully
+[2025-02-07 09:53:49] [info] Table users created or already exists
+[2025-02-07 09:53:49] [info] Table logins created or already exists
+[2025-02-07 09:53:49] [info] Database setup completed successfully
+[2025-02-07 09:56:27] [info] Database connection established successfully
+[2025-02-07 09:56:27] [info] Table users created or already exists
+[2025-02-07 09:56:27] [info] Table logins created or already exists
+[2025-02-07 09:56:27] [info] Database setup completed successfully
+[2025-02-07 10:07:03] [info] Database connection established successfully
+[2025-02-07 10:07:03] [info] Table users created or already exists
+[2025-02-07 10:07:03] [info] Table logins created or already exists
+[2025-02-07 10:07:03] [info] Database setup completed successfully
+[2025-02-07 10:07:14] [info] Database connection established successfully
+[2025-02-07 10:07:14] [info] Table users created or already exists
+[2025-02-07 10:07:14] [info] Table logins created or already exists
+[2025-02-07 10:07:14] [info] Database setup completed successfully
+[2025-02-07 11:15:20] [info] Database connection established successfully
+[2025-02-07 11:15:20] [info] Table users created or already exists
+[2025-02-07 11:15:20] [info] Table logins created or already exists
+[2025-02-07 11:15:20] [info] Database setup completed successfully
+[2025-02-07 11:18:05] [info] Database connection established successfully
+[2025-02-07 11:18:05] [info] Table users created or already exists
+[2025-02-07 11:18:05] [info] Table logins created or already exists
+[2025-02-07 11:18:05] [info] Database setup completed successfully
+[2025-02-07 11:18:21] [info] Database connection established successfully
+[2025-02-07 11:18:21] [info] Table users created or already exists
+[2025-02-07 11:18:21] [info] Table logins created or already exists
+[2025-02-07 11:18:21] [info] Database setup completed successfully
+[2025-02-07 11:18:35] [info] Database connection established successfully
+[2025-02-07 11:18:35] [info] Table users created or already exists
+[2025-02-07 11:18:35] [info] Table logins created or already exists
+[2025-02-07 11:18:35] [info] Database setup completed successfully
+[2025-02-07 11:18:48] [info] Database connection established successfully
+[2025-02-07 11:18:48] [info] Table users created or already exists
+[2025-02-07 11:18:48] [info] Table logins created or already exists
+[2025-02-07 11:18:48] [info] Database setup completed successfully
+[2025-02-07 11:18:50] [info] Database connection established successfully
+[2025-02-07 11:18:50] [info] Table users created or already exists
+[2025-02-07 11:18:50] [info] Table logins created or already exists
+[2025-02-07 11:18:50] [info] Database setup completed successfully
+[2025-02-07 11:19:00] [info] Database connection established successfully
+[2025-02-07 11:19:00] [info] Table users created or already exists
+[2025-02-07 11:19:00] [info] Table logins created or already exists
+[2025-02-07 11:19:00] [info] Database setup completed successfully
+[2025-02-07 11:19:00] [info] Database connection established successfully
+[2025-02-07 11:19:00] [info] Table users created or already exists
+[2025-02-07 11:19:00] [info] Table logins created or already exists
+[2025-02-07 11:19:00] [info] Database setup completed successfully
+[2025-02-07 11:19:12] [info] Database connection established successfully
+[2025-02-07 11:19:12] [info] Table users created or already exists
+[2025-02-07 11:19:12] [info] Table logins created or already exists
+[2025-02-07 11:19:12] [info] Database setup completed successfully
+[2025-02-07 11:19:13] [info] Database connection established successfully
+[2025-02-07 11:19:13] [info] Table users created or already exists
+[2025-02-07 11:19:13] [info] Table logins created or already exists
+[2025-02-07 11:19:13] [info] Database setup completed successfully
+[2025-02-07 11:19:25] [info] Database connection established successfully
+[2025-02-07 11:19:25] [info] Table users created or already exists
+[2025-02-07 11:19:25] [info] Table logins created or already exists
+[2025-02-07 11:19:25] [info] Database setup completed successfully
+[2025-02-07 11:19:35] [info] Database connection established successfully
+[2025-02-07 11:19:35] [info] Table users created or already exists
+[2025-02-07 11:19:35] [info] Table logins created or already exists
+[2025-02-07 11:19:35] [info] Database setup completed successfully
+[2025-02-07 11:19:38] [info] Database connection established successfully
+[2025-02-07 11:19:38] [info] Table users created or already exists
+[2025-02-07 11:19:38] [info] Table logins created or already exists
+[2025-02-07 11:19:38] [info] Database setup completed successfully
+[2025-02-07 11:19:42] [info] Database connection established successfully
+[2025-02-07 11:19:42] [info] Table users created or already exists
+[2025-02-07 11:19:42] [info] Table logins created or already exists
+[2025-02-07 11:19:42] [info] Database setup completed successfully
+[2025-02-07 11:20:01] [info] Database connection established successfully
+[2025-02-07 11:20:01] [info] Table users created or already exists
+[2025-02-07 11:20:01] [info] Table logins created or already exists
+[2025-02-07 11:20:01] [info] Database setup completed successfully
+[2025-02-07 11:20:10] [info] Database connection established successfully
+[2025-02-07 11:20:10] [info] Table users created or already exists
+[2025-02-07 11:20:10] [info] Table logins created or already exists
+[2025-02-07 11:20:10] [info] Database setup completed successfully
+[2025-02-07 11:20:13] [info] Database connection established successfully
+[2025-02-07 11:20:13] [info] Table users created or already exists
+[2025-02-07 11:20:13] [info] Table logins created or already exists
+[2025-02-07 11:20:13] [info] Database setup completed successfully
+[2025-02-07 11:20:22] [info] Database connection established successfully
+[2025-02-07 11:20:22] [info] Table users created or already exists
+[2025-02-07 11:20:22] [info] Table logins created or already exists
+[2025-02-07 11:20:22] [info] Database setup completed successfully
+[2025-02-07 11:20:22] [info] Database connection established successfully
+[2025-02-07 11:20:22] [info] Table users created or already exists
+[2025-02-07 11:20:22] [info] Table logins created or already exists
+[2025-02-07 11:20:22] [info] Database setup completed successfully
+[2025-02-07 11:20:34] [info] Database connection established successfully
+[2025-02-07 11:20:34] [info] Table users created or already exists
+[2025-02-07 11:20:34] [info] Table logins created or already exists
+[2025-02-07 11:20:34] [info] Database setup completed successfully
+[2025-02-07 11:20:34] [info] Database connection established successfully
+[2025-02-07 11:20:34] [info] Table users created or already exists
+[2025-02-07 11:20:34] [info] Table logins created or already exists
+[2025-02-07 11:20:34] [info] Database setup completed successfully
+[2025-02-07 11:20:44] [info] Database connection established successfully
+[2025-02-07 11:20:44] [info] Table users created or already exists
+[2025-02-07 11:20:44] [info] Table logins created or already exists
+[2025-02-07 11:20:44] [info] Database setup completed successfully
+[2025-02-07 11:20:51] [info] Database connection established successfully
+[2025-02-07 11:20:51] [info] Table users created or already exists
+[2025-02-07 11:20:51] [info] Table logins created or already exists
+[2025-02-07 11:20:51] [info] Database setup completed successfully
+[2025-02-07 11:21:50] [info] Database connection established successfully
+[2025-02-07 11:21:50] [info] Table users created or already exists
+[2025-02-07 11:21:50] [info] Table logins created or already exists
+[2025-02-07 11:21:50] [info] Database setup completed successfully
+[2025-02-07 11:21:53] [info] Database connection established successfully
+[2025-02-07 11:21:53] [info] Table users created or already exists
+[2025-02-07 11:21:53] [info] Table logins created or already exists
+[2025-02-07 11:21:53] [info] Database setup completed successfully
+[2025-02-07 11:21:55] [info] Database connection established successfully
+[2025-02-07 11:21:55] [info] Table users created or already exists
+[2025-02-07 11:21:55] [info] Table logins created or already exists
+[2025-02-07 11:21:55] [info] Database setup completed successfully
+[2025-02-07 11:22:00] [info] Database connection established successfully
+[2025-02-07 11:22:00] [info] Table users created or already exists
+[2025-02-07 11:22:00] [info] Table logins created or already exists
+[2025-02-07 11:22:00] [info] Database setup completed successfully
+[2025-02-07 11:22:14] [info] Database connection established successfully
+[2025-02-07 11:22:14] [info] Table users created or already exists
+[2025-02-07 11:22:14] [info] Table logins created or already exists
+[2025-02-07 11:22:14] [info] Database setup completed successfully
+[2025-02-07 11:22:24] [info] Database connection established successfully
+[2025-02-07 11:22:24] [info] Table users created or already exists
+[2025-02-07 11:22:24] [info] Table logins created or already exists
+[2025-02-07 11:22:24] [info] Database setup completed successfully
+[2025-02-07 11:22:27] [info] Database connection established successfully
+[2025-02-07 11:22:27] [info] Table users created or already exists
+[2025-02-07 11:22:27] [info] Table logins created or already exists
+[2025-02-07 11:22:27] [info] Database setup completed successfully
+[2025-02-07 11:22:38] [info] Database connection established successfully
+[2025-02-07 11:22:38] [info] Table users created or already exists
+[2025-02-07 11:22:38] [info] Table logins created or already exists
+[2025-02-07 11:22:38] [info] Database setup completed successfully
+[2025-02-09 07:23:46] [info] Database connection established successfully
+[2025-02-09 07:23:46] [info] Table users created or already exists
+[2025-02-09 07:23:46] [info] Table logins created or already exists
+[2025-02-09 07:23:46] [info] Database setup completed successfully
+[2025-02-09 07:23:53] [info] Database connection established successfully
+[2025-02-09 07:23:53] [info] Table users created or already exists
+[2025-02-09 07:23:53] [info] Table logins created or already exists
+[2025-02-09 07:23:53] [info] Database setup completed successfully
+[2025-02-09 07:24:03] [info] Database connection established successfully
+[2025-02-09 07:24:03] [info] Table users created or already exists
+[2025-02-09 07:24:03] [info] Table logins created or already exists
+[2025-02-09 07:24:03] [info] Database setup completed successfully
+[2025-02-09 07:24:17] [info] Database connection established successfully
+[2025-02-09 07:24:17] [info] Table users created or already exists
+[2025-02-09 07:24:17] [info] Table logins created or already exists
+[2025-02-09 07:24:17] [info] Database setup completed successfully
+[2025-02-09 07:24:28] [info] Database connection established successfully
+[2025-02-09 07:24:28] [info] Table users created or already exists
+[2025-02-09 07:24:28] [info] Table logins created or already exists
+[2025-02-09 07:24:28] [info] Database setup completed successfully
+[2025-02-09 07:24:30] [info] Database connection established successfully
+[2025-02-09 07:24:30] [info] Table users created or already exists
+[2025-02-09 07:24:30] [info] Table logins created or already exists
+[2025-02-09 07:24:30] [info] Database setup completed successfully
+[2025-02-09 07:25:19] [info] Database connection established successfully
+[2025-02-09 07:25:19] [info] Table users created or already exists
+[2025-02-09 07:25:19] [info] Table logins created or already exists
+[2025-02-09 07:25:19] [info] Database setup completed successfully
+[2025-02-09 07:25:23] [info] Database connection established successfully
+[2025-02-09 07:25:23] [info] Table users created or already exists
+[2025-02-09 07:25:23] [info] Table logins created or already exists
+[2025-02-09 07:25:23] [info] Database setup completed successfully
+[2025-02-09 07:25:25] [info] Database connection established successfully
+[2025-02-09 07:25:25] [info] Table users created or already exists
+[2025-02-09 07:25:25] [info] Table logins created or already exists
+[2025-02-09 07:25:25] [info] Database setup completed successfully
+[2025-02-09 07:25:29] [info] Database connection established successfully
+[2025-02-09 07:25:29] [info] Table users created or already exists
+[2025-02-09 07:25:29] [info] Table logins created or already exists
+[2025-02-09 07:25:29] [info] Database setup completed successfully
+[2025-02-09 07:25:45] [info] Database connection established successfully
+[2025-02-09 07:25:45] [info] Table users created or already exists
+[2025-02-09 07:25:45] [info] Table logins created or already exists
+[2025-02-09 07:25:45] [info] Database setup completed successfully
+[2025-02-09 07:25:56] [info] Database connection established successfully
+[2025-02-09 07:25:56] [info] Table users created or already exists
+[2025-02-09 07:25:56] [info] Table logins created or already exists
+[2025-02-09 07:25:56] [info] Database setup completed successfully
+[2025-02-09 07:25:58] [info] Database connection established successfully
+[2025-02-09 07:25:58] [info] Table users created or already exists
+[2025-02-09 07:25:58] [info] Table logins created or already exists
+[2025-02-09 07:25:58] [info] Database setup completed successfully
+[2025-02-09 07:26:06] [info] Database connection established successfully
+[2025-02-09 07:26:06] [info] Table users created or already exists
+[2025-02-09 07:26:06] [info] Table logins created or already exists
+[2025-02-09 07:26:06] [info] Database setup completed successfully
+[2025-02-09 07:26:10] [info] Database connection established successfully
+[2025-02-09 07:26:10] [info] Table users created or already exists
+[2025-02-09 07:26:10] [info] Table logins created or already exists
+[2025-02-09 07:26:10] [info] Database setup completed successfully
+[2025-02-09 07:29:30] [info] Database connection established successfully
+[2025-02-09 07:29:30] [info] Table users created or already exists
+[2025-02-09 07:29:30] [info] Table logins created or already exists
+[2025-02-09 07:29:30] [info] Database setup completed successfully
+[2025-02-09 07:29:35] [info] Database connection established successfully
+[2025-02-09 07:29:35] [info] Table users created or already exists
+[2025-02-09 07:29:35] [info] Table logins created or already exists
+[2025-02-09 07:29:35] [info] Database setup completed successfully
+[2025-02-09 07:29:48] [info] Database connection established successfully
+[2025-02-09 07:29:48] [info] Table users created or already exists
+[2025-02-09 07:29:48] [info] Table logins created or already exists
+[2025-02-09 07:29:48] [info] Database setup completed successfully
+[2025-02-09 07:30:55] [info] Database connection established successfully
+[2025-02-09 07:30:55] [info] Table users created or already exists
+[2025-02-09 07:30:55] [info] Table logins created or already exists
+[2025-02-09 07:30:55] [info] Database setup completed successfully
+[2025-02-09 07:32:15] [info] Database connection established successfully
+[2025-02-09 07:32:15] [info] Table users created or already exists
+[2025-02-09 07:32:15] [info] Table logins created or already exists
+[2025-02-09 07:32:15] [info] Database setup completed successfully
+[2025-02-09 07:38:22] [info] Database connection established successfully
+[2025-02-09 07:38:22] [info] Table users created or already exists
+[2025-02-09 07:38:22] [info] Table logins created or already exists
+[2025-02-09 07:38:22] [info] Database setup completed successfully
+[2025-02-09 07:39:40] [info] Database connection established successfully
+[2025-02-09 07:39:40] [info] Table users created or already exists
+[2025-02-09 07:39:40] [info] Table logins created or already exists
+[2025-02-09 07:39:40] [info] Database setup completed successfully
+[2025-02-09 07:40:38] [info] Database connection established successfully
+[2025-02-09 07:40:38] [info] Table users created or already exists
+[2025-02-09 07:40:38] [info] Table logins created or already exists
+[2025-02-09 07:40:38] [info] Database setup completed successfully
+[2025-02-09 07:40:50] [info] Database connection established successfully
+[2025-02-09 07:40:50] [info] Table users created or already exists
+[2025-02-09 07:40:50] [info] Table logins created or already exists
+[2025-02-09 07:40:50] [info] Database setup completed successfully
+[2025-02-09 07:40:51] [info] Database connection established successfully
+[2025-02-09 07:40:51] [info] Table users created or already exists
+[2025-02-09 07:40:51] [info] Table logins created or already exists
+[2025-02-09 07:40:51] [info] Database setup completed successfully
+[2025-02-09 07:41:00] [info] Database connection established successfully
+[2025-02-09 07:41:00] [info] Table users created or already exists
+[2025-02-09 07:41:00] [info] Table logins created or already exists
+[2025-02-09 07:41:00] [info] Database setup completed successfully
+[2025-02-09 07:41:16] [info] Database connection established successfully
+[2025-02-09 07:41:16] [info] Table users created or already exists
+[2025-02-09 07:41:16] [info] Table logins created or already exists
+[2025-02-09 07:41:17] [info] Database setup completed successfully
+[2025-02-09 07:41:41] [info] Database connection established successfully
+[2025-02-09 07:41:41] [info] Table users created or already exists
+[2025-02-09 07:41:41] [info] Table logins created or already exists
+[2025-02-09 07:41:41] [info] Database setup completed successfully
+[2025-02-09 07:42:06] [info] Database connection established successfully
+[2025-02-09 07:42:06] [info] Table users created or already exists
+[2025-02-09 07:42:06] [info] Table logins created or already exists
+[2025-02-09 07:42:06] [info] Database setup completed successfully
+[2025-02-09 07:42:12] [info] Database connection established successfully
+[2025-02-09 07:42:12] [info] Table users created or already exists
+[2025-02-09 07:42:12] [info] Table logins created or already exists
+[2025-02-09 07:42:12] [info] Database setup completed successfully
+[2025-02-09 07:42:13] [info] Database connection established successfully
+[2025-02-09 07:42:13] [info] Table users created or already exists
+[2025-02-09 07:42:13] [info] Table logins created or already exists
+[2025-02-09 07:42:13] [info] Database setup completed successfully
+[2025-02-09 07:42:30] [info] Database connection established successfully
+[2025-02-09 07:42:30] [info] Table users created or already exists
+[2025-02-09 07:42:30] [info] Table logins created or already exists
+[2025-02-09 07:42:30] [info] Database setup completed successfully
+[2025-02-09 07:42:44] [info] Database connection established successfully
+[2025-02-09 07:42:44] [info] Table users created or already exists
+[2025-02-09 07:42:44] [info] Table logins created or already exists
+[2025-02-09 07:42:44] [info] Database setup completed successfully
+[2025-02-09 07:42:55] [info] Database connection established successfully
+[2025-02-09 07:42:55] [info] Table users created or already exists
+[2025-02-09 07:42:55] [info] Table logins created or already exists
+[2025-02-09 07:42:55] [info] Database setup completed successfully
+[2025-02-09 07:43:18] [info] Database connection established successfully
+[2025-02-09 07:43:18] [info] Table users created or already exists
+[2025-02-09 07:43:18] [info] Table logins created or already exists
+[2025-02-09 07:43:18] [info] Database setup completed successfully
+[2025-02-09 07:44:52] [info] Database connection established successfully
+[2025-02-09 07:44:52] [info] Table users created or already exists
+[2025-02-09 07:44:52] [info] Table logins created or already exists
+[2025-02-09 07:44:52] [info] Database setup completed successfully
+>>>>>>> 619f1ea (Initial commit:new)
