@@ -9,7 +9,6 @@ header("X-XSS-Protection: 1; mode=block");
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Pragma: no-cache");
 
-include 'header.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -183,14 +182,136 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
         }
     }
 }
+include 'header.php';
+?>
+<?php
+// Get the necessary data for breadcrumbs - place this after fetching the saree details
+// This should be placed after line 35 where $saree is defined in your Buynow.php file
+
+// Check if saree exists
+if (isset($saree) && !empty($saree)) {
+    // Get category and subcategory info if not already included in $saree
+    if (!isset($saree['category_name']) || !isset($saree['subcategory_name'])) {
+        $categoryQuery = "SELECT c.id as category_id, c.category_name, 
+                           s.id as subcategory_id, s.subcategory_name 
+                           FROM sarees sr
+                           LEFT JOIN categories c ON sr.category_id = c.id
+                           LEFT JOIN subcategories s ON sr.subcategory_id = s.id
+                           WHERE sr.id = ?";
+        $stmt = $conn->prepare($categoryQuery);
+        $stmt->bind_param("i", $saree['id']);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $categoryData = $result->fetch_assoc();
+        
+        // Add category data to saree array
+        if ($categoryData) {
+            $saree['category_id'] = $categoryData['category_id'] ?? null;
+            $saree['category_name'] = $categoryData['category_name'] ?? '';
+            $saree['subcategory_id'] = $categoryData['subcategory_id'] ?? null;
+            $saree['subcategory_name'] = $categoryData['subcategory_name'] ?? '';
+        }
+    }
+    
+    // Check if subcategory is valid (not empty or N/A)
+    $hasValidSubcategory = isset($saree['subcategory_id']) && 
+                         isset($saree['subcategory_name']) && 
+                         $saree['subcategory_name'] != 'N/A' &&
+                         !empty($saree['subcategory_name']);
+                         
+    // Debug information
+    error_log("Breadcrumb data - Category ID: {$saree['category_id']}, Name: {$saree['category_name']}, 
+             Subcategory ID: {$saree['subcategory_id']}, Name: {$saree['subcategory_name']}, 
+             Has Valid Subcategory: " . ($hasValidSubcategory ? 'Yes' : 'No'));
+}
 ?>
 
+<!-- Add this HTML code before the main content, but after including header.php -->
+<div class="breadcrumb-container">
+    <div class="breadcrumb">
+        <a href="home.php">Home</a>
+        <span class="separator">></span>
+        
+        <?php if (isset($saree) && isset($saree['category_id']) && isset($saree['category_name'])): ?>
+            <!-- Always show the category when available -->
+            <a href="categories_user.php?category_id=<?php echo $saree['category_id']; ?>"><?php echo htmlspecialchars($saree['category_name']); ?></a>
+            
+            <?php if (isset($hasValidSubcategory) && $hasValidSubcategory): ?>
+                <!-- Show separator and subcategory if available -->
+                <span class="separator">></span>
+                <a href="categories_user.php?subcategory_id=<?php echo $saree['subcategory_id']; ?>"><?php echo htmlspecialchars($saree['subcategory_name']); ?></a>
+            <?php endif; ?>
+        <?php endif; ?>
+        
+        <?php if (isset($saree) && isset($saree['id']) && isset($saree['name'])): ?>
+            <span class="separator">></span>
+            <a href="Traditional.php?id=<?php echo $saree['id']; ?>"><?php echo htmlspecialchars($saree['name']); ?></a>
+        <?php endif; ?>
+        
+        <span class="separator">></span>
+        <span class="current">Buy Now</span>
+    </div>
+</div>
+
+<style>
+    .breadcrumb-container {
+        max-width: var(--container-width);
+        margin: 0 auto;
+        padding: var(--spacing-md) var(--spacing-md) 0;
+    }
+    
+    .breadcrumb {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        padding: var(--spacing-sm) 0;
+        margin-bottom: var(--spacing-md);
+        font-size: 0.9rem;
+        color: var(--text-light);
+    }
+    
+    .breadcrumb a {
+        color: var(--primary-color);
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+    
+    .breadcrumb a:hover {
+        color: var(--primary-hover);
+        text-decoration: underline;
+    }
+    
+    .breadcrumb .separator {
+        margin: 0 var(--spacing-sm);
+        color: var(--text-light);
+    }
+    
+    .breadcrumb .current {
+        color: var(--text-color);
+        font-weight: 500;
+        max-width: 250px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    @media (max-width: 768px) {
+        .breadcrumb {
+            font-size: 0.8rem;
+        }
+        
+        .breadcrumb .current {
+            max-width: 150px;
+        }
+    }
+</style>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Complete Your Purchase - Yards of Grace</title>
+    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -533,13 +654,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
                             </div>
 
                             <div class="form-group">
-                                <label for="address_line1" class="required">Address Line 1</label>
-                                <input type="text" 
-                                       id="address_line1" 
-                                       name="address_line1" 
-                                       class="form-control"
-                                       required>
-                            </div>
+    <label for="address_line1" class="required">Address Line 1</label>
+    <input type="text" 
+           id="address_line1" 
+           name="address_line1" 
+           class="form-control"
+           required>
+    <span class="validation-message"></span> <!-- To display validation message -->
+</div>
+
 
                             <div class="form-group">
                                 <label for="address_line2">Address Line 2 (Optional)</label>
@@ -723,189 +846,321 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
 
     <script>
         // Handle payment method selection
-        document.querySelectorAll('[name="payment_method"]').forEach(radio => {
-            radio.addEventListener('change', function() {
-                // Reset all payment sections
-                document.querySelectorAll('.payment-section').forEach(section => {
-                    section.style.display = 'none';
-                });
-                
-                // Reset all payment options
-                document.querySelectorAll('.payment-option').forEach(option => {
-                    option.classList.remove('selected');
-                });
-                
-                // Show selected payment section
-                if (this.value !== 'cod') {
-                    document.getElementById(this.value + '-section').style.display = 'block';
-                }
-                
-                // Highlight selected option
-                this.closest('.payment-option').classList.add('selected');
-            });
-        });
-
-        // Form validation
-        document.getElementById('checkoutForm').addEventListener('submit', function(e) {
-            const errors = [];
-            
-            // Reset previous errors
-            document.querySelectorAll('.form-control').forEach(input => {
-                input.classList.remove('error');
-            });
-            
-            // Validate required fields
-            document.querySelectorAll('[required]').forEach(field => {
-                if (!field.value.trim()) {
-                    field.classList.add('error');
-                    errors.push(`${field.previousElementSibling.textContent.replace(' *', '')} is required`);
-                }
-            });
-
-            // Validate phone number
-            const phone = document.getElementById('phone');
-            if (phone.value && !phone.value.match(/^[0-9]{10}$/)) {
-                phone.classList.add('error');
-                errors.push('Please enter a valid 10-digit phone number');
-            }
-
-            // Validate pincode
-            const pincode = document.getElementById('pincode');
-            if (pincode.value && !pincode.value.match(/^[0-9]{6}$/)) {
-                pincode.classList.add('error');
-                errors.push('Please enter a valid 6-digit PIN code');
-            }
-
-            // Payment method specific validation
-            const paymentMethod = document.querySelector('[name="payment_method"]:checked')?.value;
-            if (paymentMethod === 'card') {
-                const cardNumber = document.getElementById('card_number');
-                const cardExpiry = document.getElementById('card_expiry');
-                const cardCvv = document.getElementById('card_cvv');
-
-                if (!cardNumber.value.match(/^[0-9]{16}$/)) {
-                    cardNumber.classList.add('error');
-                    errors.push('Please enter a valid 16-digit card number');
-                }
-                if (!cardExpiry.value.match(/^(0[1-9]|1[0-2])\/?([0-9]{2})$/)) {
-                    cardExpiry.classList.add('error');
-                    errors.push('Please enter a valid expiry date (MM/YY)');
-                }
-                if (!cardCvv.value.match(/^[0-9]{3,4}$/)) {
-                    cardCvv.classList.add('error');
-                    errors.push('Please enter a valid CVV');
-                }
-            } else if (paymentMethod === 'upi') {
-                const upiId = document.getElementById('upi_id');
-                if (!upiId.value.match(/^[\w.-]+@[\w.-]+$/)) {
-                    upiId.classList.add('error');
-                    errors.push('Please enter a valid UPI ID');
-                }
-            }
-
-            if (errors.length > 0) {
-                e.preventDefault();
-                alert(errors.join('\n'));
-                window.scrollTo(0, 0);
-            }
-        });
-
-        // Format card expiry date
-        document.getElementById('card_expiry')?.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length >= 2) {
-                value = value.slice(0, 2) + '/' + value.slice(2);
-            }
-            e.target.value = value.slice(0, 5);
-        });
-
-        // Format card number
-        document.getElementById('card_number')?.addEventListener('input', function(e) {
-            e.target.value = e.target.value.replace(/\D/g, '').slice(0, 16);
-        });
-        
-
-// Initialize step tracking
-let currentStep = 1;
-const totalSteps = 3;
-
-// Get all form sections and the progress step indicators
-const shippingSection = document.querySelector('.checkout-form .form-section:nth-child(1)');
-const paymentSection = document.querySelector('.checkout-form .form-section:nth-child(2)');
-const progressSteps = document.querySelectorAll('.progress-step .step-number');
-const checkoutForm = document.getElementById('checkoutForm');
-
-// Function to validate shipping information
-function validateShippingInfo() {
-    const requiredFields = ['full_name', 'address_line1', 'city', 'state', 'pincode', 'phone'];
-    const errors = [];
+        function showValidationMessage(element, message, isError = true) {
+    // Remove any existing validation message
+    const existingMessage = element.parentElement.querySelector('.validation-message');
+    if (existingMessage) {
+        existingMessage.remove();
+    }
     
-    requiredFields.forEach(field => {
-        const input = document.getElementById(field);
-        if (!input.value.trim()) {
-            input.classList.add('error');
-            errors.push(`${field.replace('_', ' ')} is required`);
+    // Create and add new message if there is one
+    if (message) {
+        const messageElement = document.createElement('div');
+        messageElement.className = `validation-message ${isError ? 'error-message' : 'success-message'}`;
+        messageElement.textContent = message;
+        element.parentElement.appendChild(messageElement);
+    }
+    
+    // Add or remove error class on the input
+    if (isError && message) {
+        element.classList.add('error');
+    } else {
+        element.classList.remove('error');
+    }
+}
+
+// Real-time validation for required fields
+document.querySelectorAll('[required]').forEach(field => {
+    field.addEventListener('blur', function() {
+        if (!this.value.trim()) {
+            const fieldName = this.previousElementSibling.textContent.replace(' *', '');
+            showValidationMessage(this, `${fieldName} is required`);
+        } else {
+            showValidationMessage(this, '', false);
         }
     });
     
-    // Validate phone number and pincode
-    // Validate phone number for Indian format
-if (phone.value && !phone.value.match(/^[6-9][0-9]{9}$/)) {
-    phone.classList.add('error');
-    errors.push('Please enter a valid 10-digit Indian phone number starting with 6, 7, 8, or 9');
-}
-    const pincode = document.getElementById('pincode');
-    
-    if (phone.value && !phone.value.match(/^[0-9]{10}$/)) {
-        phone.classList.add('error');
-        errors.push('Please enter a valid 10-digit phone number');
+    // Clear error on typing
+    field.addEventListener('input', function() {
+        if (this.value.trim()) {
+            showValidationMessage(this, '', false);
+        }
+    });
+});
+//name
+const fullName = document.getElementById('full_name');
+const nameMessage = document.createElement('span');
+nameMessage.style.color = 'red';
+nameMessage.style.display = 'block';
+fullName.parentNode.insertBefore(nameMessage, fullName.nextSibling);
+
+fullName.addEventListener('input', function () {
+    const namePattern = /^[a-zA-Z\s]+$/; // Only letters and spaces
+
+    if (this.value) {
+        if (!namePattern.test(this.value)) {
+            nameMessage.style.color = 'red';
+            nameMessage.textContent = 'Full name can only contain letters and spaces';
+        } else if (this.value.trim().length < 2) {
+            nameMessage.style.color = 'red';
+            nameMessage.textContent = 'Full name must be at least 2 characters long';
+        } else {
+            nameMessage.style.color = 'green';
+            nameMessage.textContent = 'Valid name ✓';
+        }
+    } else {
+        nameMessage.textContent = ''; // Remove message when input is empty
     }
+});
+
+
+function showValidationMessage(inputElement, message, isError = true) {
+    // This function will show or hide the validation message next to the input element
+    const messageElement = inputElement.nextElementSibling; // Assuming the message is in the next sibling element
+    if (messageElement) {
+        messageElement.textContent = message;
+        messageElement.style.color = isError ? 'red' : 'green';
+    } else {
+        // If there's no message element, you can create one
+        const newMessageElement = document.createElement('span');
+        newMessageElement.textContent = message;
+        newMessageElement.style.color = isError ? 'red' : 'green';
+        inputElement.parentNode.appendChild(newMessageElement);
+    }
+}
+
+// Real-time validation for phone number
+const phone = document.getElementById('phone');
+const errorMessage = document.createElement('span');
+errorMessage.style.color = 'red'; 
+errorMessage.style.display = 'block'; // Ensure it appears properly
+phone.parentNode.insertBefore(errorMessage, phone.nextSibling);
+
+phone.addEventListener('input', function () {
+    if (this.value) {
+        if (!this.value.match(/^[6-9][0-9]*$/)) {
+            errorMessage.style.color = 'red';
+            errorMessage.textContent = 'Please enter a valid Indian phone number starting with 6, 7, 8, or 9';
+        } else if (this.value.length < 10) {
+            errorMessage.style.color = 'red';
+            errorMessage.textContent = 'Phone number must be exactly 10 digits';
+        } else {
+            errorMessage.style.color = 'green'; // Change to green for valid input
+            errorMessage.textContent = 'Valid phone number ✓';
+        }
+    } else {
+        errorMessage.textContent = ''; // Remove message when input is empty
+    }
+});
+
+
+
+// Real-time validation for PIN code
+const pincode = document.getElementById('pincode');
+pincode.addEventListener('input', function() {
+    if (this.value) {
+        if (!this.value.match(/^[0-9]{0,6}$/)) {
+            showValidationMessage(this, 'PIN code should only contain numbers');
+        } else if (this.value.length === 6) {
+            showValidationMessage(this, 'Valid PIN code ✓', false);
+        } else {
+            showValidationMessage(this, '', false);
+        }
+    } else {
+        showValidationMessage(this, '', false);
+    }
+});
+
+// Card number validation
+const cardNumber = document.getElementById('card_number');
+if (cardNumber) {
+    cardNumber.addEventListener('input', function(e) {
+        this.value = this.value.replace(/\D/g, '').slice(0, 16);
+        
+        if (this.value) {
+            if (this.value.length < 16) {
+                showValidationMessage(this, `Enter ${16 - this.value.length} more digits`);
+            } else {
+                showValidationMessage(this, 'Valid card number ✓', false);
+            }
+        } else {
+            showValidationMessage(this, '', false);
+        }
+    });
+}
+
+// Card expiry validation
+const cardExpiry = document.getElementById('card_expiry');
+if (cardExpiry) {
+    cardExpiry.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+            value = value.slice(0, 2) + '/' + value.slice(2);
+        }
+        this.value = value.slice(0, 5);
+        
+        if (this.value) {
+            if (!this.value.match(/^(0[1-9]|1[0-2])\/?([0-9]{2})$/)) {
+                showValidationMessage(this, 'Enter expiry date as MM/YY');
+            } else {
+                // Check if the expiry date is in the future
+                const [month, year] = this.value.split('/');
+                const expiryDate = new Date(2000 + parseInt(year), parseInt(month) - 1);
+                const today = new Date();
+                
+                if (expiryDate < today) {
+                    showValidationMessage(this, 'Card is expired');
+                } else {
+                    showValidationMessage(this, 'Valid expiry date ✓', false);
+                }
+            }
+        } else {
+            showValidationMessage(this, '', false);
+        }
+    });
+}
+const addressLine1 = document.getElementById('address_line1');
+addressLine1.addEventListener('input', function() {
+    if (this.value) {
+        // Check if the address contains valid characters (letters, numbers, spaces, commas, periods, hyphens, apostrophes)
+        if (!this.value.match(/^[a-zA-Z0-9\s()]+$/)) {
+            showValidationMessage(this, 'Please enter a valid address (letters, numbers, spaces, commas, periods, apostrophes, and hyphens allowed)');
+        } else if (this.value.trim().length > 10) {
+            // If the address is valid and not just spaces
+            showValidationMessage(this, 'Valid address ✓', false);
+        } else {
+            showValidationMessage(this, 'Address cannot be empty and make correct address');
+        }
+    } else {
+        // If the input is empty, clear any validation message
+        showValidationMessage(this, '', false);
+    }
+});
+
+function showValidationMessage(inputElement, message, isError = true) {
+    // This function will show or hide the validation message next to the input element
+    const messageElement = inputElement.nextElementSibling; // Assuming the message is in the next sibling element (the <span>)
+    if (messageElement) {
+        messageElement.textContent = message;
+        messageElement.style.color = isError ? 'red' : 'green';
+    }
+}
+
+
+// CVV validation
+const cardCvv = document.getElementById('card_cvv');
+if (cardCvv) {
+    cardCvv.addEventListener('input', function() {
+        this.value = this.value.replace(/\D/g, '').slice(0, 4);
+        
+        if (this.value) {
+            if (!this.value.match(/^[0-9]{3,4}$/)) {
+                showValidationMessage(this, 'CVV should be 3-4 digits');
+            } else {
+                showValidationMessage(this, 'Valid CVV ✓', false);
+            }
+        } else {
+            showValidationMessage(this, '', false);
+        }
+    });
+}
+
+// UPI ID validation
+const upiId = document.getElementById('upi_id');
+if (upiId) {
+    upiId.addEventListener('input', function() {
+        if (this.value) {
+            if (!this.value.match(/^[\w.-]+@[\w.-]+$/)) {
+                showValidationMessage(this, 'Please enter a valid UPI ID (example: name@bank)');
+            } else {
+                showValidationMessage(this, 'Valid UPI ID ✓', false);
+            }
+        } else {
+            showValidationMessage(this, '', false);
+        }
+    });
+}
+
+// Keep existing code for payment method selection
+document.querySelectorAll('[name="payment_method"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        // Reset all payment sections
+        document.querySelectorAll('.payment-section').forEach(section => {
+            section.style.display = 'none';
+        });
+        
+        // Reset all payment options
+        document.querySelectorAll('.payment-option').forEach(option => {
+            option.classList.remove('selected');
+        });
+        
+        // Show selected payment section
+        if (this.value !== 'cod') {
+            document.getElementById(this.value + '-section').style.display = 'block';
+        }
+        
+        // Highlight selected option
+        this.closest('.payment-option').classList.add('selected');
+    });
+});
+
+// Add form submission validation (modified to use the validation message system)
+document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+    const errors = [];
     
+    // Reset previous errors
+    document.querySelectorAll('.form-control').forEach(input => {
+        input.classList.remove('error');
+    });
+    
+    // Validate required fields
+    document.querySelectorAll('[required]').forEach(field => {
+        if (!field.value.trim()) {
+            const fieldName = field.previousElementSibling.textContent.replace(' *', '');
+            showValidationMessage(field, `${fieldName} is required`);
+            errors.push(`${fieldName} is required`);
+        }
+    });
+
+    // Validate phone number
+    if (phone.value && !phone.value.match(/^[6-9][0-9]{9}$/)) {
+        showValidationMessage(phone, 'Please enter a valid 10-digit Indian phone number starting with 6, 7, 8, or 9');
+        errors.push('Please enter a valid 10-digit Indian phone number');
+    }
+
+    // Validate pincode
     if (pincode.value && !pincode.value.match(/^[0-9]{6}$/)) {
-        pincode.classList.add('error');
+        showValidationMessage(pincode, 'Please enter a valid 6-digit PIN code');
         errors.push('Please enter a valid 6-digit PIN code');
     }
-    
-    return errors;
-}
 
-// Function to validate payment information
-function validatePaymentInfo() {
-    const errors = [];
+    // Payment method specific validation
     const paymentMethod = document.querySelector('[name="payment_method"]:checked')?.value;
-    
-    if (!paymentMethod) {
-        errors.push('Please select a payment method');
-        return errors;
-    }
-    
     if (paymentMethod === 'card') {
-        const cardNumber = document.getElementById('card_number');
-        const cardExpiry = document.getElementById('card_expiry');
-        const cardCvv = document.getElementById('card_cvv');
-
         if (!cardNumber.value.match(/^[0-9]{16}$/)) {
-            cardNumber.classList.add('error');
+            showValidationMessage(cardNumber, 'Please enter a valid 16-digit card number');
             errors.push('Please enter a valid 16-digit card number');
         }
         if (!cardExpiry.value.match(/^(0[1-9]|1[0-2])\/?([0-9]{2})$/)) {
-            cardExpiry.classList.add('error');
+            showValidationMessage(cardExpiry, 'Please enter a valid expiry date (MM/YY)');
             errors.push('Please enter a valid expiry date (MM/YY)');
         }
         if (!cardCvv.value.match(/^[0-9]{3,4}$/)) {
-            cardCvv.classList.add('error');
+            showValidationMessage(cardCvv, 'Please enter a valid CVV');
             errors.push('Please enter a valid CVV');
         }
     } else if (paymentMethod === 'upi') {
-        const upiId = document.getElementById('upi_id');
         if (!upiId.value.match(/^[\w.-]+@[\w.-]+$/)) {
-            upiId.classList.add('error');
+            showValidationMessage(upiId, 'Please enter a valid UPI ID');
             errors.push('Please enter a valid UPI ID');
         }
     }
-    
-    return errors;
-}
+
+    if (errors.length > 0) {
+        e.preventDefault();
+        window.scrollTo(0, 0);
+    }
+});
 
 // Function to update the progress steps
 function updateProgressSteps(step) {
@@ -1088,7 +1343,6 @@ document.querySelectorAll('.prev-step').forEach(button => {
             animation: slideUp 0.5s ease forwards;
         }
     </style>
-
     <script>
         // Confetti animation for order success
         document.addEventListener('DOMContentLoaded', function() {

@@ -468,7 +468,7 @@ if ($result) {
                                                     <?php echo htmlspecialchars($subcat['name']); ?>
                                                     <form method="POST" action="" style="display:inline;">
                                                         <input type="hidden" name="subcategory_id" value="<?php echo $subcat['id']; ?>">
-                                                        <button type="submit" name="remove_subcategory" class="remove-subcategory-btn">Remove</button>
+                                                        
                                                     </form>
                                                 </li>
                                             <?php endforeach; ?>
@@ -485,7 +485,7 @@ if ($result) {
                     <button type="button" class="action-btn" onclick="showEditModal(<?php echo $cat['id']; ?>, '<?php echo htmlspecialchars($cat['category']); ?>')">Edit</button>
                     <form method="POST" action="" style="display:inline;">
                         <input type="hidden" name="category_id" value="<?php echo $cat['id']; ?>">
-                        <button type="submit" name="delete_category" class="action-btn delete-btn">Delete</button>
+                        
                     </form>
                 </td>
             </tr>

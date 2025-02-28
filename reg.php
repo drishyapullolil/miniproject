@@ -348,117 +348,163 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <script>
         // Password validation requirements
-        const passwordRequirements = {
-            length: password => password.length >= 8,
-            uppercase: password => /[A-Z]/.test(password),
-            lowercase: password => /[a-z]/.test(password),
-            number: password => /[0-9]/.test(password),
-            special: password => /[!@#$%^&*(),.?":{}|<>]/.test(password)
-        };
+        // Password validation requirements
+const passwordRequirements = {
+    length: password => password.length >= 8,
+    uppercase: password => /[A-Z]/.test(password),
+    lowercase: password => /[a-z]/.test(password),
+    number: password => /[0-9]/.test(password),
+    special: password => /[!@#$%^&*(),.?":{}|<>]/.test(password)
+};
 
-        const requirements = {
-            length: document.getElementById('length'),
-            uppercase: document.getElementById('uppercase'),
-            lowercase: document.getElementById('lowercase'),
-            number: document.getElementById('number'),
-            special: document.getElementById('special')
-        };
+const requirements = {
+    length: document.getElementById('length'),
+    uppercase: document.getElementById('uppercase'),
+    lowercase: document.getElementById('lowercase'),
+    number: document.getElementById('number'),
+    special: document.getElementById('special')
+};
 
-        function validatePassword() {
-            const password = document.getElementById('password').value;
-            let isValid = true;
+function validatePassword() {
+    const password = document.getElementById('password').value;
+    let isValid = true;
 
-            // Check each requirement
-            for (const [requirement, validator] of Object.entries(passwordRequirements)) {
-                const element = requirements[requirement];
-                const valid = validator(password);
-                element.className = valid ? 'valid' : '';
-                if (!valid) isValid = false;
-            }
+    // Check each requirement
+    for (const [requirement, validator] of Object.entries(passwordRequirements)) {
+        const element = requirements[requirement];
+        const valid = validator(password);
+        element.className = valid ? 'valid' : '';
+        if (!valid) isValid = false;
+    }
 
-            return isValid;
-        }
+    return isValid;
+}
 
-        function validatePasswordMatch() {
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const confirmError = document.getElementById('confirmPasswordError');
-            
-            const match = password === confirmPassword && confirmPassword !== '';
-            confirmError.style.display = match ? 'none' : 'block';
-            
-            return match;
-        }
+function validatePasswordMatch() {
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const confirmError = document.getElementById('confirmPasswordError');
+    
+    if (confirmPassword === '') {
+        confirmError.style.display = 'none';
+        return false;
+    }
+    
+    const match = password === confirmPassword;
+    confirmError.style.display = match ? 'none' : 'block';
+    
+    return match;
+}
 
-        function validateOtherFields() {
-            const username = document.getElementById("username").value;
-            const email = document.getElementById("email").value;
-            const phone = document.getElementById("phone").value;
+function validateUsername() {
+    const username = document.getElementById("username").value;
+    const usernameError = document.getElementById("usernameError");
+    
+    if (username === '') {
+        usernameError.style.display = 'none';
+        return false;
+    }
+    
+    const usernameRegex = /^[a-zA-Z0-9]{3,}$/;
+    const usernameValid = usernameRegex.test(username);
+    
+    usernameError.style.display = usernameValid ? "none" : "block";
+    return usernameValid;
+}
 
-            const usernameRegex = /^[a-zA-Z0-9]{3,}$/;
-            const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-            const phoneRegex = /^(?:\+91[-\s]?)?[6-9]\d{9}$/;
+function validateEmail() {
+    const email = document.getElementById("email").value;
+    const emailError = document.getElementById("emailError");
+    
+    if (email === '') {
+        emailError.style.display = 'none';
+        return false;
+    }
+    
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    const emailValid = emailRegex.test(email);
+    
+    emailError.style.display = emailValid ? "none" : "block";
+    return emailValid;
+}
 
-            const usernameValid = usernameRegex.test(username);
-            const emailValid = emailRegex.test(email);
-            const phoneValid = phoneRegex.test(phone);
+function validatePhone() {
+    const phone = document.getElementById("phone").value;
+    const phoneError = document.getElementById("phoneError");
+    
+    if (phone === '') {
+        phoneError.style.display = 'none';
+        return false;
+    }
+    
+    const phoneRegex = /^(?:\+91[-\s]?)?[6-9]\d{9}$/;
+    const phoneValid = phoneRegex.test(phone);
+    
+    phoneError.style.display = phoneValid ? "none" : "block";
+    return phoneValid;
+}
 
-            document.getElementById("usernameError").style.display = usernameValid ? "none" : "block";
-            document.getElementById("emailError").style.display = emailValid ? "none" : "block";
-            document.getElementById("phoneError").style.display = phoneValid ? "none" : "block";
+function updateSubmitButton() {
+    const submitBtn = document.getElementById('submitBtn');
+    const passwordValid = validatePassword();
+    const passwordsMatch = validatePasswordMatch();
+    const usernameValid = validateUsername();
+    const emailValid = validateEmail();
+    const phoneValid = validatePhone();
+    
+    submitBtn.disabled = !(passwordValid && passwordsMatch && usernameValid && emailValid && phoneValid);
+}
 
-            return usernameValid && emailValid && phoneValid;
-        }
+// Event listeners for real-time validation
+document.getElementById('password').addEventListener('input', function() {
+    validatePassword();
+    if (document.getElementById('confirmPassword').value !== '') {
+        validatePasswordMatch();
+    }
+    updateSubmitButton();
+});
 
-        function updateSubmitButton() {
-            const submitBtn = document.getElementById('submitBtn');
-            const passwordValid = validatePassword();
-            const passwordsMatch = validatePasswordMatch();
-            const otherFieldsValid = validateOtherFields();
-            
-            submitBtn.disabled = !(passwordValid && passwordsMatch && otherFieldsValid);
-        }
+document.getElementById('confirmPassword').addEventListener('input', function() {
+    validatePasswordMatch();
+    updateSubmitButton();
+});
 
-        // Event listeners for real-time validation
-        document.getElementById('password').addEventListener('input', function() {
-            validatePassword();
-            validatePasswordMatch();
-            updateSubmitButton();
-        });
+document.getElementById("username").addEventListener("input", function() {
+    validateUsername();
+    updateSubmitButton();
+});
 
-        document.getElementById('confirmPassword').addEventListener('input', function() {
-            validatePasswordMatch();
-            updateSubmitButton();
-        });
+document.getElementById("email").addEventListener("input", function() {
+    validateEmail();
+    updateSubmitButton();
+});
 
-        document.getElementById("username").addEventListener("input", function() {
-            updateSubmitButton();
-        });
+document.getElementById("phone").addEventListener("input", function() {
+    validatePhone();
+    updateSubmitButton();
+});
 
-        document.getElementById("email").addEventListener("input", function() {
-            updateSubmitButton();
-        });
+// Remove focus/blur event listeners that were showing/hiding errors unconditionally
 
-        document.getElementById("phone").addEventListener("input", function() {
-            updateSubmitButton();
-        });
+function validateForm() {
+    const passwordValid = validatePassword();
+    const passwordsMatch = validatePasswordMatch();
+    const usernameValid = validateUsername();
+    const emailValid = validateEmail();
+    const phoneValid = validatePhone();
 
-        function validateForm() {
-            const passwordValid = validatePassword();
-            const passwordsMatch = validatePasswordMatch();
-            const otherFieldsValid = validateOtherFields();
+    return passwordValid && passwordsMatch && usernameValid && emailValid && phoneValid;
+}
 
-            return passwordValid && passwordsMatch && otherFieldsValid;
-        }
-        // Image carousel (remains the same)
-        const images = document.querySelectorAll(".image-container img");
-        let currentIndex = 0;
+// Image carousel (remains the same)
+const images = document.querySelectorAll(".image-container img");
+let currentIndex = 0;
 
-        setInterval(() => {
-            images[currentIndex].classList.remove("active");
-            currentIndex = (currentIndex + 1) % images.length;
-            images[currentIndex].classList.add("active");
-        }, 3000);
+setInterval(() => {
+    images[currentIndex].classList.remove("active");
+    currentIndex = (currentIndex + 1) % images.length;
+    images[currentIndex].classList.add("active");
+}, 3000);
     </script>
 </body>
 </html>

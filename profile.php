@@ -82,9 +82,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     
     if (empty($update_status)) {
         // Update user profile
-        $update_query = "UPDATE users SET name = ?, email = ?, phone = ?, address = ?, profile_pic = ? WHERE id = ?";
+        $update_query = "UPDATE users SET  email = ?, address = ?, profile_pic = ? WHERE id = ?";
         $stmt = $conn->prepare($update_query);
-        $stmt->bind_param("sssssi", $name, $email, $phone, $address, $profile_pic, $user_id);
+        $stmt->bind_param("sssi", $email,  $address, $profile_pic, $user_id);
         
         if ($stmt->execute()) {
             $update_message = 'Profile updated successfully!';
@@ -94,9 +94,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
             $_SESSION['user_name'] = $name;
             
             // Refresh user data
-            $user['name'] = $name;
+            
             $user['email'] = $email;
-            $user['phone'] = $phone;
+           
             $user['address'] = $address;
             $user['profile_pic'] = $profile_pic;
         } else {

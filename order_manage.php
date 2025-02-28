@@ -80,19 +80,33 @@ function getOrderStats($conn) {
     ];
 }
 
-// Update order status - THIS IS THE CRITICAL PART
+// Update order status - MODIFIED TO PREVENT CHANGING DELIVERED ORDERS
 if (isset($_POST['update_status']) && isset($_POST['order_id']) && isset($_POST['new_status'])) {
     $orderId = $_POST['order_id'];
     $newStatus = $_POST['new_status'];
     
-    $updateSql = "UPDATE orders SET order_status = ? WHERE id = ?";
-    $updateStmt = $conn->prepare($updateSql);
-    $updateStmt->bind_param("si", $newStatus, $orderId);
+    // Check current order status first
+    $checkStatusSql = "SELECT order_status FROM orders WHERE id = ?";
+    $checkStmt = $conn->prepare($checkStatusSql);
+    $checkStmt->bind_param("i", $orderId);
+    $checkStmt->execute();
+    $result = $checkStmt->get_result();
+    $currentStatus = $result->fetch_assoc()['order_status'];
     
-    if ($updateStmt->execute()) {
-        $_SESSION['success_message'] = "Order status updated successfully";
+    // Prevent status change if order is already delivered
+    if ($currentStatus == 'delivered') {
+        $_SESSION['error_message'] = "Cannot update status for already delivered orders";
     } else {
-        $_SESSION['error_message'] = "Failed to update order status: " . $conn->error;
+        // Update the status since it's not delivered
+        $updateSql = "UPDATE orders SET order_status = ? WHERE id = ?";
+        $updateStmt = $conn->prepare($updateSql);
+        $updateStmt->bind_param("si", $newStatus, $orderId);
+        
+        if ($updateStmt->execute()) {
+            $_SESSION['success_message'] = "Order status updated successfully";
+        } else {
+            $_SESSION['error_message'] = "Failed to update order status: " . $conn->error;
+        }
     }
     
     // Redirect to prevent form resubmission
@@ -342,6 +356,12 @@ if (isset($_GET['view_order'])) {
             background-color: #5a32a3;
         }
 
+        .btn-disabled {
+            background-color: #adb5bd;
+            color: white;
+            cursor: not-allowed;
+        }
+
         .order-details-modal {
             background-color: #fff;
             padding: 20px;
@@ -426,6 +446,15 @@ if (isset($_GET['view_order'])) {
             padding: 8px;
             border-radius: 4px;
             border: 1px solid #ddd;
+        }
+
+        .disabled-note {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f8f8;
+            border-radius: 4px;
+            border-left: 4px solid #6c757d;
+            font-style: italic;
         }
 
         footer {
@@ -608,19 +637,33 @@ if (isset($_GET['view_order'])) {
                         </div>
                     </div>
                     
-                    <!-- THIS IS THE CRITICAL FORM FOR UPDATING STATUS -->
-                    <form class="status-update-form" method="POST" action="order_manage.php">
-                        <input type="hidden" name="order_id" value="<?php echo $orderHeader['id']; ?>">
-                        <label for="new_status">Update Status:</label>
-                        <select id="new_status" name="new_status" class="status-select">
-                            <option value="pending" <?php echo ($orderHeader['order_status'] == 'pending') ? 'selected' : ''; ?>>Pending</option>
-                            <option value="processing" <?php echo ($orderHeader['order_status'] == 'processing') ? 'selected' : ''; ?>>Processing</option>
-                            <option value="shipped" <?php echo ($orderHeader['order_status'] == 'shipped') ? 'selected' : ''; ?>>Shipped</option>
-                            <option value="delivered" <?php echo ($orderHeader['order_status'] == 'delivered') ? 'selected' : ''; ?>>Delivered</option>
-                            <option value="cancelled" <?php echo ($orderHeader['order_status'] == 'cancelled') ? 'selected' : ''; ?>>Cancelled</option>
-                        </select>
-                        <button type="submit" name="update_status" class="btn btn-update">Update Status</button>
-                    </form>
+                    <?php if ($orderHeader['order_status'] == 'delivered'): ?>
+                        <!-- For delivered orders, show notice and disabled form -->
+                        <div class="disabled-note">
+                            <p>This order has been delivered and its status cannot be changed.</p>
+                        </div>
+                        <div class="status-update-form">
+                            <label for="new_status">Current Status:</label>
+                            <select id="new_status" class="status-select" disabled>
+                                <option value="delivered" selected>Delivered</option>
+                            </select>
+                            <button class="btn btn-disabled" disabled>Update Status</button>
+                        </div>
+                    <?php else: ?>
+                        <!-- For non-delivered orders, show normal update form -->
+                        <form class="status-update-form" method="POST" action="order_manage.php">
+                            <input type="hidden" name="order_id" value="<?php echo $orderHeader['id']; ?>">
+                            <label for="new_status">Update Status:</label>
+                            <select id="new_status" name="new_status" class="status-select">
+                                <option value="pending" <?php echo ($orderHeader['order_status'] == 'pending') ? 'selected' : ''; ?>>Pending</option>
+                                <option value="processing" <?php echo ($orderHeader['order_status'] == 'processing') ? 'selected' : ''; ?>>Processing</option>
+                                <option value="shipped" <?php echo ($orderHeader['order_status'] == 'shipped') ? 'selected' : ''; ?>>Shipped</option>
+                                <option value="delivered" <?php echo ($orderHeader['order_status'] == 'delivered') ? 'selected' : ''; ?>>Delivered</option>
+                                <option value="cancelled" <?php echo ($orderHeader['order_status'] == 'cancelled') ? 'selected' : ''; ?>>Cancelled</option>
+                            </select>
+                            <button type="submit" name="update_status" class="btn btn-update">Update Status</button>
+                        </form>
+                    <?php endif; ?>
                 </div>
             <?php endif; ?>
         </div>

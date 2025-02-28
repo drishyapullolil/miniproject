@@ -64,3 +64,19 @@
 2025-02-19 11:11:22: Checking token: d1bc73bb03a8e8254150fb4d6b1c6b4ebb185b10684399836b3cbc89cf8b8137
 2025-02-19 11:11:40: Checking token: d1bc73bb03a8e8254150fb4d6b1c6b4ebb185b10684399836b3cbc89cf8b8137
 2025-02-19 11:11:40: Password updated successfully for email: drishyajose2027@mca.ajce.in
+2025-02-25 05:02:10: Received reset request for email: drishyajose2027@mca.ajce.in
+2025-02-25 05:02:10: Generated token: c4014b2e556195277e6383c030e4f42a06a8cb2914fa788a88ee60c52fd159bf
+2025-02-25 05:02:10: Expires at: 2025-02-26 05:02:10
+2025-02-25 05:02:10: Token stored in database successfully
+2025-02-25 05:02:15: Reset email sent successfully
+2025-02-25 05:02:26: Checking token: c4014b2e556195277e6383c030e4f42a06a8cb2914fa788a88ee60c52fd159bf
+2025-02-25 05:02:47: Checking token: c4014b2e556195277e6383c030e4f42a06a8cb2914fa788a88ee60c52fd159bf
+2025-02-25 05:02:47: Password updated successfully for email: drishyajose2027@mca.ajce.in
+2025-02-25 06:27:28: Received reset request for email: drishyajose2027@mca.ajce.in
+2025-02-25 06:27:28: Generated token: 45d6078dd0b2ceb6b6e2283529da2ee466465d8dd8d560d8fc7e207c595da6bf
+2025-02-25 06:27:28: Expires at: 2025-02-26 06:27:28
+2025-02-25 06:27:28: Token stored in database successfully
+2025-02-25 06:27:33: Reset email sent successfully
+2025-02-25 06:27:45: Checking token: 45d6078dd0b2ceb6b6e2283529da2ee466465d8dd8d560d8fc7e207c595da6bf
+2025-02-25 06:28:00: Checking token: 45d6078dd0b2ceb6b6e2283529da2ee466465d8dd8d560d8fc7e207c595da6bf
+2025-02-25 06:28:00: Password updated successfully for email: drishyajose2027@mca.ajce.in

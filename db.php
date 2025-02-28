@@ -243,4 +243,99 @@ if ($conn->query($paymentsTable) !== TRUE) {
 } else {
     logDatabaseSetup("Table 'payments' created or already exists");
 }
+$wishlistTable = "CREATE TABLE IF NOT EXISTS wishlist (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    user_id INT(11) NOT NULL,
+    saree_id INT(11) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (saree_id) REFERENCES sarees(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_wishlist (user_id, saree_id)
+)";
+
+if ($conn->query($wishlistTable) !== TRUE) {
+    logDatabaseSetup("Error creating wishlist table: " . $conn->error, 'error');
+    throw new Exception("Error creating wishlist table: " . $conn->error);
+} else {
+    logDatabaseSetup("Table 'wishlist' created or already exists");
+}
+
+// Function to add item to wishlist
+function addToWishlist($conn, $userId, $sareeId) {
+    // First check if the item is already in the wishlist
+    $checkStmt = $conn->prepare("SELECT id FROM wishlist WHERE user_id = ? AND saree_id = ?");
+    $checkStmt->bind_param("ii", $userId, $sareeId);
+    $checkStmt->execute();
+    $result = $checkStmt->get_result();
+    
+    if ($result->num_rows > 0) {
+        return ["success" => false, "message" => "Item already in wishlist"];
+    }
+    
+    // Add to wishlist
+    $stmt = $conn->prepare("INSERT INTO wishlist (user_id, saree_id) VALUES (?, ?)");
+    $stmt->bind_param("ii", $userId, $sareeId);
+    
+    if ($stmt->execute()) {
+        return ["success" => true, "message" => "Added to wishlist successfully"];
+    } else {
+        return ["success" => false, "message" => "Error adding to wishlist: " . $stmt->error];
+    }
+}
+
+// Function to remove item from wishlist
+function removeFromWishlist($conn, $userId, $sareeId) {
+    $stmt = $conn->prepare("DELETE FROM wishlist WHERE user_id = ? AND saree_id = ?");
+    $stmt->bind_param("ii", $userId, $sareeId);
+    
+    if ($stmt->execute()) {
+        return ["success" => true, "message" => "Removed from wishlist successfully"];
+    } else {
+        return ["success" => false, "message" => "Error removing from wishlist: " . $stmt->error];
+    }
+}
+
+// Function to get all wishlist items for a user
+function getUserWishlist($conn, $userId) {
+    $stmt = $conn->prepare("
+        SELECT w.id as wishlist_id, s.*, c.category_name, sc.subcategory_name
+        FROM wishlist w
+        JOIN sarees s ON w.saree_id = s.id
+        JOIN categories c ON s.category_id = c.id
+        LEFT JOIN subcategories sc ON s.subcategory_id = sc.id
+        WHERE w.user_id = ?
+        ORDER BY w.created_at DESC
+    ");
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    $wishlistItems = [];
+    while ($row = $result->fetch_assoc()) {
+        $wishlistItems[] = $row;
+    }
+    
+    return $wishlistItems;
+}
+
+// Function to check if an item is in user's wishlist
+function isInWishlist($conn, $userId, $sareeId) {
+    $stmt = $conn->prepare("SELECT id FROM wishlist WHERE user_id = ? AND saree_id = ?");
+    $stmt->bind_param("ii", $userId, $sareeId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    return $result->num_rows > 0;
+}
+
+// Function to count items in user's wishlist
+function getWishlistCount($conn, $userId) {
+    $stmt = $conn->prepare("SELECT COUNT(*) as count FROM wishlist WHERE user_id = ?");
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    
+    return $row['count'];
+}
 ?>

@@ -79,6 +79,92 @@ error_log("Number of specifications found for saree $saree_id: " . $debug_result
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="<?php echo htmlspecialchars($saree['description']); ?>">
     <title><?php echo htmlspecialchars($saree['name']); ?> - Yards of Grace</title>
+    <?php
+// Get the necessary data for breadcrumbs - place this after fetching the saree details
+$categoryId = $saree['category_id'] ?? null;
+$subcategoryId = $saree['subcategory_id'] ?? null;
+$categoryName = $saree['category_name'] ?? '';
+$subcategoryName = $saree['subcategory_name'] ?? '';
+
+// Check if subcategory is valid (not empty or N/A)
+$hasValidSubcategory = $subcategoryId && $subcategoryName && $subcategoryName != 'N/A';
+
+// Debug information
+error_log("Breadcrumb data - Category ID: $categoryId, Name: $categoryName, Subcategory ID: $subcategoryId, Name: $subcategoryName, Has Valid Subcategory: " . ($hasValidSubcategory ? 'Yes' : 'No'));
+?>
+
+<!-- Add this to your HTML right after the opening <body> tag and before the main content -->
+<div class="breadcrumb-container">
+    <div class="breadcrumb">
+        <a href="home.php">Home</a>
+        <span class="separator">></span>
+        
+        <?php if ($hasValidSubcategory): ?>
+            <!-- If there is a valid subcategory, show only the subcategory -->
+            <a href="categories_user.php?subcategory_id=<?php echo $subcategoryId; ?>"><?php echo htmlspecialchars($subcategoryName); ?></a>
+        <?php elseif ($categoryId && $categoryName): ?>
+            <!-- If no subcategory, show just the category -->
+            <a href="categories_user.php?category_id=<?php echo $categoryId; ?>"><?php echo htmlspecialchars($categoryName); ?></a>
+        <?php endif; ?>
+        
+        <span class="separator">></span>
+        <span class="current"><?php echo htmlspecialchars($saree['name']); ?></span>
+    </div>
+</div>
+
+<!-- Add this to your CSS styles section -->
+<style>
+    .breadcrumb-container {
+        max-width: var(--container-width);
+        margin: 0 auto;
+        padding: var(--spacing-md) var(--spacing-md) 0;
+    }
+    
+    .breadcrumb {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        padding: var(--spacing-sm) 0;
+        margin-bottom: var(--spacing-md);
+        font-size: 0.9rem;
+        color: var(--text-light);
+    }
+    
+    .breadcrumb a {
+        color: var(--primary-color);
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+    
+    .breadcrumb a:hover {
+        color: var(--primary-hover);
+        text-decoration: underline;
+    }
+    
+    .breadcrumb .separator {
+        margin: 0 var(--spacing-sm);
+        color: var(--text-light);
+    }
+    
+    .breadcrumb .current {
+        color: var(--text-color);
+        font-weight: 500;
+        max-width: 250px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    @media (max-width: 768px) {
+        .breadcrumb {
+            font-size: 0.8rem;
+        }
+        
+        .breadcrumb .current {
+            max-width: 150px;
+        }
+    }
+</style>
     <style>
         /* CSS Reset */
         *, *::before, *::after {
@@ -289,7 +375,7 @@ error_log("Number of specifications found for saree $saree_id: " . $debug_result
                     </form>
                 </div>
 
-                <form method="POST" action="add_to_wishlist.php" class="wishlist-form">
+                <form method="POST" action="wishlist.php" class="wishlist-form">
                     <input type="hidden" name="saree_id" value="<?php echo $saree['id']; ?>">
                     <button type="submit" class="button button-wishlist" aria-label="Add to wishlist">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

@@ -466,7 +466,7 @@ if ($result) {
                                 <td>
                                     <form method="POST" action="" style="display:inline;">
                                         <input type="hidden" name="subcategory_id" value="<?php echo $subcat['id']; ?>">
-                                        <button type="submit" name="remove_subcategory" class="action-btn delete-btn">Delete</button>
+                                       
                                     </form>
                                 </td>
                             </tr>

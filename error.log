@@ -1,0 +1,48 @@
+[26-Feb-2025 14:06:44 Europe/Berlin] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xamppp\htdocs\YOG\config.php on line 22
+[26-Feb-2025 14:06:44 Europe/Berlin] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xamppp\htdocs\YOG\config.php on line 23
+[26-Feb-2025 14:06:44 Europe/Berlin] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xamppp\htdocs\YOG\config.php on line 24
+[26-Feb-2025 14:06:44 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xamppp\htdocs\YOG\config.php on line 25
+[26-Feb-2025 14:06:44 Europe/Berlin] PHP Warning:  include(functions.php): Failed to open stream: No such file or directory in C:\xamppp\htdocs\YOG\wishlist.php on line 11
+[26-Feb-2025 14:06:44 Europe/Berlin] PHP Warning:  include(): Failed opening 'functions.php' for inclusion (include_path='C:\xamppp\php\PEAR') in C:\xamppp\htdocs\YOG\wishlist.php on line 11
+[26-Feb-2025 14:09:12 Europe/Berlin] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xamppp\htdocs\YOG\config.php on line 22
+[26-Feb-2025 14:09:12 Europe/Berlin] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xamppp\htdocs\YOG\config.php on line 23
+[26-Feb-2025 14:09:12 Europe/Berlin] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xamppp\htdocs\YOG\config.php on line 24
+[26-Feb-2025 14:09:12 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xamppp\htdocs\YOG\config.php on line 25
+[26-Feb-2025 14:09:12 Europe/Berlin] PHP Warning:  include(functions.php): Failed to open stream: No such file or directory in C:\xamppp\htdocs\YOG\wishlist.php on line 11
+[26-Feb-2025 14:09:12 Europe/Berlin] PHP Warning:  include(): Failed opening 'functions.php' for inclusion (include_path='C:\xamppp\php\PEAR') in C:\xamppp\htdocs\YOG\wishlist.php on line 11
+[26-Feb-2025 14:09:16 Europe/Berlin] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xamppp\htdocs\YOG\config.php on line 22
+[26-Feb-2025 14:09:16 Europe/Berlin] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xamppp\htdocs\YOG\config.php on line 23
+[26-Feb-2025 14:09:16 Europe/Berlin] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xamppp\htdocs\YOG\config.php on line 24
+[26-Feb-2025 14:09:16 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xamppp\htdocs\YOG\config.php on line 25
+[26-Feb-2025 14:09:16 Europe/Berlin] PHP Warning:  include(functions.php): Failed to open stream: No such file or directory in C:\xamppp\htdocs\YOG\wishlist.php on line 11
+[26-Feb-2025 14:09:16 Europe/Berlin] PHP Warning:  include(): Failed opening 'functions.php' for inclusion (include_path='C:\xamppp\php\PEAR') in C:\xamppp\htdocs\YOG\wishlist.php on line 11
+[26-Feb-2025 14:12:33 Europe/Berlin] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xamppp\htdocs\YOG\config.php on line 22
+[26-Feb-2025 14:12:33 Europe/Berlin] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xamppp\htdocs\YOG\config.php on line 23
+[26-Feb-2025 14:12:33 Europe/Berlin] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xamppp\htdocs\YOG\config.php on line 24
+[26-Feb-2025 14:12:33 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xamppp\htdocs\YOG\config.php on line 25
+[26-Feb-2025 14:12:33 Europe/Berlin] PHP Warning:  include(functions.php): Failed to open stream: No such file or directory in C:\xamppp\htdocs\YOG\wishlist.php on line 11
+[26-Feb-2025 14:12:33 Europe/Berlin] PHP Warning:  include(): Failed opening 'functions.php' for inclusion (include_path='C:\xamppp\php\PEAR') in C:\xamppp\htdocs\YOG\wishlist.php on line 11
+[26-Feb-2025 14:12:33 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xamppp\htdocs\YOG\wishlist.php on line 460
+[26-Feb-2025 14:12:33 Europe/Berlin] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'added_date' in 'field list' in C:\xamppp\htdocs\YOG\wishlist.php:500
+Stack trace:
+#0 C:\xamppp\htdocs\YOG\wishlist.php(500): mysqli->prepare('INSERT INTO wis...')
+#1 {main}
+  thrown in C:\xamppp\htdocs\YOG\wishlist.php on line 500
+[26-Feb-2025 14:12:37 Europe/Berlin] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xamppp\htdocs\YOG\config.php on line 22
+[26-Feb-2025 14:12:37 Europe/Berlin] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xamppp\htdocs\YOG\config.php on line 23
+[26-Feb-2025 14:12:37 Europe/Berlin] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xamppp\htdocs\YOG\config.php on line 24
+[26-Feb-2025 14:12:37 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xamppp\htdocs\YOG\config.php on line 25
+[26-Feb-2025 14:12:37 Europe/Berlin] PHP Warning:  include(functions.php): Failed to open stream: No such file or directory in C:\xamppp\htdocs\YOG\wishlist.php on line 11
+[26-Feb-2025 14:12:37 Europe/Berlin] PHP Warning:  include(): Failed opening 'functions.php' for inclusion (include_path='C:\xamppp\php\PEAR') in C:\xamppp\htdocs\YOG\wishlist.php on line 11
+[26-Feb-2025 14:12:37 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xamppp\htdocs\YOG\wishlist.php on line 460
+[26-Feb-2025 14:12:37 Europe/Berlin] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'added_date' in 'field list' in C:\xamppp\htdocs\YOG\wishlist.php:500
+Stack trace:
+#0 C:\xamppp\htdocs\YOG\wishlist.php(500): mysqli->prepare('INSERT INTO wis...')
+#1 {main}
+  thrown in C:\xamppp\htdocs\YOG\wishlist.php on line 500
+[26-Feb-2025 14:12:49 Europe/Berlin] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xamppp\htdocs\YOG\config.php on line 22
+[26-Feb-2025 14:12:49 Europe/Berlin] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xamppp\htdocs\YOG\config.php on line 23
+[26-Feb-2025 14:12:49 Europe/Berlin] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xamppp\htdocs\YOG\config.php on line 24
+[26-Feb-2025 14:12:49 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xamppp\htdocs\YOG\config.php on line 25
+[26-Feb-2025 14:12:49 Europe/Berlin] PHP Warning:  include(functions.php): Failed to open stream: No such file or directory in C:\xamppp\htdocs\YOG\wishlist.php on line 11
+[26-Feb-2025 14:12:49 Europe/Berlin] PHP Warning:  include(): Failed opening 'functions.php' for inclusion (include_path='C:\xamppp\php\PEAR') in C:\xamppp\htdocs\YOG\wishlist.php on line 11
