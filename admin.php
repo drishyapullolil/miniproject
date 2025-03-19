@@ -189,9 +189,13 @@ session_start();
                 <a href="Category.php"><li>Category Management</li></a>
                 <a href="subcategory.php"><li>Subcategory Management</li></a>
                 <a href="category_details.php"><li>Product Management</li></a>
+                <a href="wedding_categories.php"><li>Wedding Categories</li></a>
+                <a href="wedding_products.php"><li>Wedding Products</li></a>
+                <a href="wedding_images.php"><li>Wedding Specifications</li></a>
+                <a href="admin_report.php"><li>Reports</li></a>
                 <a href="order_manage.php"><li>Orders</li></a>
                 <a href="#"><li>Products</li></a>
-                <a href="#"><li>Reports</li></a>
+              
                 <a href="#"><li>Settings</li></a>
             </ul>
         </div>

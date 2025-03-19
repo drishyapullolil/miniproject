@@ -1,0 +1,15 @@
+[11-Mar-2025 12:13:54 Europe/Berlin] Processing wishlist request - Action: add, Saree ID: 1, User ID: 3
+[11-Mar-2025 12:23:22 Europe/Berlin] Processing wishlist request - Action: remove, Saree ID: 1, User ID: 3
+[11-Mar-2025 12:23:23 Europe/Berlin] Processing wishlist request - Action: add, Saree ID: 1, User ID: 3
+[11-Mar-2025 14:37:58 Europe/Berlin] Processing wishlist request - Action: add, Saree ID: 7, User ID: 3
+[11-Mar-2025 14:59:30 Europe/Berlin] Processing wishlist request - Action: remove, Saree ID: 1, User ID: 3
+[11-Mar-2025 14:59:32 Europe/Berlin] Processing wishlist request - Action: add, Saree ID: 1, User ID: 3
+[11-Mar-2025 15:11:22 Europe/Berlin] Processing wishlist request - Action: remove, Saree ID: 1, User ID: 3
+[11-Mar-2025 15:11:24 Europe/Berlin] Processing wishlist request - Action: add, Saree ID: 1, User ID: 3
+[12-Mar-2025 10:02:20 Europe/Berlin] Processing wishlist request - Action: add, Saree ID: 5, User ID: 3
+[12-Mar-2025 10:03:17 Europe/Berlin] Processing wishlist request - Action: update_quantity, Saree ID: 7, User ID: 3
+[12-Mar-2025 10:03:17 Europe/Berlin] Invalid action received: update_quantity
+[12-Mar-2025 10:03:18 Europe/Berlin] Processing wishlist request - Action: update_quantity, Saree ID: 7, User ID: 3
+[12-Mar-2025 10:03:18 Europe/Berlin] Invalid action received: update_quantity
+[13-Mar-2025 06:46:35 Europe/Berlin] Processing wishlist request - Action: add, Saree ID: 9, User ID: 3
+[13-Mar-2025 06:52:43 Europe/Berlin] Processing wishlist request - Action: add, Saree ID: 8, User ID: 3

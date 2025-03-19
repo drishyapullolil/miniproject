@@ -2,6 +2,19 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
+
+// Check if user is logged out but session still exists
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 1800)) {
+    // If last activity was more than 30 minutes ago
+    session_unset();     // unset $_SESSION variable for the run-time 
+    session_destroy();   // destroy session data in storage
+    // Redirect to the same page to refresh after session destroy
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
+}
+
+$_SESSION['last_activity'] = time(); // Update last activity time
+
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
@@ -32,6 +45,11 @@ if ($categoryResult->num_rows > 0) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Add this in the <head> section of your header.php file -->
+<link rel="stylesheet" href="live_search.css">
+
+<!-- Add this just before the closing </body> tag -->
+<script src="live_search.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YARDS OF GRACE</title>
@@ -102,22 +120,20 @@ if ($categoryResult->num_rows > 0) {
             display: flex;
             align-items: center;
             background: #fff;
-            border: 2px solid #8d0f8f;
-            border-radius: 25px;
-            padding: 5px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px 10px;
             max-width: 400px;
             width: 100%;
-            position: relative;
         }
 
-        .search-bar {
+        .search-input {
             flex: 1;
             border: none;
             padding: 8px;
             font-size: 14px;
             outline: none;
             background: transparent;
-            width: 100%;
         }
 
         .search-button {
@@ -125,8 +141,11 @@ if ($categoryResult->num_rows > 0) {
             border: none;
             padding: 8px;
             cursor: pointer;
-            color: #8d0f8f;
-            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+
+        .search-button:hover {
+            opacity: 0.8;
         }
 
         /* Center Logo */
@@ -455,7 +474,7 @@ if ($categoryResult->num_rows > 0) {
         align-items: center;
         background: #fff;
         border: 2px solid #8d0f8f;
-        border-radius: 25px;
+        border-radius: 5px;
         padding: 5px 15px;
         max-width: 400px;
         width: 100%;
@@ -476,8 +495,8 @@ if ($categoryResult->num_rows > 0) {
         border: none;
         padding: 8px;
         cursor: pointer;
-        color: #8d0f8f;
-        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
     }
 
     .search-button:hover {
@@ -575,7 +594,7 @@ if ($categoryResult->num_rows > 0) {
     align-items: center;
     background: #fff;
     border: 2px solid #8d0f8f;
-    border-radius: 25px;
+    border-radius: 5px;
     padding: 5px 15px;
     max-width: 400px;
     width: 100%;
@@ -608,6 +627,324 @@ if ($categoryResult->num_rows > 0) {
     position: relative;
     z-index: 99; /* Lower than header */
 }
+
+/* Add these styles to your existing CSS */
+.price-range {
+    font-size: 0.8em;
+    color: #666;
+    margin-left: 8px;
+}
+
+.dropdown li a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+}
+
+/* Wedding collection specific styles */
+.main-menu > li:nth-child(4) .dropdown { /* Targeting Wedding Collection dropdown */
+    min-width: 250px;
+}
+
+.main-menu > li:nth-child(4) .dropdown li a:hover {
+    background-color: #fff1f9; /* Light pink background on hover */
+}
+
+/* Optional: Add a wedding icon */
+.main-menu > li:nth-child(4) > a::before {
+    
+    margin-right: 5px;
+    font-size: 1.1em;
+}
+
+.global-search {
+    position: relative;
+    max-width: 450px;
+    margin: 0 auto;
+    padding: 10px;
+}
+
+.search-input-group {
+    display: flex;
+    gap: 10px;
+}
+
+.search-input {
+    flex: 1;
+    padding: 12px 20px;
+    border: 2px solid #8d0f8f;
+    border-radius: 25px;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.search-input:focus {
+    border-color: #4e034f;
+    box-shadow: 0 0 8px rgba(141, 15, 143, 0.3);
+}
+
+.search-button {
+    background: #8d0f8f;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.search-button:hover {
+    background: #4e034f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(141, 15, 143, 0.3);
+}
+
+.live-search-results {
+    display: none;
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 1000;
+    border: 1px solid #f0e0f0;
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.search-result-item {
+    display: flex;
+    padding: 15px;
+    text-decoration: none;
+    color: inherit;
+    border-bottom: 1px solid #f5e0f5;
+    transition: all 0.3s ease;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item:hover {
+    background-color: #fdf4fd;
+}
+
+.search-result-item img {
+    width: 60px;
+    height: 75px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.search-result-item:hover img {
+    transform: scale(1.05);
+}
+
+.search-item-details {
+    margin-left: 15px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.search-item-name {
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #333;
+    font-size: 15px;
+    transition: color 0.3s ease;
+}
+
+.search-result-item:hover .search-item-name {
+    color: #8d0f8f;
+}
+
+.search-item-price {
+    color: #8d0f8f;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+/* Status messages */
+.searching, .no-results, .error {
+    padding: 20px;
+    text-align: center;
+    color: #666;
+    font-size: 15px;
+}
+
+.searching {
+    position: relative;
+    padding: 25px;
+}
+
+.searching::after {
+    content: '';
+    height: 20px;
+    width: 20px;
+    border: 3px solid #8d0f8f;
+    border-right-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    position: absolute;
+    margin-left: 10px;
+    animation: rotate 0.8s linear infinite;
+}
+
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.no-results {
+    color: #8d0f8f;
+    font-style: italic;
+}
+
+.error {
+    color: #dc3545;
+    font-weight: 500;
+}
+
+/* Custom scrollbar for results */
+.live-search-results::-webkit-scrollbar {
+    width: 8px;
+}
+
+.live-search-results::-webkit-scrollbar-track {
+    background: #f9f0f9;
+    border-radius: 10px;
+}
+
+.live-search-results::-webkit-scrollbar-thumb {
+    background: #d0a0d0;
+    border-radius: 10px;
+}
+
+.live-search-results::-webkit-scrollbar-thumb:hover {
+    background: #8d0f8f;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .global-search {
+        padding: 10px 15px;
+        max-width: 100%;
+    }
+    
+    .search-input {
+        font-size: 14px;
+        padding: 10px 15px;
+    }
+    
+    .search-button {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .search-result-item {
+        padding: 10px;
+    }
+    
+    .search-item-name {
+        font-size: 14px;
+    }
+    
+    .search-item-price {
+        font-size: 15px;
+    }
+}
+
+/* Enhanced Search Bar Styling */
+.global-search {
+    position: relative;
+    max-width: 450px;
+    margin: 0 auto;
+    padding: 10px;
+}
+
+.search-input-group {
+    display: flex;
+    position: relative;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 2px solid #8d0f8f;
+    border-radius: 50px;
+    padding: 5px;
+    width: 100%;
+    box-shadow: 0 2px 5px rgba(141, 15, 143, 0.1);
+}
+
+.search-container:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(141, 15, 143, 0.15);
+}
+
+.search-container:focus-within {
+    border-color: #4e034f;
+    box-shadow: 0 4px 15px rgba(141, 15, 143, 0.2);
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    outline: none;
+    background: transparent;
+    color: #333;
+}
+
+.search-button {
+    background: #8d0f8f;  /* Solid purple background */
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin-right: 5px;
+    transition: all 0.3s ease;
+}
+
+.search-icon {
+    color: white;  /* White icon */
+    font-size: 16px;
+}
+
+.search-button:hover {
+    background: #7a0d7b;
+    transform: scale(1.05);
+}
+
+.search-button:active {
+    transform: scale(0.95);
+}
     </style>
 </head>
 <body>
@@ -617,12 +954,25 @@ if ($categoryResult->num_rows > 0) {
 
     <div class="header-main">
         <div class="header-left">
-            <form action="search_results.php" method="GET" class="search-container">
-                <input type="text" name="q" id="searchInput" placeholder="Search products..." class="search-bar" required minlength="2">
-                <button type="submit" class="search-button">
-                    <i class="fas fa-search">🔍</i>
-                </button>
-            </form>
+            <div class="global-search">
+                <form action="search_results.php" method="GET">
+                    <div class="search-input-group">
+                        <div class="search-container">
+                            <input type="text" 
+                                   id="live-search"
+                                   name="q" 
+                                   placeholder="Search products..." 
+                                   class="search-input" 
+                                   autocomplete="off"
+                                   minlength="2">
+                            <button type="submit" class="search-button">
+                                <span class="search-icon">🔍</span>
+                            </button>
+                            <div id="search-results" class="search-results-dropdown"></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
         
         <div class="header-center">
@@ -632,27 +982,35 @@ if ($categoryResult->num_rows > 0) {
         <div class="header-right">
             <div class="icon-group">
                 <div class="user-dropdown">
-                    <span class="header-icon user-icon">👤 
-                        <?php                         
-                        if (isset($_SESSION['username'])) {                             
-                            echo htmlspecialchars($_SESSION['username']);                         
-                        } else {                             
-                            echo "Guest";                         
-                        }                         
-                        ?> 
+                    <span class="header-icon user-icon">👤 <?php echo isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'Guest'; ?>
                         <span class="dropdown-arrow">▼</span>
                     </span>
                     <div class="user-dropdown-content">
-                        <a href="profile.php">Profile</a>
-                        <a href="orders.php">My Orders</a>
-                        <a href="settings.php">Settings</a>
                         <?php if (isset($_SESSION['username'])): ?>
+                            <a href="profile.php">Profile</a>
+                            <a href="orders.php">My Orders</a>
+                            <a href="settings.php">Settings</a>
                             <a href="logout.php" onclick="return confirm('Are you sure you want to logout?')">Logout</a>
+                        <?php else: ?>
+                            <a href="login.php">Login</a>
+                            <a href="reg.php">Sign Up</a>
                         <?php endif; ?>
                     </div>
                 </div>
-                <span class="header-icon"><a href="wishlist.php">♥ Wishlist</a></span>
-                <span class="header-icon">🛍 Shopping Bag</span>
+                <span class="header-icon">
+                    <?php if (isset($_SESSION['username'])): ?>
+                        <a href="wishlist.php">♥ Wishlist</a>
+                    <?php else: ?>
+                        <a href="login.php">♥ Wishlist</a>
+                    <?php endif; ?>
+                </span>
+                <span class="header-icon">
+                    <?php if (isset($_SESSION['username'])): ?>
+                        <a href="cart.php">🛍 Shopping Bag</a>
+                    <?php else: ?>
+                        <a href="login.php">🛍 Shopping Bag</a>
+                    <?php endif; ?>
+                </span>
                 <?php if (!isset($_SESSION['username'])): ?>
                     <a href="login.php" class="login-btn">Login</a>
                     <a href="reg.php" class="signup-btn">Sign up</a>
@@ -666,33 +1024,132 @@ if ($categoryResult->num_rows > 0) {
         <ul class="main-menu">
             <li><a href="home.php">Home</a></li>
             <li><a href="#category">Category</a>
-            <ul class="dropdown">
-    <?php foreach ($categories as $category): ?>
-        <li>
-            <a href="categories_user.php?category_id=<?= $category['id'] ?>">
-                <?= htmlspecialchars($category['category_name']) ?>
-            </a>
-            <?php if (isset($subcategories[$category['id']])): ?>
-                <ul class="subdropdown">
-                    <?php foreach ($subcategories[$category['id']] as $subcategory): ?>
+                <ul class="dropdown">
+                    <?php foreach ($categories as $category): ?>
                         <li>
-                            <a href="categories_user.php?subcategory_id=<?= $subcategory['id'] ?>">
-                                <?= htmlspecialchars($subcategory['subcategory_name']) ?>
+                            <a href="categories_user.php?category_id=<?= $category['id'] ?>">
+                                <?= htmlspecialchars($category['category_name']) ?>
                             </a>
+                            <?php if (isset($subcategories[$category['id']])): ?>
+                                <ul class="subdropdown">
+                                    <?php foreach ($subcategories[$category['id']] as $subcategory): ?>
+                                        <li>
+                                            <a href="categories_user.php?subcategory_id=<?= $subcategory['id'] ?>">
+                                                <?= htmlspecialchars($subcategory['subcategory_name']) ?>
+                                            </a>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            <?php endif; ?>
                         </li>
                     <?php endforeach; ?>
                 </ul>
-            <?php endif; ?>
-        </li>
-    <?php endforeach; ?>
-</ul>
             </li>
             <li><a href="#new-arrivals">New Arrivals</a></li>
-            <li><a href="#trending">Trending</a></li>
+            <li><a href="#wedding">Wedding Collection</a>
+                <ul class="dropdown">
+                    <?php
+                    // Fetch wedding categories
+                    $weddingQuery = "SELECT * FROM wedding_categories ORDER BY category_name";
+                    $weddingResult = $conn->query($weddingQuery);
+                    
+                    while ($weddingCategory = $weddingResult->fetch_assoc()): 
+                    ?>
+                        <li>
+                            <a href="wedding_categories_user.php?category_id=<?= $weddingCategory['id'] ?>">
+                                <?= htmlspecialchars($weddingCategory['category_name']) ?>
+                                
+                            </a>
+                        </li>
+                    <?php endwhile; ?>
+                </ul>
+            </li>
             <li><a href="#deals">Deals</a></li>
             <li><a href="#blog">Blog</a></li>
         </ul>
     </nav>
 </header>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('live-search');
+    const searchResults = document.getElementById('search-results');
+    let searchTimeout;
+
+    // Function to handle search submission
+    function submitSearch() {
+        const query = searchInput.value.trim();
+        if (query.length >= 2) {
+            window.location.href = `search_results.php?q=${encodeURIComponent(query)}`;
+        }
+    }
+
+    // Handle Enter key press
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            submitSearch();
+        }
+    });
+
+    // Live search preview
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        const query = this.value.trim();
+
+        if (query.length < 2) {
+            searchResults.style.display = 'none';
+            return;
+        }
+
+        searchResults.innerHTML = '<div class="searching">Searching...</div>';
+        searchResults.style.display = 'block';
+
+        searchTimeout = setTimeout(() => {
+            fetch(`live_search.php?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(response => {
+                    if (!response.success) {
+                        console.error('Search error:', response.debug_message);
+                        searchResults.innerHTML = `<div class="error">${response.message}</div>`;
+                        return;
+                    }
+                    
+                    const data = response.data;
+                    if (data.length > 0) {
+                        searchResults.innerHTML = `
+                            ${data.map(item => `
+                                <a href="search_results.php?q=${encodeURIComponent(query)}" class="search-result-item">
+                                    <img src="${item.image}" alt="${item.name}">
+                                    <div class="search-item-details">
+                                        <div class="search-item-name">${item.name}</div>
+                                        <div class="search-item-category">${item.category_name} > ${item.subcategory_name}</div>
+                                        <div class="search-item-price">₹${item.price}</div>
+                                    </div>
+                                </a>
+                            `).join('')}
+                            <div class="view-all-results">
+                                <a href="search_results.php?q=${encodeURIComponent(query)}">View all results</a>
+                            </div>
+                        `;
+                    } else {
+                        searchResults.innerHTML = '<div class="no-results">No results found</div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Search error:', error);
+                    searchResults.innerHTML = '<div class="error">Search error occurred</div>';
+                });
+        }, 300);
+    });
+
+    // Close search results when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!searchResults.contains(e.target) && e.target !== searchInput) {
+            searchResults.style.display = 'none';
+        }
+    });
+});
+</script>
 </body>
 </html>

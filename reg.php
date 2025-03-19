@@ -1,105 +1,138 @@
 <?php
-// session_start();
+session_start();
 include 'db.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+
+require 'PHPMailer/PHPMailer.php';
+require 'PHPMailer/SMTP.php';
+require 'PHPMailer/Exception.php';
+
 
 // Debug connection
 if ($conn) {
     echo "<!-- Database connected successfully -->";
 }
 
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
     $email = $_POST['email'];
-    $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
+    $password = $_POST['password'];
     $phone = $_POST['phone'];
-    
+   
     // Set default role as 'user'
     $role = 'user';
-    
+   
     // Check if email already exists
     $check_email_sql = "SELECT email FROM users WHERE email = ?";
     $check_email_stmt = $conn->prepare($check_email_sql);
-    
+   
     if (!$check_email_stmt) {
         die("Error in SQL Preparation (Check Email): " . $conn->error);
     }
-    
+   
     $check_email_stmt->bind_param("s", $email);
     $check_email_stmt->execute();
     $check_email_stmt->store_result();
-    
+   
     if ($check_email_stmt->num_rows > 0) {
         echo "<script>alert('Email already exists. Please use a different email address.'); window.location.href='reg.php';</script>";
         $check_email_stmt->close();
         $conn->close();
         exit();
     }
-    
+   
     $check_email_stmt->close();
+
 
     // Check if phone number already exists
     $check_phone_sql = "SELECT phoneno FROM users WHERE phoneno = ?";
     $check_phone_stmt = $conn->prepare($check_phone_sql);
-    
+   
     if (!$check_phone_stmt) {
         die("Error in SQL Preparation (Check Phone): " . $conn->error);
     }
-    
+   
     $check_phone_stmt->bind_param("s", $phone);
     $check_phone_stmt->execute();
     $check_phone_stmt->store_result();
-    
+   
     if ($check_phone_stmt->num_rows > 0) {
         echo "<script>alert('Phone number already exists. Please use a different phone number.'); window.location.href='reg.php';</script>";
         $check_phone_stmt->close();
         $conn->close();
         exit();
     }
-    
+   
     $check_phone_stmt->close();
-    
+   
     // Check if username already exists
     $check_sql = "SELECT username FROM users WHERE username = ?";
     $check_stmt = $conn->prepare($check_sql);
-    
+   
     if (!$check_stmt) {
         die("Error in SQL Preparation (Check Username): " . $conn->error);
     }
-    
+   
     $check_stmt->bind_param("s", $username);
     $check_stmt->execute();
     $check_stmt->store_result();
-    
+   
     if ($check_stmt->num_rows > 0) {
         echo "<script>alert('Username already taken. Please choose another one.'); window.location.href='reg.php';</script>";
         $check_stmt->close();
         $conn->close();
         exit();
     }
-    
+   
     $check_stmt->close();
-    
-    // Insert the new user if all checks pass
-    $sql = "INSERT INTO users (username, email, password, phoneno, role) VALUES (?, ?, ?, ?, ?)";
-    $stmt = $conn->prepare($sql);
-    
-    if (!$stmt) {
-        die("Error in SQL Preparation: " . $conn->error);
+   
+    // Generate OTP
+    $otp = rand(100000, 999999); // Generate a 6-digit OTP
+    $_SESSION['otp'] = $otp; // Store OTP in session for later verification
+    $_SESSION['email'] = $email; // Store email for sending OTP
+    $_SESSION['username'] = $username; // Store username for registration
+    $_SESSION['password'] = $password; // Store password for registration
+    $_SESSION['phone'] = $phone; // Store phone for registration
+
+
+    // Send OTP to user's email
+    $mail = new PHPMailer(true);
+    try {
+        // Server settings
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com'; // Set the SMTP server to send through
+        $mail->SMTPAuth = true; // Enable SMTP authentication
+        $mail->Username = 'padanamakkalonix@gmail.com'; // SMTP username
+        $mail->Password = 'shyl ywsq bwel vnvk'; // SMTP password (use App Password if 2FA is enabled)
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // Enable SSL encryption
+        $mail->Port = 465; // TCP port to connect to
+
+
+        // Recipients
+        $mail->setFrom('padanamakkalonix@gmail.com', 'Your Name');
+        $mail->addAddress($email); // Add a recipient
+
+
+        // Content
+        $mail->isHTML(true);
+        $mail->Subject = 'Your OTP for Registration';
+        $mail->Body    = "Your OTP code is: <strong>$otp</strong>";
+
+
+        $mail->send();
+        echo 'OTP has been sent to your email. Please verify to complete registration.';
+        // Redirect to OTP verification page
+        header("Location: verify_otp.php");
+        exit();
+    } catch (Exception $e) {
+        echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
     }
-    
-    $stmt->bind_param("sssss", $username, $email, $password, $phone, $role);
-    
-    if ($stmt->execute()) {
-        $_SESSION['username'] = $username;
-        $_SESSION['role'] = $role;
-        
-        echo "<script>alert('Signup successful! Please login to continue.'); window.location.href='login.php';</script>";
-    }
-    
-    $stmt->close();
-    $conn->close();
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -114,6 +147,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             box-sizing: border-box;
         }
 
+
         body {
             display: flex;
             justify-content: center;
@@ -122,6 +156,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
         }
+
 
         .container {
             display: flex;
@@ -134,9 +169,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             overflow: hidden;
         }
 
+
         h1 {
             color: purple;
         }
+
 
         .left-section {
             flex: 1;
@@ -147,17 +184,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             background-color: #ffffff;
         }
 
+
         .right-section {
             flex: 1;
             position: relative;
             overflow: hidden;
         }
 
+
         .image-container {
             position: absolute;
             width: 100%;
             height: 100%;
         }
+
 
         .image-container img {
             position: absolute;
@@ -168,9 +208,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             transition: opacity 1s ease-in-out;
         }
 
+
         .image-container img.active {
             opacity: 1;
         }
+
 
         .form-container {
             width: 100%;
@@ -178,20 +220,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             text-align: center;
         }
 
+
         .left-section h1 {
             font-size: 24px;
             margin-bottom: 10px;
         }
+
 
         .left-section p {
             color: #7a7a7a;
             margin-bottom: 20px;
         }
 
+
         .form-group {
             margin-bottom: 15px;
             text-align: left;
         }
+
 
         .form-group label {
             font-size: 14px;
@@ -199,6 +245,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin-bottom: 5px;
             display: block;
         }
+
 
         .form-group input {
             width: 100%;
@@ -208,10 +255,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             font-size: 14px;
         }
 
+
         .form-group input:focus {
             border-color: #0051ff;
             outline: none;
         }
+
 
         .error {
             color: red;
@@ -219,6 +268,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin-top: 5px;
             display: none;
         }
+
 
         .btn {
             width: 100%;
@@ -233,13 +283,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             transition: opacity 0.3s ease;
         }
 
+
         .btn:not(:disabled) {
             opacity: 1;
         }
 
+
         .btn:hover:not(:disabled) {
             background-color: #f705ff;
         }
+
 
         .requirements-list {
             list-style: none;
@@ -249,11 +302,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             color: #666;
         }
 
+
         .requirements-list li {
             margin-bottom: 3px;
             padding-left: 20px;
             position: relative;
         }
+
 
         .requirements-list li:before {
             content: '✕';
@@ -262,24 +317,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             left: 0;
         }
 
+
         .requirements-list li.valid:before {
             content: '✓';
             color: #28a745;
         }
 
+
         .requirements-list li.valid {
             color: #28a745;
         }
+
 
         .sign-in {
             margin-top: 20px;
             font-size: 14px;
         }
 
+
         .sign-in a {
             color: #007bff;
             text-decoration: none;
         }
+
 
         .sign-in a:hover {
             text-decoration: underline;
@@ -298,19 +358,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <input type="text" id="username" name="username" placeholder="Enter your username" required>
                         <span id="usernameError" class="error">Username must be at least 3 characters long and contain only letters and numbers.</span>
                     </div>
-                    
+                   
                     <div class="form-group">
                         <label for="email">E-mail</label>
                         <input type="email" id="email" name="email" placeholder="example@email.com" required>
                         <span id="emailError" class="error">Please enter a valid email address.</span>
                     </div>
-                    
+                   
                     <div class="form-group">
                         <label for="phone">Phone Number</label>
                         <input type="text" id="phone" name="phone" placeholder="Enter phone number" required>
                         <span id="phoneError" class="error">Please enter a valid Indian phone number.</span>
                     </div>
-                    
+                   
                     <div class="form-group">
                         <label for="password">Password</label>
                         <input type="password" id="password" name="password" placeholder="********" required>
@@ -322,13 +382,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <li id="special">Contains special character</li>
                         </ul>
                     </div>
-                    
+                   
                     <div class="form-group">
                         <label for="confirmPassword">Confirm Password</label>
                         <input type="password" id="confirmPassword" name="confirmPassword" placeholder="********" required>
                         <span id="confirmPasswordError" class="error">Passwords do not match.</span>
                     </div>
-                    
+                   
                     <button type="submit" class="btn" id="submitBtn" disabled>Sign Up</button>
                 </form>
                 <div class="sign-in">
@@ -345,6 +405,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </div>
     </div>
+
 
     <script>
         // Password validation requirements
@@ -364,6 +425,14 @@ const requirements = {
     number: document.getElementById('number'),
     special: document.getElementById('special')
 };
+
+// Initialize all error messages to be hidden
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById("usernameError").style.display = "none";
+    document.getElementById("emailError").style.display = "none";
+    document.getElementById("phoneError").style.display = "none";
+    document.getElementById("confirmPasswordError").style.display = "none";
+});
 
 function validatePassword() {
     const password = document.getElementById('password').value;
@@ -385,77 +454,107 @@ function validatePasswordMatch() {
     const confirmPassword = document.getElementById('confirmPassword').value;
     const confirmError = document.getElementById('confirmPasswordError');
     
-    if (confirmPassword === '') {
-        confirmError.style.display = 'none';
-        return false;
+    // Only show error if confirmPassword field has been touched
+    if (confirmPassword !== '') {
+        const match = password === confirmPassword;
+        confirmError.style.display = match ? 'none' : 'block';
+        return match;
     }
     
-    const match = password === confirmPassword;
-    confirmError.style.display = match ? 'none' : 'block';
-    
-    return match;
+    return false; // If confirm password is empty, consider it invalid for button enabling
 }
 
 function validateUsername() {
     const username = document.getElementById("username").value;
-    const usernameError = document.getElementById("usernameError");
-    
-    if (username === '') {
-        usernameError.style.display = 'none';
-        return false;
-    }
-    
     const usernameRegex = /^[a-zA-Z0-9]{3,}$/;
     const usernameValid = usernameRegex.test(username);
     
-    usernameError.style.display = usernameValid ? "none" : "block";
-    return usernameValid;
+    // Only show error if username field has been touched
+    if (username !== '') {
+        document.getElementById("usernameError").style.display = usernameValid ? "none" : "block";
+        return usernameValid;
+    }
+    
+    return false;
 }
 
 function validateEmail() {
     const email = document.getElementById("email").value;
-    const emailError = document.getElementById("emailError");
-    
-    if (email === '') {
-        emailError.style.display = 'none';
-        return false;
-    }
-    
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     const emailValid = emailRegex.test(email);
     
-    emailError.style.display = emailValid ? "none" : "block";
-    return emailValid;
+    // Only show error if email field has been touched
+    if (email !== '') {
+        document.getElementById("emailError").style.display = emailValid ? "none" : "block";
+        return emailValid;
+    }
+    
+    return false;
 }
 
 function validatePhone() {
     const phone = document.getElementById("phone").value;
-    const phoneError = document.getElementById("phoneError");
-    
-    if (phone === '') {
-        phoneError.style.display = 'none';
-        return false;
-    }
-    
     const phoneRegex = /^(?:\+91[-\s]?)?[6-9]\d{9}$/;
     const phoneValid = phoneRegex.test(phone);
     
-    phoneError.style.display = phoneValid ? "none" : "block";
-    return phoneValid;
+    // Only show error if phone field has been touched
+    if (phone !== '') {
+        document.getElementById("phoneError").style.display = phoneValid ? "none" : "block";
+        return phoneValid;
+    }
+    
+    return false;
 }
 
 function updateSubmitButton() {
     const submitBtn = document.getElementById('submitBtn');
-    const passwordValid = validatePassword();
-    const passwordsMatch = validatePasswordMatch();
+    
+    // Check if all fields have values
+    const username = document.getElementById("username").value;
+    const email = document.getElementById("email").value;
+    const phone = document.getElementById("phone").value;
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
+    
+    // Only enable button if all fields are filled AND valid
+    const allFieldsFilled = username !== '' && email !== '' && phone !== '' && 
+                           password !== '' && confirmPassword !== '';
+    
     const usernameValid = validateUsername();
     const emailValid = validateEmail();
     const phoneValid = validatePhone();
+    const passwordValid = validatePassword();
+    const passwordsMatch = validatePasswordMatch();
     
-    submitBtn.disabled = !(passwordValid && passwordsMatch && usernameValid && emailValid && phoneValid);
+    // Check if filled fields are valid (for partially completed form)
+    const filledFieldsValid = 
+        (username === '' || usernameValid) && 
+        (email === '' || emailValid) && 
+        (phone === '' || phoneValid) && 
+        (password === '' || passwordValid) && 
+        (confirmPassword === '' || passwordsMatch);
+    
+    // Only enable button when all fields are filled AND valid
+    submitBtn.disabled = !(allFieldsFilled && usernameValid && emailValid && 
+                          phoneValid && passwordValid && passwordsMatch);
 }
 
 // Event listeners for real-time validation
+document.getElementById('username').addEventListener('input', function() {
+    validateUsername();
+    updateSubmitButton();
+});
+
+document.getElementById('email').addEventListener('input', function() {
+    validateEmail();
+    updateSubmitButton();
+});
+
+document.getElementById('phone').addEventListener('input', function() {
+    validatePhone();
+    updateSubmitButton();
+});
+
 document.getElementById('password').addEventListener('input', function() {
     validatePassword();
     if (document.getElementById('confirmPassword').value !== '') {
@@ -469,31 +568,15 @@ document.getElementById('confirmPassword').addEventListener('input', function() 
     updateSubmitButton();
 });
 
-document.getElementById("username").addEventListener("input", function() {
-    validateUsername();
-    updateSubmitButton();
-});
-
-document.getElementById("email").addEventListener("input", function() {
-    validateEmail();
-    updateSubmitButton();
-});
-
-document.getElementById("phone").addEventListener("input", function() {
-    validatePhone();
-    updateSubmitButton();
-});
-
-// Remove focus/blur event listeners that were showing/hiding errors unconditionally
-
+// Final validation before form submission
 function validateForm() {
-    const passwordValid = validatePassword();
-    const passwordsMatch = validatePasswordMatch();
     const usernameValid = validateUsername();
     const emailValid = validateEmail();
     const phoneValid = validatePhone();
+    const passwordValid = validatePassword();
+    const passwordsMatch = validatePasswordMatch();
 
-    return passwordValid && passwordsMatch && usernameValid && emailValid && phoneValid;
+    return usernameValid && emailValid && phoneValid && passwordValid && passwordsMatch;
 }
 
 // Image carousel (remains the same)

@@ -53,7 +53,10 @@ try {
                 token_expiry DATETIME DEFAULT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 last_login TIMESTAMP NULL DEFAULT NULL,
-                profile_pic VARCHAR(255)
+                profile_pic VARCHAR(255),
+                google_uid VARCHAR(128) NULL,
+                photo_url VARCHAR(255) NULL,
+                display_name VARCHAR(100) NULL
             )",
         'logins' => "CREATE TABLE IF NOT EXISTS logins (
                 id INT(11) AUTO_INCREMENT PRIMARY KEY,
@@ -64,6 +67,7 @@ try {
                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
             )"
     ];
+    
     
     
     // Execute table creation with detailed error reporting
@@ -190,12 +194,14 @@ $ordersTable = "CREATE TABLE IF NOT EXISTS orders (
     user_id INT(11) NOT NULL, -- Assuming you have a users table
     name VARCHAR(255) NOT NULL, -- Add the name field
     total_amount DECIMAL(10, 2) NOT NULL,
-    order_status ENUM('pending', 'processing', 'shipped', 'delivered', 'cancelled') DEFAULT 'pending',
+    order_status ENUM('pending', 'processing', 'shipped', 'delivered', 'cancelled', 'cash_received') DEFAULT 'pending',
     address TEXT NOT NULL,
     payment_method VARCHAR(50) NOT NULL,
+    payment_status VARCHAR(20) DEFAULT 'pending', -- Added payment_status column
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 )";
+
 
 
 // Execute the query for 'orders' table
@@ -210,11 +216,13 @@ if ($conn->query($ordersTable) !== TRUE) {
 $orderDetailsTable = "CREATE TABLE IF NOT EXISTS order_details (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
     order_id INT(11) NOT NULL,
-    saree_id INT(11) NOT NULL,
+    saree_id INT(11) DEFAULT NULL,  -- Allow NULL for saree_id
+    product_id INT(11) DEFAULT NULL,  -- Allow NULL for product_id
     quantity INT(11) NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
-    FOREIGN KEY (saree_id) REFERENCES sarees(id) ON DELETE CASCADE
+    FOREIGN KEY (saree_id) REFERENCES sarees(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES wedding_products(id) ON DELETE CASCADE
 )";
 
 // Execute the query for 'order_details' table
@@ -318,7 +326,6 @@ function getUserWishlist($conn, $userId) {
     return $wishlistItems;
 }
 
-// Function to check if an item is in user's wishlist
 function isInWishlist($conn, $userId, $sareeId) {
     $stmt = $conn->prepare("SELECT id FROM wishlist WHERE user_id = ? AND saree_id = ?");
     $stmt->bind_param("ii", $userId, $sareeId);
@@ -327,8 +334,6 @@ function isInWishlist($conn, $userId, $sareeId) {
     
     return $result->num_rows > 0;
 }
-
-// Function to count items in user's wishlist
 function getWishlistCount($conn, $userId) {
     $stmt = $conn->prepare("SELECT COUNT(*) as count FROM wishlist WHERE user_id = ?");
     $stmt->bind_param("i", $userId);
@@ -337,5 +342,315 @@ function getWishlistCount($conn, $userId) {
     $row = $result->fetch_assoc();
     
     return $row['count'];
+}
+
+// Cart functions
+function addToCart($conn, $userId, $sareeId, $quantity = 1) {
+    try {
+        // Check if item already exists in cart
+        $checkSql = "SELECT id, quantity FROM cart WHERE user_id = ? AND saree_id = ?";
+        $checkStmt = $conn->prepare($checkSql);
+        $checkStmt->bind_param("ii", $userId, $sareeId);
+        $checkStmt->execute();
+        $result = $checkStmt->get_result();
+
+        if ($result->num_rows > 0) {
+            // Update existing cart item
+            $row = $result->fetch_assoc();
+            $newQuantity = $row['quantity'] + $quantity;
+            
+            $updateSql = "UPDATE cart SET quantity = ? WHERE id = ?";
+            $updateStmt = $conn->prepare($updateSql);
+            $updateStmt->bind_param("ii", $newQuantity, $row['id']);
+            
+            if ($updateStmt->execute()) {
+                return ["success" => true, "message" => "Cart updated successfully"];
+            }
+        } else {
+            // Add new item to cart
+            $insertSql = "INSERT INTO cart (user_id, saree_id, quantity) VALUES (?, ?, ?)";
+            $insertStmt = $conn->prepare($insertSql);
+            $insertStmt->bind_param("iii", $userId, $sareeId, $quantity);
+            
+            if ($insertStmt->execute()) {
+                return ["success" => true, "message" => "Item added to cart"];
+            }
+        }
+        
+        return ["success" => false, "message" => "Failed to update cart"];
+        
+    } catch (Exception $e) {
+        error_log("Add to cart error: " . $e->getMessage());
+        return ["success" => false, "message" => "An error occurred"];
+    }
+}
+
+function getCartItems($conn, $userId) {
+    $sql = "SELECT 
+                c.id as cart_id, 
+                c.saree_id, 
+                c.quantity, 
+                s.name, 
+                s.price, 
+                s.image,
+                s.description, 
+                cat.category_name, 
+                sc.subcategory_name
+            FROM cart c 
+            JOIN sarees s ON c.saree_id = s.id 
+            JOIN categories cat ON s.category_id = cat.id
+            LEFT JOIN subcategories sc ON s.subcategory_id = sc.id
+            WHERE c.user_id = ?";
+            
+    try {
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $cartItems = [];
+        
+        while ($row = $result->fetch_assoc()) {
+            $cartItems[] = $row;
+        }
+        
+        return $cartItems;
+        
+    } catch (Exception $e) {
+        error_log("Get cart items error: " . $e->getMessage());
+        return [];
+    }
+}
+
+function removeFromCart($conn, $userId, $sareeId) {
+    try {
+        $sql = "DELETE FROM cart WHERE user_id = ? AND saree_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ii", $userId, $sareeId);
+        
+        if ($stmt->execute()) {
+            return ["success" => true, "message" => "Item removed from cart"];
+        }
+        
+        return ["success" => false, "message" => "Failed to remove item"];
+        
+    } catch (Exception $e) {
+        error_log("Remove from cart error: " . $e->getMessage());
+        return ["success" => false, "message" => "An error occurred"];
+    }
+}
+
+function updateCartQuantity($conn, $userId, $sareeId, $quantity) {
+    try {
+        $sql = "UPDATE cart SET quantity = ? WHERE user_id = ? AND saree_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("iii", $quantity, $userId, $sareeId);
+        
+        if ($stmt->execute()) {
+            return ["success" => true, "message" => "Quantity updated"];
+        }
+        
+        return ["success" => false, "message" => "Failed to update quantity"];
+        
+    } catch (Exception $e) {
+        error_log("Update cart quantity error: " . $e->getMessage());
+        return ["success" => false, "message" => "An error occurred"];
+    }
+}
+
+function getCartCount($conn, $userId) {
+    try {
+        $sql = "SELECT SUM(quantity) as count FROM cart WHERE user_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        
+        return $row['count'] ?? 0;
+        
+    } catch (Exception $e) {
+        error_log("Get cart count error: " . $e->getMessage());
+        return 0;
+    }
+}
+
+$cartTable = "CREATE TABLE IF NOT EXISTS cart (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    user_id INT(11) NOT NULL,
+    saree_id INT(11) NOT NULL,
+    quantity INT(11) NOT NULL DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (saree_id) REFERENCES sarees(id) ON DELETE CASCADE
+)";
+
+// Execute the query for 'cart' table
+if ($conn->query($cartTable) !== TRUE) {
+    logDatabaseSetup("Error creating cart table: " . $conn->error, 'error');
+    throw new Exception("Error creating cart table: " . $conn->error);
+} else {
+    logDatabaseSetup("Table 'cart' created or already exists");
+}
+
+/// Create Wedding Collection Categories Table
+$weddingCategoriesTable = "CREATE TABLE IF NOT EXISTS wedding_categories (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    category_name VARCHAR(255) NOT NULL UNIQUE,
+    description TEXT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+)";
+
+if ($conn->query($weddingCategoriesTable) !== TRUE) {
+    logDatabaseSetup("Error creating wedding_categories table: " . $conn->error, 'error');
+    throw new Exception("Error creating wedding_categories table: " . $conn->error);
+} else {
+    logDatabaseSetup("Table 'wedding_categories' created or already exists");
+}
+
+// Verify wedding_category_id column exists in sarees table
+$checkColumnQuery = "SHOW COLUMNS FROM sarees LIKE 'wedding_category_id'";
+$columnResult = $conn->query($checkColumnQuery);
+
+if ($columnResult->num_rows == 0) {
+    // Column doesn't exist, add it
+    $addColumnQuery = "ALTER TABLE sarees 
+        ADD COLUMN wedding_category_id INT(11),
+        ADD FOREIGN KEY (wedding_category_id) REFERENCES wedding_categories(id) ON DELETE SET NULL";
+    
+    if (!$conn->query($addColumnQuery)) {
+        die("Error adding wedding_category_id column: " . $conn->error);
+    }
+}
+
+// Create Wedding Collection Products Table
+$weddingProductsTable = "CREATE TABLE IF NOT EXISTS wedding_products (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    wedding_category_id INT(11) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    description TEXT DEFAULT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    stock INT(11) DEFAULT 0,
+    color VARCHAR(255) NOT NULL,
+    image VARCHAR(255) NOT NULL,
+    material VARCHAR(255) DEFAULT NULL,
+    style VARCHAR(255) DEFAULT NULL,
+    occasion VARCHAR(255) DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (wedding_category_id) REFERENCES wedding_categories(id) ON DELETE CASCADE
+)";
+
+if ($conn->query($weddingProductsTable) !== TRUE) {
+    logDatabaseSetup("Error creating wedding_products table: " . $conn->error, 'error');
+    throw new Exception("Error creating wedding_products table: " . $conn->error);
+} else {
+    logDatabaseSetup("Table 'wedding_products' created or already exists");
+}
+
+// Create Wedding Collection Specifications Table
+$weddingSpecificationsTable = "CREATE TABLE IF NOT EXISTS wedding_specifications (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    product_id INT(11) NOT NULL,
+    blouse_details TEXT DEFAULT NULL,
+    saree_length DECIMAL(5,2) DEFAULT NULL,
+    blouse_length DECIMAL(5,2) DEFAULT NULL,
+    wash_care TEXT DEFAULT NULL,
+    additional_details TEXT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (product_id) REFERENCES wedding_products(id) ON DELETE CASCADE
+)";
+
+if ($conn->query($weddingSpecificationsTable) !== TRUE) {
+    logDatabaseSetup("Error creating wedding_specifications table: " . $conn->error, 'error');
+    throw new Exception("Error creating wedding_specifications table: " . $conn->error);
+} else {
+    logDatabaseSetup("Table 'wedding_specifications' created or already exists");
+}
+
+$weddingDetailsTable = "CREATE TABLE IF NOT EXISTS wedding_details (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    wedding_product_id INT(11) NOT NULL,
+    fabric VARCHAR(255) NOT NULL,
+    design_type VARCHAR(255) NOT NULL,
+    length DECIMAL(5, 2) NOT NULL,
+    width DECIMAL(5, 2) NOT NULL,
+    care_instructions VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    FOREIGN KEY (wedding_product_id) REFERENCES wedding_products(id) ON DELETE CASCADE
+)";
+
+if ($conn->query($weddingDetailsTable) !== TRUE) {
+    logDatabaseSetup("Error creating wedding_details table: " . $conn->error, 'error');
+    throw new Exception("Error creating wedding_details table: " . $conn->error);
+} else {
+    logDatabaseSetup("Table 'wedding_details' created or already exists");
+}
+$weddingSpecificationsTable = "CREATE TABLE IF NOT EXISTS wedding_specifications (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    product_id INT(11) NOT NULL,
+    blouse_details VARCHAR(255) DEFAULT NULL,
+    saree_length DECIMAL(5, 2) DEFAULT NULL,
+    blouse_length DECIMAL(5, 2) DEFAULT NULL,
+    wash_care VARCHAR(255) DEFAULT NULL,
+    additional_details TEXT DEFAULT NULL,
+    FOREIGN KEY (product_id) REFERENCES wedding_products(id) ON DELETE CASCADE
+)";
+
+if ($conn->query($weddingSpecificationsTable) !== TRUE) {
+    logDatabaseSetup("Error creating wedding_specifications table: " . $conn->error, 'error');
+    throw new Exception("Error creating wedding_specifications table: " . $conn->error);
+} else {
+    logDatabaseSetup("Table 'wedding_specifications' created or already exists");
+}
+
+function checkGoogleUser($conn, $email, $uid) {
+    try {
+        // First check if user exists with this email
+        $stmt = $conn->prepare("SELECT id, username, email, google_uid, role FROM users WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows === 0) {
+            // User doesn't exist - they should sign up
+            return [
+                'exists' => false,
+                'message' => 'Please sign up first to continue.',
+                'data' => null
+            ];
+        }
+
+        $user = $result->fetch_assoc();
+
+        // If user exists, update their Google UID if not set
+        if ($user['google_uid'] === null) {
+            // Update the user's Google UID
+            $updateStmt = $conn->prepare("UPDATE users SET google_uid = ? WHERE id = ?");
+            $updateStmt->bind_param("si", $uid, $user['id']);
+            $updateStmt->execute();
+        }
+
+        // Return user data for login
+        return [
+            'exists' => true,
+            'needs_linking' => false,
+            'message' => 'User found',
+            'data' => [
+                'user_id' => $user['id'],
+                'username' => $user['username'],
+                'email' => $user['email'],
+                'role' => $user['role']
+            ]
+        ];
+
+    } catch (Exception $e) {
+        error_log("Google user check error: " . $e->getMessage());
+        return [
+            'exists' => false,
+            'message' => 'An error occurred while checking user status',
+            'data' => null
+        ];
+    }
 }
 ?>

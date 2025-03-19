@@ -1,0 +1,12 @@
+2025-03-17 10:42:50: Attempting to send order confirmation email to: drishyajose2027@mca.ajce.in
+2025-03-17 10:42:52: Email could not be sent. Mailer Error: SMTP Error: Could not authenticate.
+2025-03-17 10:51:51: Attempting to send order confirmation email to: drishyajose2027@mca.ajce.in
+2025-03-17 10:51:53: Email could not be sent. Mailer Error: SMTP Error: Could not authenticate.
+2025-03-17 10:56:38: Attempting to send order confirmation email to: drishyajose2027@mca.ajce.in
+2025-03-17 10:56:40: Email could not be sent. Mailer Error: SMTP Error: Could not authenticate.
+2025-03-17 11:07:45: Attempting to send order confirmation email to: drishyajose2027@mca.ajce.in
+2025-03-17 11:07:49: Order confirmation email sent successfully
+2025-03-18 15:56:14: Attempting to send order confirmation email to: drishyajose2027@mca.ajce.in
+2025-03-18 15:56:19: Order confirmation email sent successfully
+2025-03-18 15:59:32: Attempting to send order confirmation email to: drishyajose2027@mca.ajce.in
+2025-03-18 15:59:36: Order confirmation email sent successfully

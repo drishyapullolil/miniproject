@@ -80,3 +80,26 @@
 2025-02-25 06:27:45: Checking token: 45d6078dd0b2ceb6b6e2283529da2ee466465d8dd8d560d8fc7e207c595da6bf
 2025-02-25 06:28:00: Checking token: 45d6078dd0b2ceb6b6e2283529da2ee466465d8dd8d560d8fc7e207c595da6bf
 2025-02-25 06:28:00: Password updated successfully for email: drishyajose2027@mca.ajce.in
+2025-03-09 13:51:41: Received reset request for email: drishyajose2027@mca.ajce.in
+2025-03-09 13:51:41: Generated token: 85b4eadea5bf8398702c436a1195bfbe8322936c27a24bc9406344fe7b9b1fc7
+2025-03-09 13:51:41: Expires at: 2025-03-10 13:51:41
+2025-03-09 13:51:41: Token stored in database successfully
+2025-03-09 13:51:46: Reset email sent successfully
+2025-03-09 13:52:05: Checking token: 85b4eadea5bf8398702c436a1195bfbe8322936c27a24bc9406344fe7b9b1fc7
+2025-03-09 13:52:18: Checking token: 85b4eadea5bf8398702c436a1195bfbe8322936c27a24bc9406344fe7b9b1fc7
+2025-03-09 13:52:18: Password updated successfully for email: drishyajose2027@mca.ajce.in
+2025-03-17 10:53:05: Received reset request for email: drishyajose2027@mca.ajce.in
+2025-03-17 10:53:05: Generated token: fe1c5e53677ca7d44703bd6c405325887700f74bcd3876097dc728bb409bff9d
+2025-03-17 10:53:05: Expires at: 2025-03-18 10:53:05
+2025-03-17 10:53:05: Token stored in database successfully
+2025-03-17 10:53:07: Failed to send reset email: SMTP Error: Could not authenticate.
+2025-03-17 10:53:14: Received reset request for email: drishyajose2027@mca.ajce.in
+2025-03-17 10:53:14: Generated token: 1b1e246b286b80c32de05f69a926f6817fc01d03a35622a5459b86efa62d1983
+2025-03-17 10:53:14: Expires at: 2025-03-18 10:53:14
+2025-03-17 10:53:14: Token stored in database successfully
+2025-03-17 10:53:16: Failed to send reset email: SMTP Error: Could not authenticate.
+2025-03-17 10:55:10: Received reset request for email: drishyajose2027@mca.ajce.in
+2025-03-17 10:55:10: Generated token: bb8af1dcc3e14a6c83d783a8eef39f28b3b216b8aba77460590dff5e61c593bf
+2025-03-17 10:55:10: Expires at: 2025-03-18 10:55:10
+2025-03-17 10:55:10: Token stored in database successfully
+2025-03-17 10:55:12: Failed to send reset email: SMTP Error: Could not authenticate.

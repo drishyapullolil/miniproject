@@ -1,18 +1,21 @@
 <?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once 'db.php';
 
-// Enhanced security headers
+// Set all headers at the top
 header("X-Content-Type-Options: nosniff");
 header("X-Frame-Options: DENY");
 header("X-XSS-Protection: 1; mode=block");
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Pragma: no-cache");
 
-include 'header.php';
-
 // Fetch saree details from database with category and subcategory
-$saree_id = isset($_GET['id']) ? (int)$_GET['id'] : 1; // Default to ID 1 if none provided
+$saree_id = isset($_GET['id']) ? (int)$_GET['id'] : 1;
 
+// Check if saree exists before including header
 $saree_query = "SELECT 
                     s.*, 
                     COALESCE(ps.material, 'Not specified') AS material, 
@@ -33,35 +36,22 @@ $saree_query = "SELECT
 $stmt = $conn->prepare($saree_query);
 $stmt->bind_param("i", $saree_id);
 
-// Add error checking for query execution
 if (!$stmt->execute()) {
-    error_log("Query execution failed: " . $stmt->error);
-    die("Error loading product details");
-}
-
-$result = $stmt->get_result();
-
-// Debug information
-if ($result === false) {
-    error_log("Result fetch failed: " . $conn->error);
-    die("Error fetching product details");
-}
-
-$saree = $result->fetch_assoc();
-
-// Debug output
-if ($saree) {
-    error_log("Saree ID: " . $saree['id'] . " Has Specs: " . $saree['has_specifications']);
-} else {
-    error_log("No saree found with ID: " . $saree_id);
-}
-
-// Check if saree exists with more detailed error handling
-if (!$saree) {
-    error_log("Saree not found with ID: " . $saree_id);
     header("Location: home.php");
     exit();
 }
+
+$result = $stmt->get_result();
+$saree = $result->fetch_assoc();
+
+if (!$saree) {
+    header("Location: home.php");
+    exit();
+}
+
+// Only include header and output HTML after all possible redirects
+include 'header.php';
+
 // Add this temporarily for debugging
 $debug_query = "SELECT * FROM product_specifications WHERE saree_id = ?";
 $debug_stmt = $conn->prepare($debug_query);
@@ -118,13 +108,16 @@ error_log("Breadcrumb data - Category ID: $categoryId, Name: $categoryName, Subc
         max-width: var(--container-width);
         margin: 0 auto;
         padding: var(--spacing-md) var(--spacing-md) 0;
+        background-color: #f9f9f9;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
     }
     
     .breadcrumb {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
-        padding: var(--spacing-sm) 0;
+        padding: var(--spacing-sm) var(--spacing-md);
         margin-bottom: var(--spacing-md);
         font-size: 0.9rem;
         color: var(--text-light);
@@ -220,16 +213,15 @@ error_log("Breadcrumb data - Category ID: $categoryId, Name: $categoryName, Subc
             max-width: var(--container-width);
             margin: var(--spacing-lg) auto;
             padding: var(--spacing-md);
+            background-color: #fff;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
         }
 
         .product-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: var(--spacing-lg);
-            background: var(--background-light);
-            border-radius: var(--border-radius);
-            padding: var(--spacing-lg);
-            box-shadow: var(--shadow);
         }
 
         /* Product Images */
@@ -296,14 +288,43 @@ error_log("Breadcrumb data - Category ID: $categoryId, Name: $categoryName, Subc
         .button-wishlist {
             display: flex;
             align-items: center;
-            gap: var(--spacing-sm);
+            gap: 8px;
             background: none;
-            color: var(--text-light);
-            padding: 0;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
         .button-wishlist:hover {
-            color: var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .button-wishlist.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .button-wishlist svg {
+            transition: all 0.3s ease;
+        }
+
+        .button-wishlist:hover svg,
+        .button-wishlist.active svg {
+            transform: scale(1.1);
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .button-wishlist.active svg {
+            animation: heartbeat 0.5s;
         }
 
         /* Product Details */
@@ -375,15 +396,29 @@ error_log("Breadcrumb data - Category ID: $categoryId, Name: $categoryName, Subc
                     </form>
                 </div>
 
-                <form method="POST" action="wishlist.php" class="wishlist-form">
-                    <input type="hidden" name="saree_id" value="<?php echo $saree['id']; ?>">
-                    <button type="submit" class="button button-wishlist" aria-label="Add to wishlist">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                        </svg>
-                        ADD TO WISHLIST
-                    </button>
-                </form>
+                <?php
+                // Check if user is logged in and if item is in wishlist
+                $isInWishlist = false;
+                if (isset($_SESSION['user_id'])) {
+                    $checkWishlist = $conn->prepare("SELECT id FROM wishlist WHERE user_id = ? AND saree_id = ?");
+                    $checkWishlist->bind_param("ii", $_SESSION['user_id'], $saree_id);
+                    $checkWishlist->execute();
+                    $isInWishlist = $checkWishlist->get_result()->num_rows > 0;
+                }
+                ?>
+                
+                <button 
+                    class="button button-wishlist <?php echo $isInWishlist ? 'active' : ''; ?>" 
+                    data-id="<?php echo $saree['id']; ?>" 
+                    aria-label="<?php echo $isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'; ?>"
+                >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="<?php echo $isInWishlist ? 'currentColor' : 'none'; ?>" stroke="currentColor" stroke-width="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                    <span class="wishlist-text">
+                        <?php echo $isInWishlist ? 'REMOVE FROM WISHLIST' : 'ADD TO WISHLIST'; ?>
+                    </span>
+                </button>
 
                 <div class="product-details">
     <div class="detail-item">
@@ -444,15 +479,80 @@ error_log("Breadcrumb data - Category ID: $categoryId, Name: $categoryName, Subc
         }, 3000);
     }
 
-    // Stock check
-    document.querySelectorAll('form').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            const stock = <?php echo $saree['stock']; ?>;
-            if (stock <= 0) {
-                e.preventDefault();
-                showNotification('Sorry, this item is out of stock', 'error');
-            }
+    // Stock check and Wishlist functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        // Stock check for cart forms
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                const stock = <?php echo $saree['stock']; ?>;
+                if (stock <= 0) {
+                    e.preventDefault();
+                    showNotification('Sorry, this item is out of stock', 'error');
+                }
+            });
         });
+
+        // Wishlist functionality
+        const wishlistBtn = document.querySelector('.button-wishlist');
+        if (wishlistBtn) {
+            wishlistBtn.addEventListener('click', async function() {
+                try {
+                    const sareeId = this.getAttribute('data-id');
+                    const isActive = this.classList.contains('active');
+                    const action = isActive ? 'remove' : 'add';
+
+                    // Check if user is logged in
+                    <?php if (!isset($_SESSION['user_id'])): ?>
+                        window.location.href = 'login.php?redirect=' + encodeURIComponent(window.location.href);
+                        return;
+                    <?php endif; ?>
+
+                    // Create form data
+                    const formData = new URLSearchParams();
+                    formData.append('action', action);
+                    formData.append('saree_id', sareeId);
+
+                    // AJAX request to wishlist-api.php
+                    const response = await fetch('wishlist-api.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: formData.toString()
+                    });
+
+                    let data;
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        data = await response.json();
+                    } else {
+                        // If response is not JSON, get the text and log it
+                        const text = await response.text();
+                        console.error('Invalid JSON response:', text);
+                        throw new Error('Invalid server response');
+                    }
+
+                    if (data.success) {
+                        if (action === 'add') {
+                            this.classList.add('active');
+                            this.querySelector('svg').setAttribute('fill', 'currentColor');
+                            this.querySelector('.wishlist-text').textContent = 'REMOVE FROM WISHLIST';
+                            showNotification('Added to wishlist');
+                        } else {
+                            this.classList.remove('active');
+                            this.querySelector('svg').setAttribute('fill', 'none');
+                            this.querySelector('.wishlist-text').textContent = 'ADD TO WISHLIST';
+                            showNotification('Removed from wishlist');
+                        }
+                    } else {
+                        throw new Error(data.message || 'Operation failed');
+                    }
+                } catch (error) {
+                    console.error('Wishlist Error:', error);
+                    showNotification(error.message || 'An error occurred. Please try again.', 'error');
+                }
+            });
+        }
     });
     </script>
 

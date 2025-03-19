@@ -11,7 +11,7 @@ if (!isset($_SESSION['username'])) {
 // Fetch orders data from database
 function getOrders($conn, $limit = 10) {
     $sql = "SELECT o.id, o.user_id, o.total_amount, o.order_status, o.created_at, 
-                  u.username 
+                  u.username, o.payment_method 
            FROM orders o
            JOIN users u ON o.user_id = u.id
            ORDER BY o.created_at DESC 
@@ -32,9 +32,43 @@ function getOrders($conn, $limit = 10) {
 
 // Get order details
 function getOrderDetails($conn, $orderId) {
-    $sql = "SELECT od.*, s.name as saree_name 
+    // First, let's check if order details exist without the join
+    $checkSql = "SELECT * FROM order_details WHERE order_id = ?";
+    $checkStmt = $conn->prepare($checkSql);
+    $checkStmt->bind_param("i", $orderId);
+    $checkStmt->execute();
+    $checkResult = $checkStmt->get_result();
+    
+    if ($checkResult->num_rows == 0) {
+        error_log("No entries in order_details for Order ID: $orderId");
+        
+        // Try to get just the order
+        $orderSql = "SELECT * FROM orders WHERE id = ?";
+        $orderStmt = $conn->prepare($orderSql);
+        $orderStmt->bind_param("i", $orderId);
+        $orderStmt->execute();
+        $orderResult = $orderStmt->get_result();
+        
+        if ($orderResult->num_rows > 0) {
+            $order = $orderResult->fetch_assoc();
+            // Create a placeholder item if order exists but no details
+            return [
+                [
+                    'saree_name' => 'Order details not available',
+                    'price' => $order['total_amount'],
+                    'quantity' => 1,
+                    'order_id' => $orderId
+                ]
+            ];
+        }
+        
+        return [];
+    }
+    
+    // If we have order details, try the join
+    $sql = "SELECT od.*, COALESCE(s.name, 'Product Not Found') as saree_name 
             FROM order_details od
-            JOIN sarees s ON od.saree_id = s.id
+            LEFT JOIN sarees s ON od.saree_id = s.id
             WHERE od.order_id = ?";
     
     $stmt = $conn->prepare($sql);
@@ -80,37 +114,86 @@ function getOrderStats($conn) {
     ];
 }
 
-// Update order status - MODIFIED TO PREVENT CHANGING DELIVERED ORDERS
+// Update order status
 if (isset($_POST['update_status']) && isset($_POST['order_id']) && isset($_POST['new_status'])) {
     $orderId = $_POST['order_id'];
     $newStatus = $_POST['new_status'];
     
+    // Trim any whitespace
+    $newStatus = trim($newStatus);
+
+    // Display the exact value for debugging
+    error_log("Attempting to update order ID: $orderId with status: '$newStatus'");
+    
     // Check current order status first
-    $checkStatusSql = "SELECT order_status FROM orders WHERE id = ?";
+    $checkStatusSql = "SELECT order_status, payment_method FROM orders WHERE id = ?";
     $checkStmt = $conn->prepare($checkStatusSql);
     $checkStmt->bind_param("i", $orderId);
     $checkStmt->execute();
     $result = $checkStmt->get_result();
-    $currentStatus = $result->fetch_assoc()['order_status'];
+    $orderInfo = $result->fetch_assoc();
+    $currentStatus = $orderInfo['order_status'];
+    $paymentMethod = $orderInfo['payment_method'];
     
-    // Prevent status change if order is already delivered
-    if ($currentStatus == 'delivered') {
-        $_SESSION['error_message'] = "Cannot update status for already delivered orders";
+    // Rules for status changes
+    if ($currentStatus == 'cash_received') {
+        // Can't change status once cash is received
+        $_SESSION['error_message'] = "Cannot update status for orders where cash has been received";
+    } elseif ($currentStatus == 'delivered' && $newStatus != 'cash_received') {
+        // Delivered orders can only change to cash_received (for COD)
+        $_SESSION['error_message'] = "Delivered orders can only be marked as cash received";
     } else {
-        // Update the status since it's not delivered
+        // Before the update query, validate the status
+        $allowedStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cash_received', 'cancelled'];
+        if (!in_array($newStatus, $allowedStatuses)) {
+            // Log the invalid status value
+            error_log("Invalid status value attempted: '$newStatus' for Order ID: $orderId");
+            $_SESSION['error_message'] = "Invalid status value: " . htmlspecialchars($newStatus);
+            header("Location: order_manage.php");
+            exit();
+        }
+        
+        // Then proceed with the update if the status is valid
         $updateSql = "UPDATE orders SET order_status = ? WHERE id = ?";
         $updateStmt = $conn->prepare($updateSql);
         $updateStmt->bind_param("si", $newStatus, $orderId);
         
+        // Debugging output before executing the update
+        error_log("Order ID: $orderId, New Status: '$newStatus'");
+        
         if ($updateStmt->execute()) {
             $_SESSION['success_message'] = "Order status updated successfully";
         } else {
+            // Log detailed error message
+            error_log("Failed to update order status for Order ID: $orderId. Error: " . $conn->error);
             $_SESSION['error_message'] = "Failed to update order status: " . $conn->error;
         }
     }
     
     // Redirect to prevent form resubmission
     header("Location: order_manage.php");
+    exit();
+}
+
+// Handle cash received action
+if (isset($_POST['cash_received']) && isset($_POST['order_id'])) {
+    $orderId = $_POST['order_id'];
+    $updateCashReceivedSql = "UPDATE orders SET order_status = 'cash_received' WHERE id = ? AND payment_method = 'cod'";
+    $stmt = $conn->prepare($updateCashReceivedSql);
+    $stmt->bind_param("i", $orderId);
+    if ($stmt->execute()) {
+        $_SESSION['success_message'] = "Order marked as cash received successfully";
+    } else {
+        $_SESSION['error_message'] = "Failed to update order status: " . $conn->error;
+    }
+    // Redirect to prevent form resubmission and preserve view parameter
+    if (isset($_GET['view_cod_order'])) {
+        header("Location: order_manage.php?view_cod_order=" . $_GET['view_cod_order']);
+    } else if (isset($_GET['view_order'])) {
+        header("Location: order_manage.php?view_order=" . $_GET['view_order']);
+    } else {
+        header("Location: order_manage.php");
+    }
     exit();
 }
 
@@ -123,8 +206,14 @@ $recentOrders = getOrders($conn);
 // Get specific order details if requested
 $selectedOrderDetails = null;
 $orderHeader = null;
-if (isset($_GET['view_order'])) {
-    $selectedOrderDetails = getOrderDetails($conn, $_GET['view_order']);
+if (isset($_GET['view_order']) || isset($_GET['view_cod_order'])) {
+    $orderId = isset($_GET['view_order']) ? $_GET['view_order'] : $_GET['view_cod_order'];
+    $selectedOrderDetails = getOrderDetails($conn, $orderId);
+    
+    // Debug
+    if (empty($selectedOrderDetails)) {
+        echo "<div class='alert alert-danger'>No order details found for Order ID: " . $orderId . "</div>";
+    }
     
     // Get the order header info
     $orderHeaderSql = "SELECT o.*, u.username, u.email 
@@ -132,7 +221,6 @@ if (isset($_GET['view_order'])) {
                       JOIN users u ON o.user_id = u.id 
                       WHERE o.id = ?";
     $stmt = $conn->prepare($orderHeaderSql);
-    $orderId = $_GET['view_order'];
     $stmt->bind_param("i", $orderId);
     $stmt->execute();
     $orderHeader = $stmt->get_result()->fetch_assoc();
@@ -316,12 +404,29 @@ if (isset($_GET['view_order'])) {
             font-size: 12px;
         }
 
+        .status-cash_received {
+            background-color: #2E9AFE;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
         .status-cancelled {
             background-color: #F8D7DA;
             color: #721C24;
             padding: 5px 10px;
             border-radius: 4px;
             font-size: 12px;
+        }
+
+        .payment-cod {
+            background-color: #E2E3E5;
+            color: #383d41;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-left: 5px;
         }
 
         .action-buttons {
@@ -347,6 +452,15 @@ if (isset($_GET['view_order'])) {
             background-color: #dee2e6;
         }
 
+        .btn-cod {
+            background-color: #fd7e14;
+            color: white;
+        }
+
+        .btn-cod:hover {
+            background-color: #e67211;
+        }
+
         .btn-update {
             background-color: #6f42c1;
             color: white;
@@ -354,6 +468,15 @@ if (isset($_GET['view_order'])) {
 
         .btn-update:hover {
             background-color: #5a32a3;
+        }
+
+        .btn-cash {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-cash:hover {
+            background-color: #218838;
         }
 
         .btn-disabled {
@@ -377,6 +500,16 @@ if (isset($_GET['view_order'])) {
             margin-bottom: 20px;
             padding-bottom: 10px;
             border-bottom: 1px solid #eee;
+        }
+
+        .payment-method-label {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+            background-color: #6c757d;
+            color: white;
         }
 
         .order-items-table {
@@ -463,6 +596,14 @@ if (isset($_GET['view_order'])) {
             text-align: center;
             border-top: 1px solid #eee;
         }
+
+        .cod-info {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #fff3cd;
+            border-radius: 4px;
+            border-left: 4px solid #ffc107;
+        }
     </style>
 </head>
 <body>
@@ -530,8 +671,8 @@ if (isset($_GET['view_order'])) {
                     <p><?php echo $orderStats['by_status']['delivered'] ?? 0; ?></p>
                 </div>
                 <div class="stat-card">
-                    <h3>Total Revenue</h3>
-                    <p>₹<?php echo number_format($orderStats['total_revenue'], 2); ?></p>
+                    <h3>Cash Received (COD)</h3>
+                    <p><?php echo $orderStats['by_status']['cash_received'] ?? 0; ?></p>
                 </div>
             </div>
 
@@ -559,17 +700,32 @@ if (isset($_GET['view_order'])) {
                         <?php else: ?>
                             <?php foreach ($recentOrders as $order): ?>
                                 <tr>
-                                    <td>#ORD<?php echo str_pad($order['id'], 3, '0', STR_PAD_LEFT); ?></td>
+                                    <td>
+                                        #ORD<?php echo str_pad($order['id'], 3, '0', STR_PAD_LEFT); ?>
+                                        <?php if ($order['payment_method'] === 'cod'): ?>
+                                            <span class="payment-cod">COD</span>
+                                        <?php endif; ?>
+                                    </td>
                                     <td><?php echo htmlspecialchars($order['username']); ?></td>
                                     <td><?php echo date('Y-m-d', strtotime($order['created_at'])); ?></td>
                                     <td>₹<?php echo number_format($order['total_amount'], 2); ?></td>
                                     <td>
                                         <span class="status-<?php echo $order['order_status']; ?>">
-                                            <?php echo ucfirst($order['order_status']); ?>
+                                            <?php 
+                                            if ($order['order_status'] === 'cash_received') {
+                                                echo 'Cash Received';
+                                            } else {
+                                                echo ucfirst($order['order_status']); 
+                                            }
+                                            ?>
                                         </span>
                                     </td>
                                     <td class="action-buttons">
-                                        <a href="?view_order=<?php echo $order['id']; ?>" class="btn btn-view">View</a>
+                                        <?php if ($order['payment_method'] === 'cod'): ?>
+                                            <a href="?view_cod_order=<?php echo $order['id']; ?>" class="btn btn-cod">View COD</a>
+                                        <?php else: ?>
+                                            <a href="?view_order=<?php echo $order['id']; ?>" class="btn btn-view">View</a>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -581,9 +737,22 @@ if (isset($_GET['view_order'])) {
             <?php if ($selectedOrderDetails && $orderHeader): ?>
                 <div class="order-details-modal">
                     <div class="order-details-header">
-                        <h3>Order #ORD<?php echo str_pad($orderHeader['id'], 3, '0', STR_PAD_LEFT); ?> Details</h3>
+                        <h3>
+                            Order #ORD<?php echo str_pad($orderHeader['id'], 3, '0', STR_PAD_LEFT); ?> Details
+                            <?php if ($orderHeader['payment_method'] === 'cod'): ?>
+                                <span class="payment-method-label">Cash On Delivery</span>
+                            <?php else: ?>
+                                <span class="payment-method-label">Online Payment</span>
+                            <?php endif; ?>
+                        </h3>
                         <span class="status-<?php echo $orderHeader['order_status']; ?>">
-                            <?php echo ucfirst($orderHeader['order_status']); ?>
+                            <?php 
+                            if ($orderHeader['order_status'] === 'cash_received') {
+                                echo 'Cash Received';
+                            } else {
+                                echo ucfirst($orderHeader['order_status']); 
+                            }
+                            ?>
                         </span>
                     </div>
                     
@@ -592,8 +761,14 @@ if (isset($_GET['view_order'])) {
                         <p><strong>Email:</strong> <?php echo htmlspecialchars($orderHeader['email']); ?></p>
                         <p><strong>Order Date:</strong> <?php echo date('Y-m-d H:i', strtotime($orderHeader['created_at'])); ?></p>
                         <p><strong>Shipping Address:</strong> <?php echo htmlspecialchars($orderHeader['address']); ?></p>
-                        <p><strong>Payment Method:</strong> <?php echo htmlspecialchars($orderHeader['payment_method']); ?></p>
+                        <p><strong>Payment Method:</strong> <?php echo $orderHeader['payment_method'] === 'cod' ? 'Cash On Delivery' : 'Online Payment'; ?></p>
                     </div>
+                    
+                    <?php if ($orderHeader['payment_method'] === 'cod'): ?>
+                        <div class="cod-info">
+                            <p><strong>COD Order Instructions:</strong> Please confirm delivery and cash collection status using the controls below.</p>
+                        </div>
+                    <?php endif; ?>
                     
                     <h4 style="margin: 20px 0 10px;">Order Items</h4>
                     <table class="order-items-table">
@@ -637,15 +812,46 @@ if (isset($_GET['view_order'])) {
                         </div>
                     </div>
                     
-                    <?php if ($orderHeader['order_status'] == 'delivered'): ?>
-                        <!-- For delivered orders, show notice and disabled form -->
+                    <?php if ($orderHeader['order_status'] == 'cash_received' && $orderHeader['payment_method'] == 'cod'): ?>
+    <!-- Show cash received information for completed COD orders -->
+    <div style="margin-top: 20px; padding: 15px; background-color: #d4edda; border-radius: 4px; border-left: 4px solid #28a745;">
+    <p><strong>Payment Collected:</strong> Cash amount of ₹<?php echo number_format($total, 2); ?> has been received for this order.</p>        <p><strong>Collection Date:</strong> <?php echo date('Y-m-d H:i'); ?></p>
+    </div>
+<?php elseif ($orderHeader['order_status'] == 'delivered' && $orderHeader['payment_method'] == 'cod'): ?>
+    <!-- More code... -->
+                        <!-- Show cash received button only for delivered COD orders -->
+                        <div style="margin-top: 20px; padding: 15px; background-color: #fff3cd; border-radius: 4px;">
+                            <p><strong>Payment Collection:</strong> Mark this order as Cash Received once payment of ₹<?php echo number_format($orderHeader['total_amount'], 2); ?> has been collected from the customer.</p>
+                            <form method="POST" action="order_manage.php?<?php echo isset($_GET['view_cod_order']) ? 'view_cod_order='.$_GET['view_cod_order'] : 'view_order='.$orderHeader['id']; ?>" style="margin-top: 10px;">
+                                <input type="hidden" name="order_id" value="<?php echo $orderHeader['id']; ?>">
+                                <button type="submit" name="cash_received" class="btn btn-cash">Mark as Cash Received</button>
+                            </form>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if ($orderHeader['order_status'] == 'delivered' || $orderHeader['order_status'] == 'cash_received'): ?>
+                        <!-- For delivered/cash_received orders, show notice and disabled form -->
                         <div class="disabled-note">
-                            <p>This order has been delivered and its status cannot be changed.</p>
+                            <p>
+                                <?php if ($orderHeader['order_status'] == 'cash_received'): ?>
+                                    This order has been marked as Cash Received and its status cannot be changed.
+                                <?php else: ?>
+                                    This order has been delivered and its status can only be changed to Cash Received (for COD orders).
+                                <?php endif; ?>
+                            </p>
                         </div>
                         <div class="status-update-form">
                             <label for="new_status">Current Status:</label>
                             <select id="new_status" class="status-select" disabled>
-                                <option value="delivered" selected>Delivered</option>
+                                <option value="<?php echo $orderHeader['order_status']; ?>" selected>
+                                    <?php 
+                                    if ($orderHeader['order_status'] === 'cash_received') {
+                                        echo 'Cash Received';
+                                    } else {
+                                        echo ucfirst($orderHeader['order_status']); 
+                                    }
+                                    ?>
+                                </option>
                             </select>
                             <button class="btn btn-disabled" disabled>Update Status</button>
                         </div>
@@ -659,6 +865,7 @@ if (isset($_GET['view_order'])) {
                                 <option value="processing" <?php echo ($orderHeader['order_status'] == 'processing') ? 'selected' : ''; ?>>Processing</option>
                                 <option value="shipped" <?php echo ($orderHeader['order_status'] == 'shipped') ? 'selected' : ''; ?>>Shipped</option>
                                 <option value="delivered" <?php echo ($orderHeader['order_status'] == 'delivered') ? 'selected' : ''; ?>>Delivered</option>
+                                <option value="cash_received" <?php echo ($orderHeader['order_status'] == 'cash_received') ? 'selected' : ''; ?>>Cash Received</option>
                                 <option value="cancelled" <?php echo ($orderHeader['order_status'] == 'cancelled') ? 'selected' : ''; ?>>Cancelled</option>
                             </select>
                             <button type="submit" name="update_status" class="btn btn-update">Update Status</button>
@@ -698,6 +905,14 @@ if (isset($_GET['view_order'])) {
                     this.classList.add('active');
                 });
             });
+
+            // Add an alert to confirm form submission
+            const cashReceivedForm = document.querySelector('form[action="order_manage.php"]');
+            if (cashReceivedForm) {
+                cashReceivedForm.addEventListener('submit', function(event) {
+                    alert('Submitting form to mark as Cash Received');
+                });
+            }
         });
     </script>
 </body>

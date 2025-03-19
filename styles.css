@@ -33,19 +33,9 @@ header {
   border-bottom: 1px solid #eee;
 }
 
-/* Logo and Search */
-.logo-img {
-  height: 50px;
-  width: auto;
-}
 
-.search-bar {
-  width: 200px;
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-}
+
+
 
 /* Header Sections */
 .header-left, .header-center, .header-right {

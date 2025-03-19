@@ -102,6 +102,13 @@
         </form>
     </section>
 
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-bar" placeholder="Search for sarees...">
+        <button onclick="performSearch()" class="search-button">
+            <i class="fas fa-search"></i>
+        </button>
+    </div>
+
 <?php include 'footer.php'; ?>
 
     <script>

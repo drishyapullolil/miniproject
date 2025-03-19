@@ -32,7 +32,7 @@ $sortOption = isset($_GET['sort']) ? $_GET['sort'] : 'price-asc';
 // Base query
 $query = "SELECT 
             s.id, 
-            s.saree_name AS name, 
+            s.name,
             s.price, 
             s.stock, 
             s.color, 
@@ -92,6 +92,48 @@ if ($categoryId) {
 } else {
     $pageTitle = !empty($sarees) ? $sarees[0]['subcategory_name'] : "Subcategory Products";
 }
+
+if (isset($_GET['q'])) {
+    $searchTerm = '%' . $conn->real_escape_string($_GET['q']) . '%';
+    $clickedId = isset($_GET['clicked_id']) ? (int)$_GET['clicked_id'] : 0;
+    
+    $query = "SELECT s.*, sub.subcategory_name 
+              FROM sarees s 
+              JOIN subcategories sub ON s.subcategory_id = sub.id 
+              WHERE s.subcategory_id = ? 
+              ORDER BY 
+                CASE 
+                    WHEN s.id = ? THEN 1  -- Clicked product first
+                    WHEN s.name LIKE ? THEN 2  -- Then exact matches
+                    WHEN s.description LIKE ? THEN 3  -- Then description matches
+                    WHEN s.color LIKE ? THEN 4  -- Then color matches
+                    ELSE 5
+                END,
+                s.id DESC";
+                
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("iisss", $subcategoryId, $clickedId, $searchTerm, $searchTerm, $searchTerm);
+} else {
+    $query = "SELECT s.*, sub.subcategory_name 
+              FROM sarees s 
+              JOIN subcategories sub ON s.subcategory_id = sub.id 
+              WHERE s.subcategory_id = ? 
+              ORDER BY s.id DESC";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $subcategoryId);
+}
+
+$stmt->execute();
+$result = $stmt->get_result();
+
+// Get the subcategory name for the heading
+$subcategoryName = '';
+if ($result->num_rows > 0) {
+    $firstRow = $result->fetch_assoc();
+    $subcategoryName = $firstRow['subcategory_name'];
+    // Reset the result pointer
+    $result->data_seek(0);
+}
 ?>
 
 <!DOCTYPE html>
@@ -142,12 +184,47 @@ if ($categoryId) {
 
         .saree-item {
             width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .saree-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         .saree-item img {
             width: 100%;
-            height: 450px;
+            height: 300px;
             object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .saree-item h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 10px 0;
+            color: var(--primary-color);
+        }
+
+        .saree-item p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        .saree-item .violet-btn {
+            margin-top: 10px;
+            align-self: center;
+            padding: 10px 20px;
+            font-size: 14px;
         }
 
         .violet-btn {
@@ -202,10 +279,16 @@ if ($categoryId) {
     <div class="container">
     <div class="filter-sidebar">
         <h2>Filters</h2>
-        <form method="GET" action="">
+        <form id="filter-form" method="GET" action="">
+            <!-- Add hidden inputs to retain category or subcategory ID -->
+            <?php if ($categoryId): ?>
+                <input type="hidden" name="category_id" value="<?php echo $categoryId; ?>">
+            <?php elseif ($subcategoryId): ?>
+                <input type="hidden" name="subcategory_id" value="<?php echo $subcategoryId; ?>">
+            <?php endif; ?>
             <div class="filter-group">
                 <label for="color-select">Color:</label>
-                <select id="color-select" name="color" onchange="this.form.submit()" class="violet-btn">
+                <select id="color-select" name="color" class="violet-btn">
                     <option value="all">All Colors</option>
                     <option value="red" <?php echo (isset($_GET['color']) && $_GET['color'] == 'red') ? 'selected' : ''; ?>>Red</option>
                     <option value="blue" <?php echo (isset($_GET['color']) && $_GET['color'] == 'blue') ? 'selected' : ''; ?>>Blue</option>
@@ -217,11 +300,14 @@ if ($categoryId) {
             </div>
             <div class="filter-group">
                 <label for="sort-select">Sort By:</label>
-                <select id="sort-select" name="sort" onchange="this.form.submit()" class="violet-btn">
+                <select id="sort-select" name="sort" class="violet-btn">
                     <option value="price-asc" <?php echo (isset($_GET['sort']) && $_GET['sort'] == 'price-asc') ? 'selected' : ''; ?>>Price: Low to High</option>
                     <option value="price-desc" <?php echo (isset($_GET['sort']) && $_GET['sort'] == 'price-desc') ? 'selected' : ''; ?>>Price: High to Low</option>
                     <option value="newest" <?php echo (isset($_GET['sort']) && $_GET['sort'] == 'newest') ? 'selected' : ''; ?>>Newest First</option>
                 </select>
+            </div>
+            <div class="filter-group" style="text-align: center; margin-top: 20px;">
+                <button type="button" class="violet-btn" onclick="clearFilters()">Clear Filters</button>
             </div>
         </form>
     </div>
@@ -302,6 +388,20 @@ if ($categoryId) {
 
         // Initial display
         filterSarees();
+
+        document.getElementById('color-select').addEventListener('change', function() {
+            document.getElementById('filter-form').submit();
+        });
+
+        document.getElementById('sort-select').addEventListener('change', function() {
+            document.getElementById('filter-form').submit();
+        });
+
+        function clearFilters() {
+            document.getElementById('color-select').value = 'all';
+            document.getElementById('sort-select').value = 'price-asc';
+            document.getElementById('filter-form').submit();
+        }
     </script>
 </body>
 </html>
