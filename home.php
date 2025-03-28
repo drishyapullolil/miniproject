@@ -1,3 +1,47 @@
+<?php
+session_start();
+
+// Security headers
+header("X-Content-Type-Options: nosniff"); 
+header("X-Frame-Options: DENY");
+header("X-XSS-Protection: 1; mode=block");
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Pragma: no-cache");
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Yards of Grace</title>
+    <!-- Google Translate Script -->
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                autoDisplay: false
+            }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <style>
+        .goog-te-gadget-simple {
+            background-color: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+            cursor: pointer;
+        }
+
+        .goog-te-gadget-simple span {
+            color: white !important;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+
 <?php include 'header.php'; ?>
 
     <section class="hero">

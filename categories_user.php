@@ -1,3 +1,4 @@
+
 <?php
 // Enhanced security headers
 header("X-Content-Type-Options: nosniff");
@@ -144,6 +145,7 @@ if ($result->num_rows > 0) {
     <meta name="description" content="Exclusive Saree Collection at Yards of Grace">
     <title><?php echo htmlspecialchars($pageTitle); ?> - Yards of Grace</title>
     <link rel="stylesheet" href="styles.css">
+    
     <style>
         :root {
             --primary-color: #4e034f;
@@ -276,6 +278,29 @@ if ($result->num_rows > 0) {
 </head>
 <body>
     <?php include 'header.php'; ?>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                autoDisplay: false
+            }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <style>
+        .goog-te-gadget-simple {
+            background-color: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+            cursor: pointer;
+        }
+
+        .goog-te-gadget-simple span {
+            color: white !important;
+            font-size: 16px;
+        }
+    </style>
     <div class="container">
     <div class="filter-sidebar">
         <h2>Filters</h2>

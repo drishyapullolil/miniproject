@@ -19,7 +19,181 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Report generation code
+// Initial date range (last 30 days by default)
+$defaultStartDate = date('Y-m-d', strtotime('-30 days'));
+$defaultEndDate = date('Y-m-d');
+
+// Get filter values if submitted
+$startDate = isset($_GET['start_date']) ? $_GET['start_date'] : $defaultStartDate;
+$endDate = isset($_GET['end_date']) ? $_GET['end_date'] : $defaultEndDate;
+$reportType = isset($_GET['report_type']) ? $_GET['report_type'] : 'full';
+$status = isset($_GET['status']) ? $_GET['status'] : 'all';
+$orderBy = isset($_GET['order_by']) ? $_GET['order_by'] : 'id';
+$orderDir = isset($_GET['order_dir']) ? $_GET['order_dir'] : 'ASC';
+
+// Handle CSV download
+if (isset($_GET['download_csv'])) {
+    $reportType = $_GET['download_csv'];
+    
+    // Prepare filter conditions
+    $dateCondition = "";
+    if (!empty($startDate) && !empty($endDate)) {
+        $dateCondition = " AND created_at BETWEEN '$startDate 00:00:00' AND '$endDate 23:59:59'";
+    }
+    
+    $statusCondition = "";
+    if ($status != 'all') {
+        $statusCondition = " AND order_status = '$status'";
+    }
+    
+    // Create reports directory if it doesn't exist
+    $reportDir = __DIR__ . '/reports/';
+    if (!file_exists($reportDir)) {
+        mkdir($reportDir, 0777, true);
+    }
+    
+    $filename = "Admin_Report_" . $reportType . "_" . date('Ymd_His') . ".csv";
+    $filepath = $reportDir . $filename;
+    
+    // Open file for writing
+    $file = fopen($filepath, 'w');
+    
+    // --- USERS REPORT ---
+    if ($reportType == 'full' || $reportType == 'users') {
+        // Validate user table orderBy column
+        $validUserColumns = ['id', 'username', 'email', 'role'];
+        $userOrderBy = in_array($orderBy, $validUserColumns) ? $orderBy : 'id';
+        
+        // Write CSV header
+        fputcsv($file, ['ID', 'Username', 'Email', 'Role']);
+        
+        $userQuery = "SELECT id, username, email, role FROM users 
+                     WHERE 1=1 $dateCondition
+                     ORDER BY $userOrderBy $orderDir";
+        $userResult = $conn->query($userQuery);
+        
+        while ($row = $userResult->fetch_assoc()) {
+            fputcsv($file, $row);
+        }
+        
+        if ($reportType != 'full') {
+            fclose($file);
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="' . $filename . '"');
+            readfile($filepath);
+            exit();
+        } else {
+            fputcsv($file, []); // Empty line between sections
+            fputcsv($file, ['ORDERS REPORT']);
+            fputcsv($file, []); // Empty line
+        }
+    }
+    
+    // --- ORDERS REPORT ---
+    if ($reportType == 'full' || $reportType == 'orders') {
+        // First, let's define our base query with explicit table references
+        $orderQuery = "SELECT 
+            orders.id,
+            users.username,
+            orders.total_amount,
+            orders.order_status,
+            orders.payment_method
+        FROM orders 
+        INNER JOIN users ON orders.user_id = users.id 
+        WHERE 1=1";
+
+        // Add date conditions with explicit table reference
+        if (!empty($startDate) && !empty($endDate)) {
+            $orderQuery .= " AND orders.created_at BETWEEN '$startDate 00:00:00' AND '$endDate 23:59:59'";
+        }
+
+        // Add status condition
+        if ($status != 'all') {
+            $orderQuery .= " AND orders.order_status = '$status'";
+        }
+
+        // Add ordering with explicit table references
+        if ($orderBy == 'username') {
+            $orderQuery .= " ORDER BY users.username $orderDir";
+        } else {
+            $orderQuery .= " ORDER BY orders.$orderBy $orderDir";
+        }
+
+        // Execute query
+        $result = $conn->query($orderQuery);
+
+        if (!$result) {
+            die("Query failed: " . $conn->error);
+        }
+        
+        // Handle order by clause - determine if the column belongs to orders or users table
+        $orderByTable = "orders";
+        if ($orderBy == "username") {
+            $orderByTable = "users";
+        }
+
+        // Write CSV header
+        fputcsv($file, ['Order ID', 'Username', 'Total Amount', 'Status', 'Payment Method']);
+        
+        while ($row = $result->fetch_assoc()) {
+            fputcsv($file, [
+                $row['id'],
+                $row['username'],
+                $row['total_amount'],
+                $row['order_status'],
+                $row['payment_method']
+            ]);
+        }
+        
+        if ($reportType != 'full') {
+            fclose($file);
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="' . $filename . '"');
+            readfile($filepath);
+            exit();
+        } else {
+            fputcsv($file, []); // Empty line between sections
+            fputcsv($file, ['SAREE INVENTORY REPORT']);
+            fputcsv($file, []); // Empty line
+        }
+    }
+    
+    // --- SAREE STOCK REPORT ---
+    if ($reportType == 'full' || $reportType == 'sarees') {
+        // Validate saree table orderBy column
+        $validSareeColumns = ['id', 'name', 'price', 'stock', 'color', 'created_at', 'last_stock_update'];
+        $sareeOrderBy = in_array($orderBy, $validSareeColumns) ? $orderBy : 'id';
+        
+        // Write CSV header
+        fputcsv($file, ['Saree ID', 'Name', 'Price', 'Stock', 'Color', 'Last Stock Update']);
+        
+        $sareeQuery = "SELECT id, name, price, stock, color, last_stock_update FROM sarees
+                       WHERE 1=1 $dateCondition
+                       ORDER BY $sareeOrderBy $orderDir";
+        $sareeResult = $conn->query($sareeQuery);
+        
+        while ($row = $sareeResult->fetch_assoc()) {
+            fputcsv($file, [
+                $row['id'],
+                $row['name'],
+                $row['price'],
+                $row['stock'],
+                $row['color'],
+                $row['last_stock_update']
+            ]);
+        }
+    }
+    
+    fclose($file);
+    
+    // Force download
+    header('Content-Type: text/csv');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    readfile($filepath);
+    exit();
+}
+
+// Handle PDF download
 if (isset($_GET['download'])) {
     require_once('tcpdf/tcpdf.php');
 
@@ -48,8 +222,37 @@ if (isset($_GET['download'])) {
     $pdf->Cell(0, 10, 'Prepared by: ' . $_SESSION['username'], 0, 1, 'C');
     $pdf->AddPage();
 
+    // Added filter info to PDF report
+    $pdf->SetFont('helvetica', 'B', 12);
+    $pdf->Cell(0, 10, 'Filter Settings', 0, 1, 'L');
+    $pdf->SetFont('helvetica', '', 10);
+    $pdf->Cell(0, 10, 'Date Range: ' . $startDate . ' to ' . $endDate, 0, 1, 'L');
+    $pdf->Cell(0, 10, 'Status Filter: ' . ucfirst($status), 0, 1, 'L');
+    $pdf->Cell(0, 10, 'Order By: ' . $orderBy . ' ' . $orderDir, 0, 1, 'L');
+    $pdf->AddPage();
+
+    // Prepare filter conditions for queries
+    $userDateCondition = "";
+    $orderDateCondition = "";
+    $sareeDataCondition = "";
+    
+    if (!empty($startDate) && !empty($endDate)) {
+        $userDateCondition = " AND users.created_at BETWEEN '$startDate 00:00:00' AND '$endDate 23:59:59'";
+        $orderDateCondition = " AND orders.created_at BETWEEN '$startDate 00:00:00' AND '$endDate 23:59:59'";
+        $sareeDataCondition = " AND sarees.created_at BETWEEN '$startDate 00:00:00' AND '$endDate 23:59:59'";
+    }
+    
+    $statusCondition = "";
+    if ($status != 'all') {
+        $statusCondition = " AND order_status = '$status'";
+    }
+
     // --- USERS REPORT ---
     if ($_GET['download'] == 'full' || $_GET['download'] == 'users') {
+        // Validate user table orderBy column
+        $validUserColumns = ['id', 'username', 'email', 'role'];
+        $userOrderBy = in_array($orderBy, $validUserColumns) ? $orderBy : 'id';
+        
         $pdf->SetFont('helvetica', 'B', 14);
         $pdf->Cell(0, 10, 'Users Report', 0, 1, 'C');
         $pdf->SetFont('helvetica', '', 10);
@@ -59,7 +262,9 @@ if (isset($_GET['download'])) {
         $pdf->Cell(30, 10, 'Role', 1);
         $pdf->Ln();
 
-        $userQuery = "SELECT id, username, email, role FROM users";
+        $userQuery = "SELECT id, username, email, role FROM users
+                      WHERE 1=1" . $userDateCondition . "
+                      ORDER BY $userOrderBy $orderDir";
         $userResult = $conn->query($userQuery);
         while ($row = $userResult->fetch_assoc()) {
             $pdf->Cell(30, 10, $row['id'], 1);
@@ -68,11 +273,15 @@ if (isset($_GET['download'])) {
             $pdf->Cell(30, 10, ucfirst($row['role']), 1);
             $pdf->Ln();
         }
-        $pdf->Ln(10); // Add space before the next section
+        $pdf->Ln(10);
     }
 
     // --- ORDERS REPORT ---
     if ($_GET['download'] == 'full' || $_GET['download'] == 'orders') {
+        // Validate order table orderBy column
+        $validOrderColumns = ['id', 'username', 'total_amount', 'order_status', 'payment_method'];
+        $orderOrderBy = in_array($orderBy, $validOrderColumns) ? $orderBy : 'id';
+        
         $pdf->AddPage();
         $pdf->SetFont('helvetica', 'B', 14);
         $pdf->Cell(0, 10, 'Orders Report', 0, 1, 'C');
@@ -84,9 +293,18 @@ if (isset($_GET['download'])) {
         $pdf->Cell(60, 10, 'Payment Method', 1);
         $pdf->Ln();
 
+        // Handle order by clause
+        $orderByTable = "orders";
+        if ($orderOrderBy == "username") {
+            $orderByTable = "users";
+        }
+
         $orderQuery = "SELECT orders.id, users.username, orders.total_amount, orders.order_status, orders.payment_method 
                        FROM orders 
-                       JOIN users ON orders.user_id = users.id";
+                       JOIN users ON orders.user_id = users.id
+                       WHERE 1=1" . $orderDateCondition . $statusCondition . "
+                       ORDER BY $orderByTable.$orderOrderBy $orderDir";
+        
         $orderResult = $conn->query($orderQuery);
         while ($row = $orderResult->fetch_assoc()) {
             $pdf->Cell(20, 10, $row['id'], 1);
@@ -96,11 +314,15 @@ if (isset($_GET['download'])) {
             $pdf->Cell(60, 10, ucfirst($row['payment_method']), 1);
             $pdf->Ln();
         }
-        $pdf->Ln(10); // Add space before the next section
+        $pdf->Ln(10);
     }
 
     // --- SAREE STOCK REPORT ---
     if ($_GET['download'] == 'full' || $_GET['download'] == 'sarees') {
+        // Validate saree table orderBy column
+        $validSareeColumns = ['id', 'name', 'price', 'stock', 'color', 'created_at', 'last_stock_update'];
+        $sareeOrderBy = in_array($orderBy, $validSareeColumns) ? $orderBy : 'id';
+        
         $pdf->AddPage();
         $pdf->SetFont('helvetica', 'B', 14);
         $pdf->Cell(0, 10, 'Saree Stock Report', 0, 1, 'C');
@@ -112,7 +334,9 @@ if (isset($_GET['download'])) {
         $pdf->Cell(50, 10, 'Last Update', 1);
         $pdf->Ln();
 
-        $sareeQuery = "SELECT id, name, price, stock, last_stock_update FROM sarees";
+        $sareeQuery = "SELECT id, name, price, stock, last_stock_update FROM sarees
+                       WHERE 1=1" . $sareeDataCondition . "
+                       ORDER BY $sareeOrderBy $orderDir";
         $sareeResult = $conn->query($sareeQuery);
         while ($row = $sareeResult->fetch_assoc()) {
             $pdf->Cell(20, 10, $row['id'], 1);
@@ -142,7 +366,14 @@ if (isset($_GET['download'])) {
     readfile($pdfFilePath);
     exit();
 }
+
+// Get order status options for dropdown
+$statusOptions = array('all', 'pending', 'processing', 'shipped', 'delivered', 'cancelled', 'cash_received');
+
+// Get column names for orderBy dropdown
+$orderByColumns = array('id', 'username', 'name', 'total_amount', 'price', 'stock', 'created_at');
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -150,528 +381,7 @@ if (isset($_GET['download'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Download Reports - Yards of Grace</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <style>
-        :root {
-            --primary: #800080;
-            --primary-light: #a000a0;
-            --primary-dark: #600060;
-            --primary-ultra-light: #f9e6f9;
-            --white: #ffffff;
-            --text-dark: #333333;
-            --text-medium: #666666;
-            --text-light: #888888;
-            --border-light: #e6e0ed;
-            --danger: #d81b60;
-            --success: #4a9141;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Arial, sans-serif;
-        }
-
-        body {
-            background-color: #fdf6fd;
-            padding: 0;
-            color: var(--text-dark);
-            min-height: 100vh;
-        }
-
-        .top-bar {
-            background-color: var(--primary-dark);
-            color: var(--white);
-            text-align: center;
-            padding: 10px;
-            font-size: 14px;
-        }
-
-        .header-main {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 40px;
-            border-bottom: 1px solid var(--border-light);
-            background-color: var(--white);
-            box-shadow: 0 2px 15px rgba(128, 0, 128, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-center h1 {
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            font-weight: 600;
-            letter-spacing: 1px;
-        }
-
-        .header-center h1 img {
-            margin-right: 15px;
-            transition: transform 0.3s;
-        }
-
-        .header-center h1:hover img {
-            transform: scale(1.05);
-        }
-
-        .nav-buttons {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .dashboard-btn {
-            background-color: var(--primary-ultra-light);
-            color: var(--primary);
-            border: none;
-            padding: 10px 18px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 15px;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .dashboard-btn i {
-            margin-right: 8px;
-            font-size: 16px;
-        }
-
-        .dashboard-btn:hover {
-            background-color: var(--primary);
-            color: var(--white);
-        }
-
-        .logout-btn {
-            background-color: var(--white);
-            color: var(--danger);
-            border: 1px solid var(--danger);
-            padding: 10px 18px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 15px;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            font-weight: 500;
-        }
-
-        .logout-btn i {
-            margin-right: 8px;
-            font-size: 16px;
-        }
-
-        .logout-btn:hover {
-            background-color: var(--danger);
-            color: var(--white);
-        }
-
-        .main-container {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        .page-title {
-            margin-bottom: 40px;
-            text-align: center;
-            position: relative;
-        }
-
-        .page-title h1 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            font-size: 32px;
-            position: relative;
-            display: inline-block;
-        }
-
-        .page-title h1::after {
-            content: "";
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 3px;
-            background-color: var(--primary);
-            border-radius: 3px;
-        }
-
-        .page-title p {
-            color: var(--text-medium);
-            font-size: 16px;
-            max-width: 600px;
-            margin: 0 auto;
-            line-height: 1.6;
-        }
-
-        .reports-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-        }
-
-        .report-card {
-            background: var(--white);
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(128, 0, 128, 0.1);
-            padding: 30px;
-            text-align: left;
-            transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid transparent;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .report-card::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background-color: var(--primary);
-            opacity: 0.7;
-        }
-
-        .report-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(128, 0, 128, 0.2);
-            border-color: var(--primary-light);
-        }
-
-        .card-header {
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-        }
-
-        .card-icon {
-            width: 60px;
-            height: 60px;
-            background: var(--primary-ultra-light);
-            border-radius: 12px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-right: 15px;
-            transition: all 0.3s;
-        }
-
-        .report-card:hover .card-icon {
-            background: var(--primary);
-        }
-
-        .card-icon i {
-            font-size: 24px;
-            color: var(--primary);
-            transition: all 0.3s;
-        }
-
-        .report-card:hover .card-icon i {
-            color: var(--white);
-        }
-
-        .card-title h2 {
-            font-size: 20px;
-            color: var(--primary);
-            margin-bottom: 5px;
-        }
-
-        .card-title p {
-            color: var(--text-light);
-            font-size: 14px;
-        }
-
-        .card-content {
-            flex-grow: 1;
-            margin-bottom: 25px;
-        }
-
-        .content-section {
-            margin-bottom: 15px;
-        }
-
-        .section-title {
-            display: flex;
-            align-items: center;
-            font-size: 16px;
-            color: var(--primary-dark);
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .section-title i {
-            margin-right: 8px;
-            font-size: 14px;
-        }
-
-        .content-section p {
-            color: var(--text-medium);
-            font-size: 14px;
-            line-height: 1.5;
-            margin-bottom: 10px;
-        }
-
-        .feature-list {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .feature-list li {
-            font-size: 14px;
-            color: var(--text-medium);
-            margin-bottom: 8px;
-            padding-left: 25px;
-            position: relative;
-            line-height: 1.4;
-        }
-
-        .feature-list li:before {
-            content: "✓";
-            position: absolute;
-            left: 0;
-            color: var(--primary);
-            font-weight: bold;
-        }
-
-        .card-footer {
-            margin-top: auto;
-        }
-
-        .download-btn {
-            background-color: var(--primary);
-            color: var(--white);
-            border: none;
-            padding: 14px 0;
-            border-radius: 8px;
-            cursor: pointer;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            transition: all 0.3s;
-            font-weight: 500;
-            width: 100%;
-            box-shadow: 0 4px 15px rgba(128, 0, 128, 0.2);
-        }
-
-        .download-btn i {
-            margin-right: 10px;
-        }
-
-        .download-btn:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(128, 0, 128, 0.3);
-        }
-
-        .full-report-card {
-            grid-column: 1 / -1;
-            background: linear-gradient(135deg, #800080, #a000a0);
-        }
-
-        .full-report-card::before {
-            background-color: rgba(255, 255, 255, 0.3);
-        }
-
-        .full-report-card .card-icon {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .full-report-card:hover .card-icon {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .full-report-card .card-icon i {
-            color: var(--white);
-        }
-
-        .full-report-card .card-title h2,
-        .full-report-card .section-title,
-        .full-report-card .feature-list li:before {
-            color: var(--white);
-        }
-
-        .full-report-card .card-title p,
-        .full-report-card .content-section p,
-        .full-report-card .feature-list li {
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .full-report-card .download-btn {
-            background-color: var(--white);
-            color: var(--primary);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .full-report-card .download-btn:hover {
-            background-color: var(--primary-ultra-light);
-        }
-
-        .help-icon {
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            width: 18px;
-            height: 18px;
-            background-color: var(--primary-ultra-light);
-            color: var(--primary);
-            border-radius: 50%;
-            font-size: 12px;
-            margin-left: 8px;
-            cursor: help;
-            position: relative;
-        }
-
-        .help-text {
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: var(--text-dark);
-            color: var(--white);
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            width: 180px;
-            visibility: hidden;
-            opacity: 0;
-            transition: all 0.3s;
-            pointer-events: none;
-            z-index: 10;
-            text-align: center;
-            margin-bottom: 5px;
-            font-weight: normal;
-        }
-
-        .help-text::after {
-            content: "";
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            border-width: 5px;
-            border-style: solid;
-            border-color: var(--text-dark) transparent transparent transparent;
-        }
-
-        .help-icon:hover .help-text {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        .toast-notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #800080;
-            color: var(--white);
-            padding: 15px 25px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            display: none;
-            z-index: 1000;
-            animation: slideIn 0.3s forwards;
-            font-weight: 500;
-        }
-
-        .toast-notification i {
-            margin-right: 10px;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .feedback-section {
-            text-align: center;
-            margin-top: 50px;
-            padding: 20px;
-            background-color: var(--primary-ultra-light);
-            border-radius: 10px;
-        }
-
-        .feedback-section h3 {
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
-
-        .feedback-section p {
-            color: var(--text-medium);
-            margin-bottom: 15px;
-            font-size: 14px;
-        }
-
-        .feedback-btn {
-            background-color: var(--white);
-            color: #800080;
-            border: 1px solid var(--primary);
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-        }
-
-        .feedback-btn i {
-            margin-right: 8px;
-        }
-
-        .feedback-btn:hover {
-            background-color: #800080;
-            color: var(--white);
-        }
-
-        @media (max-width: 768px) {
-            .header-main {
-                padding: 15px 20px;
-                flex-direction: column;
-            }
-            
-            .header-center {
-                margin-bottom: 15px;
-            }
-            
-            .reports-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .card-header {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .card-icon {
-                margin-right: 0;
-                margin-bottom: 15px;
-            }
-            
-            .card-title {
-                text-align: center;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="report.css">
 </head>
 <body>
     <div class="top-bar">
@@ -698,8 +408,73 @@ if (isset($_GET['download'])) {
             <p>Generate and download reports to analyze your business data</p>
         </div>
         
+        <!-- Filter section -->
+        <div class="filter-section">
+            <h3 class="filter-title"><i class="fas fa-filter"></i> Filter Report Data</h3>
+            <form action="" method="GET" class="filter-form">
+                <div class="form-group">
+                    <label for="start_date">Start Date</label>
+                    <input type="date" id="start_date" name="start_date" class="form-control" value="<?php echo $startDate; ?>">
+                </div>
+                <div class="form-group">
+                    <label for="end_date">End Date</label>
+                    <input type="date" id="end_date" name="end_date" class="form-control" value="<?php echo $endDate; ?>">
+                </div>
+                <div class="form-group">
+                    <label for="report_type">Report Type</label>
+                    <select id="report_type" name="report_type" class="form-control">
+                        <option value="full" <?php echo $reportType == 'full' ? 'selected' : ''; ?>>Full Report</option>
+                        <option value="users" <?php echo $reportType == 'users' ? 'selected' : ''; ?>>Users Only</option>
+                        <option value="orders" <?php echo $reportType == 'orders' ? 'selected' : ''; ?>>Orders Only</option>
+                        <option value="sarees" <?php echo $reportType == 'sarees' ? 'selected' : ''; ?>>Sarees Only</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="status">Order Status</label>
+                    <select id="status" name="status" class="form-control">
+                        <option value="all" <?php echo $status == 'all' ? 'selected' : ''; ?>>All Statuses</option>
+                        <option value="pending" <?php echo $status == 'pending' ? 'selected' : ''; ?>>Pending</option>
+                        <option value="processing" <?php echo $status == 'processing' ? 'selected' : ''; ?>>Processing</option>
+                        <option value="shipped" <?php echo $status == 'shipped' ? 'selected' : ''; ?>>Shipped</option>
+                        <option value="delivered" <?php echo $status == 'delivered' ? 'selected' : ''; ?>>Delivered</option>
+                        <option value="cancelled" <?php echo $status == 'cancelled' ? 'selected' : ''; ?>>Cancelled</option>
+                        <option value="cash_received" <?php echo $status == 'cash_received' ? 'selected' : ''; ?>>Cash Received</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="order_by">Sort By</label>
+                    <select id="order_by" name="order_by" class="form-control">
+                        <option value="id" <?php echo $orderBy == 'id' ? 'selected' : ''; ?>>ID</option>
+                        <option value="username" <?php echo $orderBy == 'username' ? 'selected' : ''; ?>>Username</option>
+                        <option value="name" <?php echo $orderBy == 'name' ? 'selected' : ''; ?>>Name</option>
+                        <option value="total_amount" <?php echo $orderBy == 'total_amount' ? 'selected' : ''; ?>>Total Amount</option>
+                        <option value="price" <?php echo $orderBy == 'price' ? 'selected' : ''; ?>>Price</option>
+                        <option value="stock" <?php echo $orderBy == 'stock' ? 'selected' : ''; ?>>Stock</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="order_dir">Order</label>
+                    <select id="order_dir" name="order_dir" class="form-control">
+                        <option value="ASC" <?php echo $orderDir == 'ASC' ? 'selected' : ''; ?>>Ascending</option>
+                        <option value="DESC" <?php echo $orderDir == 'DESC' ? 'selected' : ''; ?>>Descending</option>
+                    </select>
+                </div>
+                
+                <div class="filter-buttons">
+                    <button type="reset" class="filter-btn reset-btn">
+                        <i class="fas fa-undo"></i> Reset
+                    </button>
+                    <button type="submit" class="filter-btn apply-btn">
+                        <i class="fas fa-check"></i> Apply Filters
+                    </button>
+                </div>
+            </form>
+        </div>
+        
         <div class="reports-container">
             <div class="report-card full-report-card">
+                <span class="format-badge pdf-badge">PDF</span>
+                <span class="format-badge csv-badge">CSV</span>
                 <div class="card-header">
                     <div class="card-icon">
                         <i class="fas fa-file-pdf"></i>
@@ -714,7 +489,7 @@ if (isset($_GET['download'])) {
                         <div class="section-title">
                             <i class="fas fa-info-circle"></i> Description
                         </div>
-                        <p>This complete report combines all business data in a single PDF document, providing a comprehensive overview of your entire operation.</p>
+                        <p>This complete report combines all business data in a single document, providing a comprehensive overview of your entire operation.</p>
                     </div>
                     <div class="content-section">
                         <div class="section-title">
@@ -732,13 +507,18 @@ if (isset($_GET['download'])) {
                     </div>
                 </div>
                 <div class="card-footer">
-                    <a href="?download=full" class="download-btn" onclick="showNotification('full')">
-                        <i class="fas fa-download"></i> Download Complete Report
+                    <a href="?download=full<?php echo (!empty($startDate) ? '&start_date='.$startDate : ''); ?><?php echo (!empty($endDate) ? '&end_date='.$endDate : ''); ?><?php echo ($status != 'all' ? '&status='.$status : ''); ?><?php echo (!empty($orderBy) ? '&order_by='.$orderBy : ''); ?><?php echo (!empty($orderDir) ? '&order_dir='.$orderDir : ''); ?>" class="download-btn" onclick="showNotification('pdf-full')">
+                        <i class="fas fa-file-pdf"></i> PDF Format
+                    </a>
+                    <a href="?download_csv=full<?php echo (!empty($startDate) ? '&start_date='.$startDate : ''); ?><?php echo (!empty($endDate) ? '&end_date='.$endDate : ''); ?><?php echo ($status != 'all' ? '&status='.$status : ''); ?><?php echo (!empty($orderBy) ? '&order_by='.$orderBy : ''); ?><?php echo (!empty($orderDir) ? '&order_dir='.$orderDir : ''); ?>" class="download-btn csv-btn" onclick="showNotification('csv-full')">
+                        <i class="fas fa-file-csv"></i> CSV Format
                     </a>
                 </div>
             </div>
             
             <div class="report-card">
+                <span class="format-badge pdf-badge">PDF</span>
+                <span class="format-badge csv-badge">CSV</span>
                 <div class="card-header">
                     <div class="card-icon">
                         <i class="fas fa-users"></i>
@@ -768,20 +548,25 @@ if (isset($_GET['download'])) {
                     </div>
                 </div>
                 <div class="card-footer">
-                    <a href="?download=users" class="download-btn" onclick="showNotification('users')">
-                        <i class="fas fa-download"></i> Download Users Report
+                    <a href="?download=users<?php echo (!empty($startDate) ? '&start_date='.$startDate : ''); ?><?php echo (!empty($endDate) ? '&end_date='.$endDate : ''); ?><?php echo (!empty($orderBy) ? '&order_by='.$orderBy : ''); ?><?php echo (!empty($orderDir) ? '&order_dir='.$orderDir : ''); ?>" class="download-btn" onclick="showNotification('pdf-users')">
+                        <i class="fas fa-file-pdf"></i> PDF Format
+                    </a>
+                    <a href="?download_csv=users<?php echo (!empty($startDate) ? '&start_date='.$startDate : ''); ?><?php echo (!empty($endDate) ? '&end_date='.$endDate : ''); ?><?php echo (!empty($orderBy) ? '&order_by='.$orderBy : ''); ?><?php echo (!empty($orderDir) ? '&order_dir='.$orderDir : ''); ?>" class="download-btn csv-btn" onclick="showNotification('csv-users')">
+                        <i class="fas fa-file-csv"></i> CSV Format
                     </a>
                 </div>
             </div>
             
             <div class="report-card">
+                <span class="format-badge pdf-badge">PDF</span>
+                <span class="format-badge csv-badge">CSV</span>
                 <div class="card-header">
                     <div class="card-icon">
                         <i class="fas fa-shopping-cart"></i>
                     </div>
                     <div class="card-title">
                         <h2>Orders Report</h2>
-                        <p>Transaction and purchase data</p>
+                        <p>Transactions and order details</p>
                     </div>
                 </div>
                 <div class="card-content">
@@ -789,35 +574,40 @@ if (isset($_GET['download'])) {
                         <div class="section-title">
                             <i class="fas fa-info-circle"></i> Description
                         </div>
-                        <p>Access all order information and payment details for tracking sales performance.</p>
+                        <p>Analyze all customer orders and transactions with detailed status information.</p>
                     </div>
                     <div class="content-section">
                         <div class="section-title">
                             <i class="fas fa-list-ul"></i> Includes
                         </div>
                         <ul class="feature-list">
-                            <li>Order IDs and customer information</li>
-                            <li>Total amounts and payment methods</li>
-                            <li>Current order processing status</li>
-                            <li>Presented in clear tabular format</li>
+                            <li>Order IDs and customer details</li>
+                            <li>Total amount and payment methods</li>
+                            <li>Current order status tracking</li>
+                            <li>Date and time information</li>
                         </ul>
                     </div>
                 </div>
                 <div class="card-footer">
-                    <a href="?download=orders" class="download-btn" onclick="showNotification('orders')">
-                        <i class="fas fa-download"></i> Download Orders Report
+                    <a href="?download=orders<?php echo (!empty($startDate) ? '&start_date='.$startDate : ''); ?><?php echo (!empty($endDate) ? '&end_date='.$endDate : ''); ?><?php echo ($status != 'all' ? '&status='.$status : ''); ?><?php echo (!empty($orderBy) ? '&order_by='.$orderBy : ''); ?><?php echo (!empty($orderDir) ? '&order_dir='.$orderDir : ''); ?>" class="download-btn" onclick="showNotification('pdf-orders')">
+                        <i class="fas fa-file-pdf"></i> PDF Format
+                    </a>
+                    <a href="?download_csv=orders<?php echo (!empty($startDate) ? '&start_date='.$startDate : ''); ?><?php echo (!empty($endDate) ? '&end_date='.$endDate : ''); ?><?php echo ($status != 'all' ? '&status='.$status : ''); ?><?php echo (!empty($orderBy) ? '&order_by='.$orderBy : ''); ?><?php echo (!empty($orderDir) ? '&order_dir='.$orderDir : ''); ?>" class="download-btn csv-btn" onclick="showNotification('csv-orders')">
+                        <i class="fas fa-file-csv"></i> CSV Format
                     </a>
                 </div>
             </div>
             
             <div class="report-card">
+                <span class="format-badge pdf-badge">PDF</span>
+                <span class="format-badge csv-badge">CSV</span>
                 <div class="card-header">
                     <div class="card-icon">
                         <i class="fas fa-tshirt"></i>
                     </div>
                     <div class="card-title">
-                        <h2>Saree Stock Report</h2>
-                        <p>Inventory and product details</p>
+                        <h2>Saree Inventory Report</h2>
+                        <p>Stock levels and product data</p>
                     </div>
                 </div>
                 <div class="card-content">
@@ -825,70 +615,88 @@ if (isset($_GET['download'])) {
                         <div class="section-title">
                             <i class="fas fa-info-circle"></i> Description
                         </div>
-                        <p>Review current inventory levels and product information to manage your stock effectively.</p>
+                        <p>Track your entire inventory with detailed information about each saree product.</p>
                     </div>
                     <div class="content-section">
                         <div class="section-title">
                             <i class="fas fa-list-ul"></i> Includes
                         </div>
                         <ul class="feature-list">
-                            <li>Product IDs and saree names</li>
-                            <li>Current prices and available stock</li>
-                            <li>Last inventory update timestamps</li>
-                            <li>Clear tabular presentation format</li>
+                            <li>Product IDs and detailed names</li>
+                            <li>Current stock levels and pricing</li>
+                            <li>Last stock update timestamps</li>
+                            <li>Helps identify low stock items</li>
                         </ul>
                     </div>
                 </div>
                 <div class="card-footer">
-                    <a href="?download=sarees" class="download-btn" onclick="showNotification('sarees')">
-                        <i class="fas fa-download"></i> Download Saree Stock Report
+                    <a href="?download=sarees<?php echo (!empty($startDate) ? '&start_date='.$startDate : ''); ?><?php echo (!empty($endDate) ? '&end_date='.$endDate : ''); ?><?php echo (!empty($orderBy) ? '&order_by='.$orderBy : ''); ?><?php echo (!empty($orderDir) ? '&order_dir='.$orderDir : ''); ?>" class="download-btn" onclick="showNotification('pdf-sarees')">
+                        <i class="fas fa-file-pdf"></i> PDF Format
+                    </a>
+                    <a href="?download_csv=sarees<?php echo (!empty($startDate) ? '&start_date='.$startDate : ''); ?><?php echo (!empty($endDate) ? '&end_date='.$endDate : ''); ?><?php echo (!empty($orderBy) ? '&order_by='.$orderBy : ''); ?><?php echo (!empty($orderDir) ? '&order_dir='.$orderDir : ''); ?>" class="download-btn csv-btn" onclick="showNotification('csv-sarees')">
+                        <i class="fas fa-file-csv"></i> CSV Format
                     </a>
                 </div>
             </div>
         </div>
         
         <div class="feedback-section">
-            <h3>Need a customized report?</h3>
-            <p>We can create custom reports tailored to your specific business needs.</p>
-            <button class="feedback-btn" onclick="alert('Feature coming soon! Please contact the development team for custom reports.')">
+            <h3>Need A Custom Report?</h3>
+            <p>If you need a specialized report with specific metrics or format, our development team can help.</p>
+            <button class="feedback-btn" onclick="window.location.href='contact_dev.php'">
                 <i class="fas fa-comment-alt"></i> Request Custom Report
             </button>
         </div>
     </div>
     
-    <div class="toast-notification" id="notification">
-        <i class="fas fa-spinner fa-spin"></i> Generating report... Please wait.
+    <div id="toast" class="toast-notification">
+        <i class="fas fa-check-circle"></i> <span id="toast-message">Your report is being generated</span>
     </div>
-
+    
     <script>
-        function showNotification(reportType) {
-            const notification = document.getElementById('notification');
-            let message = '';
+        function showNotification(type) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
             
-            switch(reportType) {
-                case 'full':
-                    message = '<i class="fas fa-spinner fa-spin"></i> Generating full business report... Please wait.';
-                    break;
-                case 'users':
-                    message = '<i class="fas fa-spinner fa-spin"></i> Generating users report... Please wait.';
-                    break;
-                case 'orders':
-                    message = '<i class="fas fa-spinner fa-spin"></i> Generating orders report... Please wait.';
-                    break;
-                case 'sarees':
-                    message = '<i class="fas fa-spinner fa-spin"></i> Generating saree stock report... Please wait.';
-                    break;
-                default:
-                    message = '<i class="fas fa-spinner fa-spin"></i> Generating report... Please wait.';
+            let message = 'Your report is being generated';
+            let format = 'PDF';
+            
+            if (type.startsWith('csv')) {
+                format = 'CSV';
             }
             
-            notification.innerHTML = message;
-            notification.style.display = 'block';
+            if (type.includes('full')) {
+                message = `Your complete ${format} report is being generated`;
+            } else if (type.includes('users')) {
+                message = `Your users ${format} report is being generated`;
+            } else if (type.includes('orders')) {
+                message = `Your orders ${format} report is being generated`;
+            } else if (type.includes('sarees')) {
+                message = `Your inventory ${format} report is being generated`;
+            }
+            
+            toastMessage.textContent = message;
+            toast.style.display = 'block';
             
             setTimeout(function() {
-                notification.style.display = 'none';
+                toast.style.opacity = '0';
+                setTimeout(function() {
+                    toast.style.display = 'none';
+                    toast.style.opacity = '1';
+                }, 300);
             }, 3000);
         }
+        
+        // Date validation
+        document.querySelector('.filter-form').addEventListener('submit', function(e) {
+            const startDate = document.getElementById('start_date').value;
+            const endDate = document.getElementById('end_date').value;
+            
+            if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+                e.preventDefault();
+                alert('Start date cannot be after end date. Please correct your date selection.');
+            }
+        });
     </script>
 </body>
 </html>

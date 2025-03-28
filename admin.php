@@ -192,6 +192,7 @@ session_start();
                 <a href="wedding_categories.php"><li>Wedding Categories</li></a>
                 <a href="wedding_products.php"><li>Wedding Products</li></a>
                 <a href="wedding_images.php"><li>Wedding Specifications</li></a>
+                <a href="review_of_user.php"><li>Reviews</li></a>
                 <a href="admin_report.php"><li>Reports</li></a>
                 <a href="order_manage.php"><li>Orders</li></a>
                 <a href="#"><li>Products</li></a>

@@ -362,6 +362,29 @@ error_log("Breadcrumb data - Category ID: $categoryId, Name: $categoryName, Subc
     </style>
 </head>
 <body>
+<script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                autoDisplay: false
+            }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <style>
+        .goog-te-gadget-simple {
+            background-color: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+            cursor: pointer;
+        }
+
+        .goog-te-gadget-simple span {
+            color: white !important;
+            font-size: 16px;
+        }
+    </style>
     <main class="product-container">
         <div class="product-grid">
             <section class="product-gallery" aria-label="Product images">
@@ -463,6 +486,265 @@ error_log("Breadcrumb data - Category ID: $categoryId, Name: $categoryName, Subc
             </section>
         </div>
     </main>
+    <?php
+    // Create reviews table if it doesn't exist
+    $reviewsTable = "CREATE TABLE IF NOT EXISTS reviews (
+        id INT(11) AUTO_INCREMENT PRIMARY KEY,
+        product_id INT(11) NOT NULL,
+        user_id INT(11) NOT NULL,
+        rating INT(1) NOT NULL,
+        comment TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (product_id) REFERENCES sarees(id) ON DELETE CASCADE
+    )";
+
+    if ($conn->query($reviewsTable) !== TRUE) {
+        error_log("Error creating reviews table: " . $conn->error);
+    }
+
+    // Handle review submission
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_review'])) {
+        if (isset($_SESSION['user_id'])) {
+            $rating = filter_input(INPUT_POST, 'rating', FILTER_VALIDATE_INT);
+            // Using htmlspecialchars instead of deprecated FILTER_SANITIZE_STRING
+            $comment = htmlspecialchars($_POST['comment'], ENT_QUOTES, 'UTF-8');
+            $user_id = $_SESSION['user_id'];
+            
+            if ($rating && $comment) {
+                $insert_review = "INSERT INTO reviews (product_id, user_id, rating, comment) VALUES (?, ?, ?, ?)";
+                $stmt = $conn->prepare($insert_review);
+                $stmt->bind_param("iiis", $saree_id, $user_id, $rating, $comment);
+                
+                if ($stmt->execute()) {
+                    echo "<script>showNotification('Review submitted successfully!', 'success');</script>";
+                } else {
+                    echo "<script>showNotification('Error submitting review.', 'error');</script>";
+                }
+            }
+        }
+    }
+    ?>
+
+    <section class="reviews-section">
+        <h2>Share Your Experience</h2>
+        <?php
+        // Fetch reviews for this product
+        $review_query = "SELECT r.*, u.username 
+                        FROM reviews r
+                        LEFT JOIN users u ON r.user_id = u.id
+                        WHERE r.product_id = ?
+                        ORDER BY r.created_at DESC";
+        
+        $stmt = $conn->prepare($review_query);
+        $stmt->bind_param("i", $saree_id);
+        $stmt->execute();
+        $reviews = $stmt->get_result();
+        
+        if ($reviews->num_rows > 0): ?>
+            <div class="reviews-container">
+                <?php while($review = $reviews->fetch_assoc()): ?>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <span class="reviewer-name"><?php echo htmlspecialchars($review['username']); ?></span>
+                            <div class="rating">
+                                <?php for($i = 1; $i <= 5; $i++): ?>
+                                    <span class="star <?php echo $i <= $review['rating'] ? 'filled' : ''; ?>">
+                                        <svg width="24" height="24" viewBox="0 0 24 24">
+                                            <path d="M12 2l2.4 7.4h7.6l-6 4.6 2.3 7.2-6.3-4.8-6.3 4.8 2.3-7.2-6-4.6h7.6z" fill="currentColor"/>
+                                        </svg>
+                                    </span>
+                                <?php endfor; ?>
+                            </div>
+                            <span class="review-date"><?php echo date('M d, Y', strtotime($review['created_at'])); ?></span>
+                        </div>
+                        <p class="review-content"><?php echo htmlspecialchars($review['comment']); ?></p>
+                    </div>
+                <?php endwhile; ?>
+            </div>
+        <?php else: ?>
+            <p class="no-reviews">Be the first to review this product!</p>
+        <?php endif; ?>
+
+        <?php if(isset($_SESSION['user_id'])): ?>
+            <div class="add-review-section">
+                <h3>Write Your Review</h3>
+                <form method="POST" class="review-form">
+                    <div class="rating-input">
+                        <label>Select Your Rating</label>
+                        <div class="star-rating">
+                            <?php for($i = 5; $i >= 1; $i--): ?>
+                                <input type="radio" id="star<?php echo $i; ?>" name="rating" value="<?php echo $i; ?>" required>
+                                <label for="star<?php echo $i; ?>">
+                                    <svg width="32" height="32" viewBox="0 0 24 24">
+                                        <path d="M12 2l2.4 7.4h7.6l-6 4.6 2.3 7.2-6.3-4.8-6.3 4.8 2.3-7.2-6-4.6h7.6z" fill="currentColor"/>
+                                    </svg>
+                                </label>
+                            <?php endfor; ?>
+                        </div>
+                        <span class="rating-help">Click a star to rate</span>
+                    </div>
+                    <div class="comment-input">
+                        <label for="comment">Your Review:</label>
+                        <textarea id="comment" name="comment" 
+                            placeholder="Tell us what you think about this product" 
+                            required></textarea>
+                    </div>
+                    <button type="submit" name="submit_review" class="submit-review">Submit Review</button>
+                </form>
+            </div>
+        <?php else: ?>
+            <p class="login-prompt">Please <a href="login.php">sign in</a> to write a review</p>
+        <?php endif; ?>
+    </section>
+
+    <style>
+    .reviews-section {
+        padding: 2rem;
+        max-width: 800px;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 10px;
+    }
+
+    .reviews-section h2 {
+        color: #a000a0;
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .review-card {
+        background: #f8f8f8;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .review-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .reviewer-name {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .rating .star {
+        color: #ddd;
+    }
+
+    .rating .star.filled {
+        color: #a000a0;
+    }
+
+    .rating .star svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .review-date {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .review-content {
+        color: #444;
+        line-height: 1.5;
+    }
+
+    .add-review-section {
+        margin-top: 2rem;
+        padding: 1.5rem;
+        background: #f8f8f8;
+        border-radius: 8px;
+    }
+
+    .review-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .star-rating {
+        display: flex;
+        flex-direction: row-reverse;
+        gap: 0.5rem;
+        margin: 1rem 0;
+    }
+
+    .star-rating input {
+        display: none;
+    }
+
+    .star-rating label {
+        color: #ddd;
+        cursor: pointer;
+    }
+
+    .star-rating label:hover,
+    .star-rating label:hover ~ label,
+    .star-rating input:checked ~ label {
+        color: #a000a0;
+    }
+
+    .rating-help {
+        display: block;
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .comment-input textarea {
+        width: 100%;
+        min-height: 100px;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        resize: vertical;
+    }
+
+    .submit-review {
+        background: #a000a0;
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color 0.2s;
+    }
+
+    .submit-review:hover {
+        background: #800080;
+    }
+
+    .login-prompt {
+        text-align: center;
+        margin: 2rem 0;
+        color: #666;
+    }
+
+    .login-prompt a {
+        color: #a000a0;
+        text-decoration: none;
+    }
+
+    .no-reviews {
+        text-align: center;
+        color: #666;
+        padding: 1rem;
+    }
+    </style>
+
+
+
+
+
 
     <?php include 'footer.php'; ?>
 
@@ -481,7 +763,6 @@ error_log("Breadcrumb data - Category ID: $categoryId, Name: $categoryName, Subc
 
     // Stock check and Wishlist functionality
     document.addEventListener('DOMContentLoaded', function() {
-        // Stock check for cart forms
         document.querySelectorAll('form').forEach(form => {
             form.addEventListener('submit', function(e) {
                 const stock = <?php echo $saree['stock']; ?>;

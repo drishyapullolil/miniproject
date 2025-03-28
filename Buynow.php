@@ -242,6 +242,29 @@ include 'header.php';
     </style>
 </head>
 <body>
+<script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                autoDisplay: false
+            }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <style>
+        .goog-te-gadget-simple {
+            background-color: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+            cursor: pointer;
+        }
+
+        .goog-te-gadget-simple span {
+            color: white !important;
+            font-size: 16px;
+        }
+    </style>
     <div class="container">
         <!-- Breadcrumbs -->
         <div class="breadcrumbs">

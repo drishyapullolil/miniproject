@@ -10,3 +10,7 @@
 2025-03-18 15:56:19: Order confirmation email sent successfully
 2025-03-18 15:59:32: Attempting to send order confirmation email to: drishyajose2027@mca.ajce.in
 2025-03-18 15:59:36: Order confirmation email sent successfully
+2025-03-25 15:02:50: Attempting to send order confirmation email to: drishyajose2027@mca.ajce.in
+2025-03-25 15:02:58: Order confirmation email sent successfully
+2025-03-27 16:35:51: Attempting to send order confirmation email to: drishyajose2027@mca.ajce.in
+2025-03-27 16:35:57: Order confirmation email sent successfully

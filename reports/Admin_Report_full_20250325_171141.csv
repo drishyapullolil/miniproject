@@ -1,0 +1,72 @@
+ID,Username,Email,Role
+5,abeymathew,abeymathew2027@mca.ajce.in,user
+6,Kalyanysnair,kalyanysnair2027@mca.ajce.in,user
+8,Dolly,josedrishya8@gmail.com,user
+9,drishyajose03,drishyajose03@gmail.com,user
+10,drishyajose2027,drishyajose2027@mca.ajce.in,user
+11,padanamakkalonix,padanamakkalonix@gmail.com,user
+
+"ORDERS REPORT"
+
+"Order ID",Username,"Total Amount",Status,"Payment Method"
+1,Drishyajose,10100.00,,upi
+2,Drishyajose,13630.00,cancelled,upi
+13,Drishyajose,23040.00,,upi
+14,Drishyajose,21000.00,,upi
+15,Drishyajose,13630.00,pending,upi
+16,abeymathew,13630.00,,upi
+17,Drishyajose,13630.00,pending,upi
+18,Kalyanysnair,10100.00,,upi
+20,Drishyajose,16090.00,,upi
+21,Drishyajose,13630.00,pending,upi
+22,Drishyajose,13630.00,pending,upi
+23,Drishyajose,13630.00,pending,upi
+24,Drishyajose,13630.00,pending,upi
+25,Drishyajose,13630.00,pending,upi
+26,Drishyajose,13630.00,pending,cod
+27,Drishyajose,13630.00,pending,upi
+28,Drishyajose,0.00,pending,upi
+29,Drishyajose,16090.00,pending,upi
+30,Drishyajose,21000.00,pending,upi
+31,Drishyajose,13630.00,,upi
+32,Drishyajose,13630.00,pending,cod
+33,Drishyajose,0.00,,cod
+34,Drishyajose,0.00,,cod
+35,Drishyajose,13630.00,,upi
+36,Drishyajose,13630.00,,upi
+37,Drishyajose,0.00,pending,upi
+38,Drishyajose,10100.00,shipped,upi
+39,Drishyajose,10100.00,pending,upi
+40,Drishyajose,13630.00,cancelled,upi
+41,Drishyajose,13630.00,cancelled,upi
+42,Drishyajose,0.00,,upi
+43,Drishyajose,21000.00,shipped,upi
+44,Drishyajose,13630.00,,razorpay
+45,Drishyajose,0.00,shipped,razorpay
+46,Drishyajose,0.00,shipped,razorpay
+47,Drishyajose,13630.00,shipped,razorpay
+48,Drishyajose,13630.00,,razorpay
+49,Drishyajose,0.00,,razorpay
+50,Drishyajose,13630.00,processing,razorpay
+51,Drishyajose,13630.00,pending,razorpay
+52,Drishyajose,13630.00,confirmed,razorpay
+53,Drishyajose,0.00,confirmed,razorpay
+54,Drishyajose,13630.00,confirmed,razorpay
+55,Drishyajose,13630.00,confirmed,razorpay
+56,Drishyajose,23040.00,confirmed,razorpay
+57,Drishyajose,0.00,confirmed,razorpay
+58,Drishyajose,0.00,confirmed,razorpay
+59,Drishyajose,13630.00,confirmed,razorpay
+60,Drishyajose,0.00,confirmed,razorpay
+61,Drishyajose,21000.00,confirmed,razorpay
+62,Drishyajose,10100.00,confirmed,razorpay
+63,Drishyajose,16090.00,confirmed,razorpay
+64,Drishyajose,13630.00,confirmed,razorpay
+65,Drishyajose,0.00,confirmed,razorpay
+66,Drishyajose,10100.00,confirmed,razorpay
+
+"SAREE INVENTORY REPORT"
+
+"Saree ID",Name,Price,Stock,Color,"Last Stock Update"
+9,"Greenish Blue Kanjivaram Silk Saree ",13840.00,130,Blue,"2025-02-25 09:49:17"
+10,"Banarasi Silk Kanchi Weaving Saree",1.00,30,red,"2025-03-15 17:01:00"

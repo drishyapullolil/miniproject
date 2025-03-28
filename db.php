@@ -194,7 +194,7 @@ $ordersTable = "CREATE TABLE IF NOT EXISTS orders (
     user_id INT(11) NOT NULL, -- Assuming you have a users table
     name VARCHAR(255) NOT NULL, -- Add the name field
     total_amount DECIMAL(10, 2) NOT NULL,
-    order_status ENUM('pending', 'processing', 'shipped', 'delivered', 'cancelled', 'cash_received') DEFAULT 'pending',
+    order_status VARCHAR(20) DEFAULT 'pending',
     address TEXT NOT NULL,
     payment_method VARCHAR(50) NOT NULL,
     payment_status VARCHAR(20) DEFAULT 'pending', -- Added payment_status column

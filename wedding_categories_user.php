@@ -57,9 +57,9 @@ if (isset($_GET['q'])) {
     $stmt->bind_param("iisss", $categoryId, $clickedId, $searchTerm, $searchTerm, $searchTerm);
 } else {
     $query = "SELECT w.*, wc.category_name 
-              FROM wedding_collection w 
-              JOIN wedding_categories wc ON w.category_id = wc.id 
-              WHERE w.category_id = ? 
+              FROM wedding_products w 
+              JOIN wedding_categories wc ON w.wedding_category_id = wc.id 
+              WHERE w.wedding_category_id = ? 
               ORDER BY w.id DESC";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("i", $categoryId);
@@ -68,6 +68,8 @@ if (isset($_GET['q'])) {
 $stmt->execute();
 $result = $stmt->get_result();
 $products = $result->fetch_all(MYSQLI_ASSOC);
+
+
 ?>
 
 <!DOCTYPE html>

@@ -1,0 +1,18 @@
+ID,Username,Email,Role
+5,abeymathew,abeymathew2027@mca.ajce.in,user
+6,Kalyanysnair,kalyanysnair2027@mca.ajce.in,user
+8,Dolly,josedrishya8@gmail.com,user
+9,drishyajose03,drishyajose03@gmail.com,user
+10,drishyajose2027,drishyajose2027@mca.ajce.in,user
+11,padanamakkalonix,padanamakkalonix@gmail.com,user
+
+"ORDERS REPORT"
+
+"Order ID",Username,"Total Amount",Status,"Payment Method"
+
+"SAREE INVENTORY REPORT"
+
+"Saree ID",Name,Price,Stock,Color,"Last Stock Update"
+9,"Greenish Blue Kanjivaram Silk Saree ",500.00,130,Blue,"2025-02-25 09:49:17"
+10,"Banarasi Silk Kanchi Weaving Saree",69.16,30,red,"2025-03-15 17:01:00"
+11,"Banarasi Silk Bridal Saree",2.30,30,"Red&amp; Gold","2025-03-27 12:15:34"
