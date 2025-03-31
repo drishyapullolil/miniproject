@@ -9,10 +9,10 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Database Configuration
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "yardsofgrace";
+$servername = getenv('DB_HOST'); // Will fetch the value for DB_HOST from environment variables
+$username = getenv('DB_USER');   // Will fetch the value for DB_USER from environment variables
+$password = getenv('DB_PASSWORD'); // Will fetch the value for DB_PASSWORD from environment variables
+$dbname = getenv('DB_NAME');
 
 // Logging Function
 function logDatabaseSetup($message, $type = 'info') {
