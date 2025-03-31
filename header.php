@@ -1,8 +1,8 @@
 <?php
+ob_start();
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-
 // Check if user is logged out but session still exists
 if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 1800)) {
     // If last activity was more than 30 minutes ago
@@ -1153,3 +1153,4 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
+<?php ob_end_flush(); ?>
