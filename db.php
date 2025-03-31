@@ -9,7 +9,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Database Configuration
-$servername = "localhost";
+$servername = "127.0.0.1";
 $username = "root";  // Default for XAMPP
 $password = "";      // Default for XAMPP (no password)
 $dbname = "yardsofgrace";
