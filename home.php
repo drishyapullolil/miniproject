@@ -1,6 +1,6 @@
 <?php
+ob_start();
 session_start();
-
 // Security headers
 header("X-Content-Type-Options: nosniff"); 
 header("X-Frame-Options: DENY");
@@ -626,3 +626,4 @@ header("Pragma: no-cache");
     </script>
 </body>
 </html>
+<?php ob_end_flush(); ?>
