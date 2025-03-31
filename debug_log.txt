@@ -103,3 +103,24 @@
 2025-03-17 10:55:10: Expires at: 2025-03-18 10:55:10
 2025-03-17 10:55:10: Token stored in database successfully
 2025-03-17 10:55:12: Failed to send reset email: SMTP Error: Could not authenticate.
+2025-03-28 11:27:51: Received reset request for email: Drishyajose2027@mca.ajce.in
+2025-03-28 11:27:51: Generated token: 92798b02df41d423b3ac6bb7748b00c6bc1e7f844bd1520b8197e309305720a9
+2025-03-28 11:27:51: Expires at: 2025-03-29 11:27:51
+2025-03-28 11:27:51: Token stored in database successfully
+2025-03-28 11:27:51: Failed to send reset email: SMTP Error: Could not connect to SMTP host. Failed to connect to serverSMTP server error: Failed to connect to server Additional SMTP info: php_network_getaddresses: getaddrinfo for smtp.gmail.com failed: No such host is known. 
+2025-03-28 11:27:58: Received reset request for email: Drishyajose2027@mca.ajce.in
+2025-03-28 11:27:58: Generated token: 272e63bd38e05ec1b8206df7f5b6b86b7fa53c709cf2dfb612c47bf9cbacb476
+2025-03-28 11:27:58: Expires at: 2025-03-29 11:27:58
+2025-03-28 11:27:58: Token stored in database successfully
+2025-03-28 11:27:58: Failed to send reset email: SMTP Error: Could not connect to SMTP host. Failed to connect to serverSMTP server error: Failed to connect to server Additional SMTP info: php_network_getaddresses: getaddrinfo for smtp.gmail.com failed: No such host is known. 
+2025-03-28 11:28:06: Received reset request for email: Drishyajose2027@mca.ajce.in
+2025-03-28 11:28:06: Generated token: 6f0a65c0481037e20a7cde95bc954673ebcf9692f0bc5f45d561efbae7bb536e
+2025-03-28 11:28:06: Expires at: 2025-03-29 11:28:06
+2025-03-28 11:28:06: Token stored in database successfully
+2025-03-28 11:28:06: Failed to send reset email: SMTP Error: Could not connect to SMTP host. Failed to connect to serverSMTP server error: Failed to connect to server Additional SMTP info: php_network_getaddresses: getaddrinfo for smtp.gmail.com failed: No such host is known. 
+2025-03-28 11:30:12: Received reset request for email: Drishyajose2027@mca.ajce.in
+2025-03-28 11:30:12: Generated token: 759164fd74f828590a6d496498aaacd9f55d7a150e3d3bfdcc2bf1edd00cca04
+2025-03-28 11:30:12: Expires at: 2025-03-29 11:30:12
+2025-03-28 11:30:12: Token stored in database successfully
+2025-03-28 11:30:16: Reset email sent successfully
+2025-03-28 11:30:42: Checking token: 759164fd74f828590a6d496498aaacd9f55d7a150e3d3bfdcc2bf1edd00cca04
