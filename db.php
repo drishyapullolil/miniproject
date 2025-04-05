@@ -1,4 +1,14 @@
 <?php
+$log_file = '/var/www/html/database_setup.log';
+
+// Check if the log file is writable
+if (is_writable($log_file)) {
+    // Write to the log file if it's writable
+    file_put_contents($log_file, "Log entry here\n", FILE_APPEND);
+} else {
+    // Log an error if the log file is not writable
+    error_log("Cannot write to log file: " . $log_file);
+}
 // Session Management
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
