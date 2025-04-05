@@ -8,13 +8,6 @@ if (session_status() == PHP_SESSION_NONE) {
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Database Configuration for Railway
-$servername = "mysql.railway.internal";  // Railway MySQL host
-$username = "root";  
-$password = "egmrrZmOxiKOODsRfqCAEdYjtmDjqjpB";  
-$dbname = "railway";  
-$port = 3306;  // Railway default MySQL port
-
 // Logging Function
 function logDatabaseSetup($message, $type = 'info') {
     $logFile = __DIR__ . '/database_setup.log';
@@ -24,8 +17,39 @@ function logDatabaseSetup($message, $type = 'info') {
     file_put_contents($logFile, $logEntry, FILE_APPEND);
 }
 
+// Database Configuration for Railway - Use environment variables when available
+$servername = getenv("MYSQLHOST") ?: "mysql.railway.internal";
+$username = getenv("MYSQLUSER") ?: "root";
+$password = getenv("MYSQLPASSWORD") ?: "egmrrZmOxiKOODsRfqCAEdYjtmDjqjpB";
+$dbname = getenv("MYSQLDATABASE") ?: "railway";
+$port = getenv("MYSQLPORT") ?: 3306;
+
+// Alternative connection using DATABASE_URL if available
+$databaseUrl = getenv("DATABASE_URL");
+if ($databaseUrl) {
+    $dbComponents = parse_url($databaseUrl);
+    if ($dbComponents) {
+        $servername = $dbComponents['host'] ?? $servername;
+        $username = $dbComponents['user'] ?? $username;
+        $password = $dbComponents['pass'] ?? $password;
+        $dbname = ltrim($dbComponents['path'] ?? '', '/') ?: $dbname;
+        $port = $dbComponents['port'] ?? $port;
+    }
+}
+
+// Add DNS resolution test
+$ip = gethostbyname($servername);
+if ($ip == $servername) {
+    logDatabaseSetup("DNS resolution failed for " . $servername, 'error');
+} else {
+    logDatabaseSetup("Resolved " . $servername . " to " . $ip);
+}
+
 // Improved Connection Handling with Comprehensive Error Management
 try {
+    // Log connection attempt with sanitized details
+    logDatabaseSetup("Attempting database connection to {$servername}:{$port} as {$username}");
+    
     // Create connection using exception handling
     $conn = new mysqli($servername, $username, $password, $dbname, $port);
     
