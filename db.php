@@ -4,7 +4,7 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Enable Error Reporting for Debugging
+// Enable Error Reporting for Debugging (only for development, disable in production)
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -14,16 +14,18 @@ function logDatabaseSetup($message, $type = 'info') {
     $timestamp = date('Y-m-d H:i:s');
     $logEntry = "[{$timestamp}] [{$type}] {$message}" . PHP_EOL;
     
+    // Write log to file
     file_put_contents($logFile, $logEntry, FILE_APPEND);
 }
 
-// Database Configuration for Railway - Use environment variables when available
-$servername = getenv("MYSQLHOST") ?: "maglev.proxy.rlwy.net";
+// Database Configuration using environment variables or fallback
+$servername = getenv("MYSQLHOST") ?: "maglev.proxy.rlwy.net";  // Default to external Railway host
 $username = getenv("MYSQLUSER") ?: "root";
 $password = getenv("MYSQLPASSWORD") ?: "egmrrZmOxiKOODsRfqCAEdYjtmDjqjpB";
 $dbname = getenv("MYSQLDATABASE") ?: "railway";
-$port = getenv("MYSQLPORT") ?: 3306;  // Updated to 3306
-// Alternative connection using DATABASE_URL if available
+$port = getenv("MYSQLPORT") ?: 3306;  // Default port 3306 for MySQL
+
+// Check if DATABASE_URL is provided for flexible parsing
 $databaseUrl = getenv("DATABASE_URL");
 if ($databaseUrl) {
     $dbComponents = parse_url($databaseUrl);
@@ -36,7 +38,7 @@ if ($databaseUrl) {
     }
 }
 
-// Add DNS resolution test
+// DNS resolution check
 $ip = gethostbyname($servername);
 if ($ip == $servername) {
     logDatabaseSetup("DNS resolution failed for " . $servername, 'error');
@@ -48,7 +50,7 @@ if ($ip == $servername) {
 try {
     // Log connection attempt with sanitized details
     logDatabaseSetup("Attempting database connection to {$servername}:{$port} as {$username}");
-    
+
     // Create connection using exception handling
     $conn = new mysqli($servername, $username, $password, $dbname, $port);
     
@@ -61,6 +63,10 @@ try {
 
     // Log successful connection
     logDatabaseSetup("✅ Database connection established successfully");
+
+} catch (Exception $e) {
+    die("❌ Error: " . $e->getMessage());
+}
 
     // Table Creation Queries with Improved Error Handling
     $tables = [
