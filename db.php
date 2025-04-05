@@ -8,11 +8,12 @@ if (session_status() == PHP_SESSION_NONE) {
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Database Configuration
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "yardsofgrace";
+// PostgreSQL Database connection details
+$host = 'dpg-cvojjammcj7s73867eog-a.oregon-postgres.render.com';  // Render PostgreSQL hostname
+$port = '5432';  // Default PostgreSQL port
+$dbname = 'yards_of_grace_db';  // Database name
+$username = 'yards_of_grace_db_user';  // Username
+$password = 'tJtozPTnA3QgFvz9Bor27YGwSJazMvZs';  // Password
 
 // Logging Function
 function logDatabaseSetup($message, $type = 'info') {
@@ -23,16 +24,16 @@ function logDatabaseSetup($message, $type = 'info') {
     file_put_contents($logFile, $logEntry, FILE_APPEND);
 }
 
-// Improved Connection Handling with Comprehensive Error Management
+// Improved Connection Handling with PostgreSQL and Comprehensive Error Management
 try {
-    // Create connection using exception handling
-    $conn = new mysqli($servername, $username, $password, $dbname);
-    
+    // Create PostgreSQL connection
+    $conn = pg_connect("host=$host port=$port dbname=$dbname user=$username password=$password");
+
     // Enhanced connection error checking
-    if ($conn->connect_errno) {
+    if (!$conn) {
         // Log connection error
-        logDatabaseSetup("Database Connection Failed: " . $conn->connect_error, 'error');
-        throw new Exception("Database Connection Failed: " . $conn->connect_error);
+        logDatabaseSetup("Database Connection Failed: " . pg_last_error(), 'error');
+        throw new Exception("Database Connection Failed: " . pg_last_error());
     }
 
     // Log successful connection
@@ -41,15 +42,15 @@ try {
     // Table Creation Queries with Improved Error Handling
     $tables = [
         'users' => "CREATE TABLE IF NOT EXISTS users (
-                id INT(11) AUTO_INCREMENT PRIMARY KEY,
+                id SERIAL PRIMARY KEY,
                 username VARCHAR(50) NOT NULL UNIQUE,
                 email VARCHAR(100) NOT NULL,
                 password VARCHAR(255) NOT NULL,
                 phoneno VARCHAR(15) NOT NULL,
                 address VARCHAR(255) DEFAULT NULL,
-                role ENUM('admin', 'user') NOT NULL DEFAULT 'user',
+                role VARCHAR(20) NOT NULL DEFAULT 'user',
                 reset_token VARCHAR(255) DEFAULT NULL,
-                token_expiry DATETIME DEFAULT NULL,
+                token_expiry TIMESTAMP DEFAULT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 last_login TIMESTAMP NULL DEFAULT NULL,
                 profile_pic VARCHAR(255),
@@ -58,23 +59,22 @@ try {
                 display_name VARCHAR(100) NULL
             )",
         'logins' => "CREATE TABLE IF NOT EXISTS logins (
-                id INT(11) AUTO_INCREMENT PRIMARY KEY,
-                user_id INT(11) NOT NULL,
+                id SERIAL PRIMARY KEY,
+                user_id INT NOT NULL,
                 username VARCHAR(50) NOT NULL,
                 ip_address VARCHAR(50) NOT NULL,
                 login_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
             )"
     ];
-    
-    
-    
+
     // Execute table creation with detailed error reporting
     foreach ($tables as $tableName => $createTableQuery) {
-        if ($conn->query($createTableQuery) !== TRUE) {
+        $result = pg_query($conn, $createTableQuery);
+        if (!$result) {
             // Log table creation error
-            logDatabaseSetup("Error creating {$tableName} table: " . $conn->error, 'error');
-            throw new Exception("Error creating {$tableName} table: " . $conn->error);
+            logDatabaseSetup("Error creating {$tableName} table: " . pg_last_error($conn), 'error');
+            throw new Exception("Error creating {$tableName} table: " . pg_last_error($conn));
         } else {
             // Log successful table creation
             logDatabaseSetup("Table {$tableName} created or already exists");
@@ -83,7 +83,7 @@ try {
 
     // Additional Database Configuration
     // Set SQL Mode to Strict (recommended for data integrity)
-    $conn->query("SET sql_mode = 'STRICT_ALL_TABLES'");
+    pg_query($conn, "SET SESSION sql_mode = 'STRICT_ALL_TABLES'");
 
     // Log successful database setup
     logDatabaseSetup("Database setup completed successfully");
@@ -94,8 +94,7 @@ try {
     
     // In production, you might want to redirect to an error page
     die("A critical database setup error occurred. Please contact support.");
-
-} 
+}
 $categoriesTable = "CREATE TABLE IF NOT EXISTS categories (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
     category_name VARCHAR(255) NOT NULL UNIQUE,
