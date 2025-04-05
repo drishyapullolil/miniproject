@@ -1,4 +1,7 @@
 <?php
+echo "PHP server is running!";
+phpinfo();
+
 // Display errors for debugging
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -18,10 +21,6 @@ $conn = new mysqli($host, $user, $password, $db, $port);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-
-// Redirect to home.php (move this to the top to prevent output before redirection)
-header("Location: home.php");
-exit;
 ?>
 
 <!DOCTYPE html>
@@ -106,4 +105,8 @@ exit;
 <?php
 // Close connection
 $conn->close();
+?>
+<?php
+header("Location: home.php");
+exit;
 ?>
