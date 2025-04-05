@@ -8,11 +8,12 @@ if (session_status() == PHP_SESSION_NONE) {
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Database Configuration
-$servername = "127.0.0.1";
-$username = "root";  // Default for XAMPP
-$password = "";      // Default for XAMPP (no password)
-$dbname = "yardsofgrace";
+// Database Configuration for Railway
+$servername = "mysql.railway.internal";  // Railway MySQL host
+$username = "root";  
+$password = "egmrrZmOxiKOODsRfqCAEdYjtmDjqjpB";  
+$dbname = "railway";  
+$port = 3306;  // Railway default MySQL port
 
 // Logging Function
 function logDatabaseSetup($message, $type = 'info') {
@@ -26,7 +27,7 @@ function logDatabaseSetup($message, $type = 'info') {
 // Improved Connection Handling with Comprehensive Error Management
 try {
     // Create connection using exception handling
-    $conn = new mysqli($servername, $username, $password, $dbname);
+    $conn = new mysqli($servername, $username, $password, $dbname, $port);
     
     // Enhanced connection error checking
     if ($conn->connect_errno) {
@@ -36,7 +37,12 @@ try {
     }
 
     // Log successful connection
-    logDatabaseSetup("Database connection established successfully");
+    logDatabaseSetup("✅ Database connection established successfully");
+
+} catch (Exception $e) {
+    die("❌ Error: " . $e->getMessage());
+}
+
 
     // Table Creation Queries with Improved Error Handling
     $tables = [
