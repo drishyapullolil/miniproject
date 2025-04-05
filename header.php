@@ -1046,24 +1046,7 @@ if ($categoryResult->num_rows > 0) {
                 </ul>
             </li>
             <li><a href="#new-arrivals">New Arrivals</a></li>
-            <li><a href="#wedding">Wedding Collection</a>
-                <ul class="dropdown">
-                    <?php
-                    // Fetch wedding categories
-                    $weddingQuery = "SELECT * FROM wedding_categories ORDER BY category_name";
-                    $weddingResult = $conn->query($weddingQuery);
-                    
-                    while ($weddingCategory = $weddingResult->fetch_assoc()): 
-                    ?>
-                        <li>
-                            <a href="wedding_categories_user.php?category_id=<?= $weddingCategory['id'] ?>">
-                                <?= htmlspecialchars($weddingCategory['category_name']) ?>
-                                
-                            </a>
-                        </li>
-                    <?php endwhile; ?>
-                </ul>
-            </li>
+             <li><a href="#new-arrivals">Wedding collections</a></li>
             <li><a href="#deals">Deals</a></li>
             <li><a href="#blog">Blog</a></li>
         </ul>
