@@ -1,7 +1,7 @@
 <?php
 echo "PHP server is running!";
 phpinfo();
-<?php
+
 // Display errors for debugging
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
