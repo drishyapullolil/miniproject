@@ -715,7 +715,9 @@ function getDbConnection() {
         if ($conn->connect_error) {
             error_log("Database connection failed: " . $conn->connect_error);
             return null;
-             return $conn;
+        }
+        
+        return $conn;
     } catch (Exception $e) {
         error_log("Database connection exception: " . $e->getMessage());
         return null;
@@ -733,4 +735,5 @@ function closeDbConnection($conn) {
 if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
     echo "Database setup complete.";
 }
+
 ?>
