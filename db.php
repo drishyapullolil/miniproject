@@ -1,5 +1,4 @@
 <?php
-// Session Management
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -18,6 +17,9 @@ function logDatabaseSetup($message, $type = 'info') {
 
     // Write log to file
     file_put_contents($logFile, $logEntry, FILE_APPEND);
+    
+    // Also log to error_log
+    error_log("DB Setup [{$type}]: {$message}");
 }
 
 // ==========================================
@@ -148,9 +150,21 @@ try {
     // You may want to display a user-friendly message or redirect to an error page
     die("Database connection failed. Please try again later.");
 }
-function logDatabaseSetup($message, $level = 'info') {
-    // Log implementation
-    error_log("DB Setup [{$level}]: {$message}");
+
+// Create Subcategories Table
+$subcategoriesTable = "CREATE TABLE IF NOT EXISTS subcategories (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    category_id INT(11) NOT NULL,
+    subcategory_name VARCHAR(255) NOT NULL,
+    description TEXT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
+)";
+if ($conn->query($subcategoriesTable) !== TRUE) {
+    logDatabaseSetup("Error creating subcategories table: " . $conn->error, 'error');
+    throw new Exception("Error creating subcategories table: " . $conn->error);
+} else {
+    logDatabaseSetup("Table 'subcategories' created or already exists");
 }
 
 try {
