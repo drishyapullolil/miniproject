@@ -19,3 +19,7 @@ RUN a2enmod rewrite
 
 # Expose the necessary port
 EXPOSE 80
+# Add ServerName directive
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
+# Start command remains the same
