@@ -1,35 +1,13 @@
-FROM php:8.1-cli
-RUN docker-php-ext-install mysqli
-WORKDIR /app
-COPY . .
-EXPOSE 10000
-CMD ["php", "-S", "0.0.0.0:10000", "-t", "."]
-FROM php:8.1-cli
+FROM php:7.4-apache
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    libzip-dev \
-    zip \
-    unzip \
-    git
+# Install PostgreSQL extension
+RUN apt-get update && apt-get install -y libpq-dev && docker-php-ext-install pgsql pdo_pgsql
 
-# Install PHP extensions
-RUN docker-php-ext-install mysqli pdo pdo_mysql zip
+# Enable mod_rewrite (optional, if needed for your app)
+RUN a2enmod rewrite
 
-# Create app directory
-WORKDIR /app
+# Copy your project files into the container
+COPY . /var/www/html/
 
-# Copy application files
-COPY . /app
-
-# Install Composer if needed
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-# Install dependencies if you have a composer.json
-# RUN composer install --no-interaction --no-plugins --no-scripts
-
-# Make port 10000 available
-EXPOSE 10000
-
-# Start PHP server
-CMD php -S 0.0.0.0:10000 -t .
+# Expose the necessary port
+EXPOSE 80
