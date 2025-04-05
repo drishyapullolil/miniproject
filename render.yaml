@@ -1,0 +1,58 @@
+services:
+  - type: web
+    name: php-mysql-app
+    env: docker
+    region: your-preferred-region  # e.g., singapore
+    healthCheckPath: /
+    buildCommand: ""  # Docker builds automatically
+    # Scale up/down as needed:
+    autoscaling:
+      min: 1
+      max: 1
+    envVars:
+      # For connecting to a MySQL database on Render:
+      - key: MYSQL_HOST
+        fromService:
+          type: pserv
+          name: mysql-database
+          property: host
+      - key: MYSQL_PORT
+        fromService:
+          type: pserv
+          name: mysql-database
+          property: port
+      - key: MYSQL_USERNAME
+        fromService:
+          type: pserv
+          name: mysql-database
+          property: username
+      - key: MYSQL_PASSWORD
+        fromService:
+          type: pserv
+          name: mysql-database
+          property: password
+      - key: MYSQL_DATABASE
+        fromService:
+          type: pserv
+          name: mysql-database
+          property: database
+
+  # Define a MySQL database (if you need one)
+  - type: pserv
+    name: mysql-database
+    env: docker
+    region: your-preferred-region  # Match with web service
+    plan: free  # Or choose an appropriate plan
+    disk:
+      name: data
+      mountPath: /var/lib/mysql
+      sizeGB: 1  # Minimum size, increase as needed
+    envVars:
+      - key: MYSQL_DATABASE
+        value: my_database
+      - key: MYSQL_USER
+        generateValue: true  # Render will generate a secure username
+      - key: MYSQL_PASSWORD
+        generateValue: true  # Render will generate a secure password
+      - key: MYSQL_ROOT_PASSWORD
+        generateValue: true  # Render will generate a secure root password
