@@ -531,6 +531,9 @@ if (!pg_query($conn, $weddingProductsTable)) {
     logDatabaseSetup("Table 'wedding_products' created or already exists");
 }
 
+// Proceed to create other tables or processes that depend on wedding_products
+
+
 // Wedding Specifications Table - PostgreSQL version
 $weddingSpecificationsTable = "CREATE TABLE IF NOT EXISTS wedding_specifications (
     id SERIAL PRIMARY KEY,
