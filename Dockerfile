@@ -23,3 +23,4 @@ RUN apt-get update && apt-get install -y libpq-dev && docker-php-ext-install pgs
 
 # Other setup for Apache and PHP
 COPY . /var/www/html
+RUN chmod -R 777 /var/www/html/database_setup.log
