@@ -21,7 +21,13 @@ function logDatabaseSetup($message, $type = 'info') {
     $timestamp = date('Y-m-d H:i:s');
     $logEntry = "[{$timestamp}] [{$type}] {$message}" . PHP_EOL;
     
-    file_put_contents($logFile, $logEntry, FILE_APPEND);
+    // Check if file is writable, if not, change permissions
+    if (is_writable($logFile) || is_writable(dirname($logFile))) {
+        file_put_contents($logFile, $logEntry, FILE_APPEND);
+    } else {
+        // If not writable, log to default error log
+        error_log($logEntry);
+    }
 }
 
 // Improved Connection Handling with PostgreSQL and Comprehensive Error Management
@@ -80,10 +86,6 @@ try {
             logDatabaseSetup("Table {$tableName} created or already exists");
         }
     }
-
-    // Additional Database Configuration
-    // Set SQL Mode to Strict (recommended for data integrity)
-    pg_query($conn, "SET SESSION sql_mode = 'STRICT_ALL_TABLES'");
 
     // Log successful database setup
     logDatabaseSetup("Database setup completed successfully");
