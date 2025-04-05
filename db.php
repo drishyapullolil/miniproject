@@ -19,7 +19,7 @@ function logDatabaseSetup($message, $type = 'info') {
 }
 
 // Database Configuration using environment variables or fallback
-$servername = getenv("MYSQLHOST") ?: "maglev.proxy.rlwy.net";  // Default to external Railway host
+$servername = getenv("MYSQLHOST") ?: "mysql.railway.internal";  // Updated default to internal Railway host
 $username = getenv("MYSQLUSER") ?: "root";
 $password = getenv("MYSQLPASSWORD") ?: "egmrrZmOxiKOODsRfqCAEdYjtmDjqjpB";
 $dbname = getenv("MYSQLDATABASE") ?: "railway";
@@ -158,7 +158,7 @@ try {
         last_stock_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
         FOREIGN KEY (subcategory_id) REFERENCES subcategories(id) ON DELETE SET NULL
-    )";//ALTER TABLE sarees ADD COLUMN last_stock_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+    )";
 
     if ($conn->query($sareesTable) !== TRUE) {
         logDatabaseSetup("Error creating sarees table: " . $conn->error, 'error');
@@ -185,7 +185,7 @@ try {
     } else {
         logDatabaseSetup("Table 'product_specifications' created or already exists");
     }
-    //ALTER TABLE users ADD COLUMN profile_pic VARCHAR(255) DEFAULT NULL;
+    
     $sareeStockHistoryTable = "CREATE TABLE IF NOT EXISTS saree_stock_history (
         id INT(11) AUTO_INCREMENT PRIMARY KEY,
         saree_id INT(11) NOT NULL,
@@ -204,6 +204,49 @@ try {
     } else {
         logDatabaseSetup("Table 'saree_stock_history' created or already exists");
     }
+    
+    // Create Wedding Categories Table First
+    $weddingCategoriesTable = "CREATE TABLE IF NOT EXISTS wedding_categories (
+        id INT(11) AUTO_INCREMENT PRIMARY KEY,
+        category_name VARCHAR(255) NOT NULL UNIQUE,
+        description TEXT DEFAULT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    )";
+
+    if ($conn->query($weddingCategoriesTable) !== TRUE) {
+        logDatabaseSetup("Error creating wedding_categories table: " . $conn->error, 'error');
+        throw new Exception("Error creating wedding_categories table: " . $conn->error);
+    } else {
+        logDatabaseSetup("Table 'wedding_categories' created or already exists");
+    }
+    
+    // Create Wedding Products Table Next
+    $weddingProductsTable = "CREATE TABLE IF NOT EXISTS wedding_products (
+        id INT(11) AUTO_INCREMENT PRIMARY KEY,
+        wedding_category_id INT(11) NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        description TEXT DEFAULT NULL,
+        price DECIMAL(10,2) NOT NULL,
+        stock INT(11) DEFAULT 0,
+        color VARCHAR(255) NOT NULL,
+        image VARCHAR(255) NOT NULL,
+        material VARCHAR(255) DEFAULT NULL,
+        style VARCHAR(255) DEFAULT NULL,
+        occasion VARCHAR(255) DEFAULT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (wedding_category_id) REFERENCES wedding_categories(id) ON DELETE CASCADE
+    )";
+
+    if ($conn->query($weddingProductsTable) !== TRUE) {
+        logDatabaseSetup("Error creating wedding_products table: " . $conn->error, 'error');
+        throw new Exception("Error creating wedding_products table: " . $conn->error);
+    } else {
+        logDatabaseSetup("Table 'wedding_products' created or already exists");
+    }
+    
+    // Now we can create tables that reference wedding_products
     // SQL query for creating the 'orders' table
     $ordersTable = "CREATE TABLE IF NOT EXISTS orders (
         id INT(11) AUTO_INCREMENT PRIMARY KEY,
@@ -226,7 +269,7 @@ try {
         logDatabaseSetup("Table 'orders' created or already exists");
     }
 
-    // SQL query for creating the 'order_details' table
+    // SQL query for creating the 'order_details' table - Now wedding_products exists
     $orderDetailsTable = "CREATE TABLE IF NOT EXISTS order_details (
         id INT(11) AUTO_INCREMENT PRIMARY KEY,
         order_id INT(11) NOT NULL,
@@ -246,6 +289,7 @@ try {
     } else {
         logDatabaseSetup("Table 'order_details' created or already exists");
     }
+    
     $paymentsTable = "CREATE TABLE IF NOT EXISTS payments (
         id INT(11) AUTO_INCREMENT PRIMARY KEY,
         order_id INT(11) NOT NULL,
@@ -265,6 +309,7 @@ try {
     } else {
         logDatabaseSetup("Table 'payments' created or already exists");
     }
+    
     $wishlistTable = "CREATE TABLE IF NOT EXISTS wishlist (
         id INT(11) AUTO_INCREMENT PRIMARY KEY,
         user_id INT(11) NOT NULL,
@@ -300,22 +345,6 @@ try {
         logDatabaseSetup("Table 'cart' created or already exists");
     }
 
-    /// Create Wedding Collection Categories Table
-    $weddingCategoriesTable = "CREATE TABLE IF NOT EXISTS wedding_categories (
-        id INT(11) AUTO_INCREMENT PRIMARY KEY,
-        category_name VARCHAR(255) NOT NULL UNIQUE,
-        description TEXT DEFAULT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-    )";
-
-    if ($conn->query($weddingCategoriesTable) !== TRUE) {
-        logDatabaseSetup("Error creating wedding_categories table: " . $conn->error, 'error');
-        throw new Exception("Error creating wedding_categories table: " . $conn->error);
-    } else {
-        logDatabaseSetup("Table 'wedding_categories' created or already exists");
-    }
-
     // Verify wedding_category_id column exists in sarees table
     $checkColumnQuery = "SHOW COLUMNS FROM sarees LIKE 'wedding_category_id'";
     $columnResult = $conn->query($checkColumnQuery);
@@ -327,33 +356,11 @@ try {
             ADD FOREIGN KEY (wedding_category_id) REFERENCES wedding_categories(id) ON DELETE SET NULL";
         
         if (!$conn->query($addColumnQuery)) {
-            die("Error adding wedding_category_id column: " . $conn->error);
+            logDatabaseSetup("Error adding wedding_category_id column: " . $conn->error, 'error');
+            throw new Exception("Error adding wedding_category_id column: " . $conn->error);
+        } else {
+            logDatabaseSetup("Column 'wedding_category_id' added to sarees table or already exists");
         }
-    }
-
-    // Create Wedding Collection Products Table
-    $weddingProductsTable = "CREATE TABLE IF NOT EXISTS wedding_products (
-        id INT(11) AUTO_INCREMENT PRIMARY KEY,
-        wedding_category_id INT(11) NOT NULL,
-        name VARCHAR(255) NOT NULL,
-        description TEXT DEFAULT NULL,
-        price DECIMAL(10,2) NOT NULL,
-        stock INT(11) DEFAULT 0,
-        color VARCHAR(255) NOT NULL,
-        image VARCHAR(255) NOT NULL,
-        material VARCHAR(255) DEFAULT NULL,
-        style VARCHAR(255) DEFAULT NULL,
-        occasion VARCHAR(255) DEFAULT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY (wedding_category_id) REFERENCES wedding_categories(id) ON DELETE CASCADE
-    )";
-
-    if ($conn->query($weddingProductsTable) !== TRUE) {
-        logDatabaseSetup("Error creating wedding_products table: " . $conn->error, 'error');
-        throw new Exception("Error creating wedding_products table: " . $conn->error);
-    } else {
-        logDatabaseSetup("Table 'wedding_products' created or already exists");
     }
 
     // Create Wedding Collection Specifications Table
@@ -394,33 +401,17 @@ try {
     } else {
         logDatabaseSetup("Table 'wedding_details' created or already exists");
     }
-    $weddingSpecificationsTable = "CREATE TABLE IF NOT EXISTS wedding_specifications (
-        id INT(11) AUTO_INCREMENT PRIMARY KEY,
-        product_id INT(11) NOT NULL,
-        blouse_details VARCHAR(255) DEFAULT NULL,
-        saree_length DECIMAL(5, 2) DEFAULT NULL,
-        blouse_length DECIMAL(5, 2) DEFAULT NULL,
-        wash_care VARCHAR(255) DEFAULT NULL,
-        additional_details TEXT DEFAULT NULL,
-        FOREIGN KEY (product_id) REFERENCES wedding_products(id) ON DELETE CASCADE
-    )";
-
-    if ($conn->query($weddingSpecificationsTable) !== TRUE) {
-        logDatabaseSetup("Error creating wedding_specifications table: " . $conn->error, 'error');
-        throw new Exception("Error creating wedding_specifications table: " . $conn->error);
-    } else {
-        logDatabaseSetup("Table 'wedding_specifications' created or already exists");
-    }
 
 } catch (Exception $e) {
     // Centralized error handling with logging
     logDatabaseSetup("Critical Database Setup Error: " . $e->getMessage(), 'critical');
     
     // In production, you might want to redirect to an error page
-    die("A critical database setup error occurred. Please contact support.");
+    die("A critical database setup error occurred. Please contact support. Error: " . $e->getMessage());
 } 
 
-// Function to add item to wishlist
+// Function definitions for cart, wishlist, etc.
+// (existing functions remain unchanged)
 function addToWishlist($conn, $userId, $sareeId) {
     // First check if the item is already in the wishlist
     $checkStmt = $conn->prepare("SELECT id FROM wishlist WHERE user_id = ? AND saree_id = ?");
