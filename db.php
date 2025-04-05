@@ -117,13 +117,14 @@ try {
     // Log connection attempt with sanitized details
     logDatabaseSetup("Attempting database connection to {$servername}:{$port} as {$username}");
 
-    // Set mysqli default timeout (available in PHP 7.2.0+)
-    if (defined('MYSQLI_OPT_CONNECT_TIMEOUT')) {
-        mysqli_options(MYSQLI_OPT_CONNECT_TIMEOUT, $connectTimeout);
-    }
+    // Create a mysqli object first
+    $conn = mysqli_init();
     
-    // Create connection using exception handling
-    $conn = new mysqli($servername, $username, $password, $dbname, $port);
+    // Set options on the connection
+    $conn->options(MYSQLI_OPT_CONNECT_TIMEOUT, $connectTimeout);
+    
+    // Then connect
+    $conn->real_connect($servername, $username, $password, $dbname, $port);
     
     // Enhanced connection error checking
     if ($conn->connect_errno) {
@@ -140,6 +141,13 @@ try {
 
     // Log successful connection
     logDatabaseSetup("✅ Database connection established successfully");
+    
+} catch (Exception $e) {
+    // Handle connection exception
+    logDatabaseSetup("Database connection exception: " . $e->getMessage(), 'error');
+    // You may want to display a user-friendly message or redirect to an error page
+    die("Database connection failed. Please try again later.");
+}
 
     // Table Creation Queries with Improved Error Handling
     $tables = [
