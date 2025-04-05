@@ -77,13 +77,6 @@ try {
     // Log successful connection
     logDatabaseSetup("✅ Database connection established successfully");
 
-} catch (Exception $e) {
-    // Log the exception error message
-    logDatabaseSetup("Exception: " . $e->getMessage(), 'error');
-    echo "A critical database setup error occurred. Please contact support.";
-}
-
-
     // Table Creation Queries with Improved Error Handling
     $tables = [
         'users' => "CREATE TABLE IF NOT EXISTS users (
@@ -163,6 +156,7 @@ try {
     } else {
         logDatabaseSetup("Table 'subcategories' created or already exists");
     }
+    
     $sareesTable = "CREATE TABLE IF NOT EXISTS sarees (
         id INT(11) AUTO_INCREMENT PRIMARY KEY,
         category_id INT(11) NOT NULL,
@@ -186,6 +180,7 @@ try {
     } else {
         logDatabaseSetup("Table 'sarees' created or already exists");
     }
+    
     // Product Specifications Table
     $productSpecificationsTable = "CREATE TABLE IF NOT EXISTS product_specifications (
         id INT(11) AUTO_INCREMENT PRIMARY KEY,
