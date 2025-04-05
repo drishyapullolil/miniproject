@@ -18,12 +18,11 @@ function logDatabaseSetup($message, $type = 'info') {
 }
 
 // Database Configuration for Railway - Use environment variables when available
-$servername = getenv("MYSQLHOST") ?: "mysql.railway.internal";
+$servername = getenv("MYSQLHOST") ?: "maglev.proxy.rlwy.net";
 $username = getenv("MYSQLUSER") ?: "root";
 $password = getenv("MYSQLPASSWORD") ?: "egmrrZmOxiKOODsRfqCAEdYjtmDjqjpB";
 $dbname = getenv("MYSQLDATABASE") ?: "railway";
-$port = getenv("MYSQLPORT") ?: 3306;
-
+$port = getenv("MYSQLPORT") ?: 3306;  // Updated to 3306
 // Alternative connection using DATABASE_URL if available
 $databaseUrl = getenv("DATABASE_URL");
 if ($databaseUrl) {
