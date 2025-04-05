@@ -5,6 +5,7 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 // Enable Error Reporting for Debugging (only for development, disable in production)
+// Comment these out in production
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -19,16 +20,22 @@ function logDatabaseSetup($message, $type = 'info') {
     file_put_contents($logFile, $logEntry, FILE_APPEND);
 }
 
-// Database Configuration using the provided environment variables
-$servername = getenv("MYSQLHOST") ?: "mysql.railway.internal";
-$username = getenv("MYSQLUSER") ?: "root";
-$password = getenv("MYSQLPASSWORD") ?: "egmrrZmOxiKOODsRfqCAEdYjtmDjqjpB";
-$dbname = getenv("MYSQLDATABASE") ?: "railway";
+// ==========================================
+// IMPROVED DATABASE CONNECTION CONFIGURATION
+// ==========================================
+
+// Try multiple methods to get database configuration
+// Method 1: Standard Railway environment variables
+$servername = getenv("MYSQLHOST") ?: null;
+$username = getenv("MYSQLUSER") ?: null;
+$password = getenv("MYSQLPASSWORD") ?: null;
+$dbname = getenv("MYSQLDATABASE") ?: null;
 $port = getenv("MYSQLPORT") ?: 3306;
 
-// Check for MYSQL_URL environment variable (alternative format)
+// Method 2: Check for MYSQL_URL environment variable (alternative format)
 $mysqlUrl = getenv("MYSQL_URL");
-if ($mysqlUrl) {
+if ($mysqlUrl && (!$servername || !$username || !$password || !$dbname)) {
+    logDatabaseSetup("Using MYSQL_URL for database connection");
     $dbComponents = parse_url($mysqlUrl);
     if ($dbComponents) {
         $servername = $dbComponents['host'] ?? $servername;
@@ -36,6 +43,52 @@ if ($mysqlUrl) {
         $password = $dbComponents['pass'] ?? $password;
         $dbname = ltrim($dbComponents['path'] ?? '', '/') ?: $dbname;
         $port = $dbComponents['port'] ?? $port;
+    }
+}
+
+// Method 3: Check for DATABASE_URL (common in many platforms)
+$databaseUrl = getenv("DATABASE_URL");
+if ($databaseUrl && (!$servername || !$username || !$password || !$dbname)) {
+    logDatabaseSetup("Using DATABASE_URL for database connection");
+    $dbComponents = parse_url($databaseUrl);
+    if ($dbComponents) {
+        $servername = $dbComponents['host'] ?? $servername;
+        $username = $dbComponents['user'] ?? $username;
+        $password = $dbComponents['pass'] ?? $password;
+        $dbname = ltrim($dbComponents['path'] ?? '', '/') ?: $dbname;
+        $port = $dbComponents['port'] ?? $port;
+    }
+}
+
+// Method 4: Check Railway specific pattern with containers
+if (!$servername) {
+    $railwayHost = getenv("RAILWAY_TCP_PROXY_DOMAIN") ?: null;
+    $railwayService = getenv("RAILWAY_SERVICE_MYSQL_NAME") ?: "mysql";
+    
+    if ($railwayHost) {
+        $servername = "$railwayService.$railwayHost";
+        logDatabaseSetup("Constructed database host from Railway variables: $servername");
+    }
+}
+
+// Method 5: Fallback values (NOT RECOMMENDED FOR PRODUCTION)
+if (!$servername) $servername = "localhost";
+if (!$username) $username = "root";
+if (!$password) $password = ""; // Empty password for local development
+if (!$dbname) $dbname = "sarees_db";
+
+// Log the configuration we're going to use
+logDatabaseSetup("Database connection attempt with: host=$servername, user=$username, db=$dbname, port=$port");
+
+// DNS resolution check
+if ($servername != 'localhost' && $servername != '127.0.0.1') {
+    $ip = gethostbyname($servername);
+    if ($ip == $servername) {
+        logDatabaseSetup("DNS resolution failed for " . $servername, 'error');
+        // Log alternative hosts to try
+        logDatabaseSetup("Trying alternative connection methods...");
+    } else {
+        logDatabaseSetup("Resolved " . $servername . " to " . $ip);
     }
 }
 
@@ -51,19 +104,24 @@ if ($mysqlPublicUrl) {
     }
 }
 
-// DNS resolution check
-$ip = gethostbyname($servername);
-if ($ip == $servername) {
-    logDatabaseSetup("DNS resolution failed for " . $servername, 'error');
-} else {
-    logDatabaseSetup("Resolved " . $servername . " to " . $ip);
-}
+// ===============================
+// IMPROVED CONNECTION HANDLING
+// ===============================
 
-// Improved Connection Handling with Comprehensive Error Management
+// Set a reasonable timeout for database connection
+$connectTimeout = 10; // seconds
+$readTimeout = 30; // seconds
+
+// Try to establish a database connection with improved error handling
 try {
     // Log connection attempt with sanitized details
     logDatabaseSetup("Attempting database connection to {$servername}:{$port} as {$username}");
 
+    // Set mysqli default timeout (available in PHP 7.2.0+)
+    if (defined('MYSQLI_OPT_CONNECT_TIMEOUT')) {
+        mysqli_options(MYSQLI_OPT_CONNECT_TIMEOUT, $connectTimeout);
+    }
+    
     // Create connection using exception handling
     $conn = new mysqli($servername, $username, $password, $dbname, $port);
     
@@ -73,6 +131,12 @@ try {
         logDatabaseSetup("Database Connection Failed: " . $conn->connect_error, 'error');
         throw new Exception("Database Connection Failed: " . $conn->connect_error);
     }
+
+    // Configure connection
+    $conn->set_charset('utf8mb4');
+    
+    // Set a read timeout
+    $conn->options(MYSQLI_OPT_READ_TIMEOUT, $readTimeout);
 
     // Log successful connection
     logDatabaseSetup("✅ Database connection established successfully");
