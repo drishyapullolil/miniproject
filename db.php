@@ -148,7 +148,12 @@ try {
     // You may want to display a user-friendly message or redirect to an error page
     die("Database connection failed. Please try again later.");
 }
+function logDatabaseSetup($message, $level = 'info') {
+    // Log implementation
+    error_log("DB Setup [{$level}]: {$message}");
+}
 
+try {
     // Table Creation Queries with Improved Error Handling
     $tables = [
         'users' => "CREATE TABLE IF NOT EXISTS users (
@@ -521,7 +526,7 @@ try {
     
     // In production, you might want to redirect to an error page
     die("A critical database setup error occurred. Please contact support. Error: " . $e->getMessage());
-} 
+}
 
 // Function definitions for cart, wishlist, etc.
 function addToWishlist($conn, $userId, $sareeId) {
@@ -810,5 +815,4 @@ function closeDbConnection($conn) {
 if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
     echo "Database setup complete.";
 }
-
 ?>
