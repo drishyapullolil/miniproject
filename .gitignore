@@ -1,1 +1,21 @@
+# PHP related
 /vendor/
+composer.lock
+
+# Environment variables
+.env
+
+# IDE and editor files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Cache and logs
+*.log
+/logs/
+/cache/
+
+# System files
+.DS_Store
+Thumbs.db
