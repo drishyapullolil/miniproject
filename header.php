@@ -12,9 +12,7 @@ if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > 
     header("Location: " . $_SERVER['PHP_SELF']);
     exit;
 }
-
 $_SESSION['last_activity'] = time(); // Update last activity time
-
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
@@ -23,19 +21,15 @@ require_once 'db.php';
 // Fetch categories and subcategories from the database
 $categories = [];
 $subcategories = [];
-
 $categoryQuery = "SELECT * FROM categories";
-$categoryResult = $conn->query($categoryQuery);
-
-if ($categoryResult->num_rows > 0) {
-    while ($categoryRow = $categoryResult->fetch_assoc()) {
+$categoryResult = pg_query($conn, $categoryQuery);
+if (pg_num_rows($categoryResult) > 0) {
+    while ($categoryRow = pg_fetch_assoc($categoryResult)) {
         $categories[] = $categoryRow;
-
         $subcategoryQuery = "SELECT * FROM subcategories WHERE category_id = " . $categoryRow['id'];
-        $subcategoryResult = $conn->query($subcategoryQuery);
-
-        if ($subcategoryResult->num_rows > 0) {
-            while ($subcategoryRow = $subcategoryResult->fetch_assoc()) {
+        $subcategoryResult = pg_query($conn, $subcategoryQuery);
+        if (pg_num_rows($subcategoryResult) > 0) {
+            while ($subcategoryRow = pg_fetch_assoc($subcategoryResult)) {
                 $subcategories[$categoryRow['id']][] = $subcategoryRow;
             }
         }
