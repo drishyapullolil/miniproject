@@ -7,11 +7,11 @@ RUN apt-get update && apt-get install -y libpq-dev && docker-php-ext-install pgs
 # Enable Apache mod_rewrite (for URL rewriting)
 RUN a2enmod rewrite
 
-# Copy custom Apache configuration file to fix the ServerName warning
-COPY custom-apache.conf /etc/apache2/sites-available/000-default.conf
+# Copy the custom Apache config to resolve the ServerName issue
+COPY custom-apache.conf /etc/apache2/conf-available/custom-apache.conf
 
-# Ensure the custom Apache configuration is enabled
-RUN a2ensite 000-default.conf
+# Enable the custom configuration
+RUN a2enconf custom-apache
 
 # Expose port 80 for HTTP traffic
 EXPOSE 80
@@ -21,9 +21,6 @@ COPY . /var/www/html/
 
 # Set the working directory to the project folder
 WORKDIR /var/www/html
-
-# Set environment variables or other necessary configurations if required
-# Example: ENV VAR_NAME=value
 
 # Run Apache in the foreground
 CMD ["apache2-foreground"]
