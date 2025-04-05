@@ -39,11 +39,6 @@ try {
     // Log successful connection
     logDatabaseSetup("✅ Database connection established successfully");
 
-} catch (Exception $e) {
-    die("❌ Error: " . $e->getMessage());
-}
-
-
     // Table Creation Queries with Improved Error Handling
     $tables = [
         'users' => "CREATE TABLE IF NOT EXISTS users (
@@ -74,8 +69,6 @@ try {
             )"
     ];
     
-    
-    
     // Execute table creation with detailed error reporting
     foreach ($tables as $tableName => $createTableQuery) {
         if ($conn->query($createTableQuery) !== TRUE) {
@@ -101,8 +94,8 @@ try {
     
     // In production, you might want to redirect to an error page
     die("A critical database setup error occurred. Please contact support.");
-
 } 
+
 $categoriesTable = "CREATE TABLE IF NOT EXISTS categories (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
     category_name VARCHAR(255) NOT NULL UNIQUE,
