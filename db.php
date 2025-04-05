@@ -227,7 +227,50 @@ if (!pg_query($conn, $ordersTable)) {
     logDatabaseSetup("Table 'orders' created or already exists");
 }
 
-// Order Details - PostgreSQL version
+// Wedding Categories Table - PostgreSQL version - MOVED BEFORE order_details
+$weddingCategoriesTable = "CREATE TABLE IF NOT EXISTS wedding_categories (
+    id SERIAL PRIMARY KEY,
+    category_name VARCHAR(255) NOT NULL UNIQUE,
+    description TEXT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)";
+
+// Check if the wedding_categories table is created successfully
+if (!pg_query($conn, $weddingCategoriesTable)) {
+    logDatabaseSetup("Error creating wedding_categories table: " . pg_last_error($conn), 'error');
+    throw new Exception("Error creating wedding_categories table: " . pg_last_error($conn));
+} else {
+    logDatabaseSetup("Table 'wedding_categories' created or already exists");
+}
+
+// Wedding Products Table - PostgreSQL version - MOVED BEFORE order_details
+$weddingProductsTable = "CREATE TABLE IF NOT EXISTS wedding_products (
+    id SERIAL PRIMARY KEY,
+    wedding_category_id INT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    description TEXT DEFAULT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    stock INT DEFAULT 0,
+    color VARCHAR(255) NOT NULL,
+    image VARCHAR(255) NOT NULL,
+    material VARCHAR(255) DEFAULT NULL,
+    style VARCHAR(255) DEFAULT NULL,
+    occasion VARCHAR(255) DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (wedding_category_id) REFERENCES wedding_categories(id) ON DELETE CASCADE
+)";
+
+// Check if the wedding_products table is created successfully
+if (!pg_query($conn, $weddingProductsTable)) {
+    logDatabaseSetup("Error creating wedding_products table: " . pg_last_error($conn), 'error');
+    throw new Exception("Error creating wedding_products table: " . pg_last_error($conn));
+} else {
+    logDatabaseSetup("Table 'wedding_products' created or already exists");
+}
+
+// Order Details - PostgreSQL version - NOW COMES AFTER wedding_products IS CREATED
 $orderDetailsTable = "CREATE TABLE IF NOT EXISTS order_details (
     id SERIAL PRIMARY KEY,
     order_id INT NOT NULL,
@@ -488,51 +531,6 @@ function getCartCount($conn, $userId) {
         return 0;
     }
 }
-// Wedding Categories Table - PostgreSQL version
-$weddingCategoriesTable = "CREATE TABLE IF NOT EXISTS wedding_categories (
-    id SERIAL PRIMARY KEY,
-    category_name VARCHAR(255) NOT NULL UNIQUE,
-    description TEXT DEFAULT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)";
-
-// Check if the wedding_categories table is created successfully
-if (!pg_query($conn, $weddingCategoriesTable)) {
-    logDatabaseSetup("Error creating wedding_categories table: " . pg_last_error($conn), 'error');
-    throw new Exception("Error creating wedding_categories table: " . pg_last_error($conn));
-} else {
-    logDatabaseSetup("Table 'wedding_categories' created or already exists");
-}
-
-// Wedding Products Table - PostgreSQL version
-$weddingProductsTable = "CREATE TABLE IF NOT EXISTS wedding_products (
-    id SERIAL PRIMARY KEY,
-    wedding_category_id INT NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    description TEXT DEFAULT NULL,
-    price DECIMAL(10,2) NOT NULL,
-    stock INT DEFAULT 0,
-    color VARCHAR(255) NOT NULL,
-    image VARCHAR(255) NOT NULL,
-    material VARCHAR(255) DEFAULT NULL,
-    style VARCHAR(255) DEFAULT NULL,
-    occasion VARCHAR(255) DEFAULT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (wedding_category_id) REFERENCES wedding_categories(id) ON DELETE CASCADE
-)";
-
-// Check if the wedding_products table is created successfully
-if (!pg_query($conn, $weddingProductsTable)) {
-    logDatabaseSetup("Error creating wedding_products table: " . pg_last_error($conn), 'error');
-    throw new Exception("Error creating wedding_products table: " . pg_last_error($conn));
-} else {
-    logDatabaseSetup("Table 'wedding_products' created or already exists");
-}
-
-// Proceed to create other tables or processes that depend on wedding_products
-
 
 // Wedding Specifications Table - PostgreSQL version
 $weddingSpecificationsTable = "CREATE TABLE IF NOT EXISTS wedding_specifications (
