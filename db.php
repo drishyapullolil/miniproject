@@ -18,23 +18,35 @@ function logDatabaseSetup($message, $type = 'info') {
     file_put_contents($logFile, $logEntry, FILE_APPEND);
 }
 
-// Database Configuration using environment variables or fallback
-$servername = getenv("MYSQLHOST") ?: "mysql.railway.internal";  // Updated default to internal Railway host
+// Database Configuration using the provided environment variables
+$servername = getenv("MYSQLHOST") ?: "mysql.railway.internal";
 $username = getenv("MYSQLUSER") ?: "root";
 $password = getenv("MYSQLPASSWORD") ?: "egmrrZmOxiKOODsRfqCAEdYjtmDjqjpB";
 $dbname = getenv("MYSQLDATABASE") ?: "railway";
-$port = getenv("MYSQLPORT") ?: 3306;  // Default port 3306 for MySQL
+$port = getenv("MYSQLPORT") ?: 3306;
 
-// Check if DATABASE_URL is provided for flexible parsing
-$databaseUrl = getenv("DATABASE_URL");
-if ($databaseUrl) {
-    $dbComponents = parse_url($databaseUrl);
+// Check for MYSQL_URL environment variable (alternative format)
+$mysqlUrl = getenv("MYSQL_URL");
+if ($mysqlUrl) {
+    $dbComponents = parse_url($mysqlUrl);
     if ($dbComponents) {
         $servername = $dbComponents['host'] ?? $servername;
         $username = $dbComponents['user'] ?? $username;
         $password = $dbComponents['pass'] ?? $password;
         $dbname = ltrim($dbComponents['path'] ?? '', '/') ?: $dbname;
         $port = $dbComponents['port'] ?? $port;
+    }
+}
+
+// Check for MYSQL_PUBLIC_URL environment variable (for external connections)
+$mysqlPublicUrl = getenv("MYSQL_PUBLIC_URL");
+if ($mysqlPublicUrl) {
+    $dbPublicComponents = parse_url($mysqlPublicUrl);
+    if ($dbPublicComponents) {
+        // Store the public connection details for potential external access
+        $publicServername = $dbPublicComponents['host'] ?? "";
+        $publicPort = $dbPublicComponents['port'] ?? "";
+        logDatabaseSetup("Public database connection available at: {$publicServername}:{$publicPort}");
     }
 }
 
@@ -402,6 +414,32 @@ try {
         logDatabaseSetup("Table 'wedding_details' created or already exists");
     }
 
+    // Create a database connection config file
+    $configFilePath = __DIR__ . '/db_config.php';
+    $configContent = "<?php
+// Database configuration
+\$DB_CONFIG = [
+    'host' => '{$servername}',
+    'username' => '{$username}',
+    'password' => '{$password}',
+    'database' => '{$dbname}',
+    'port' => {$port}
+];
+
+// Public connection details (if available)
+\$DB_PUBLIC_CONFIG = [
+    'host' => '" . (isset($publicServername) ? $publicServername : "") . "',
+    'port' => '" . (isset($publicPort) ? $publicPort : "") . "'
+];
+?>";
+
+    // Write the config file
+    if (file_put_contents($configFilePath, $configContent)) {
+        logDatabaseSetup("Database configuration file created successfully");
+    } else {
+        logDatabaseSetup("Failed to create database configuration file", 'warning');
+    }
+
 } catch (Exception $e) {
     // Centralized error handling with logging
     logDatabaseSetup("Critical Database Setup Error: " . $e->getMessage(), 'critical');
@@ -411,7 +449,6 @@ try {
 } 
 
 // Function definitions for cart, wishlist, etc.
-// (existing functions remain unchanged)
 function addToWishlist($conn, $userId, $sareeId) {
     // First check if the item is already in the wishlist
     $checkStmt = $conn->prepare("SELECT id FROM wishlist WHERE user_id = ? AND saree_id = ?");
@@ -477,6 +514,7 @@ function isInWishlist($conn, $userId, $sareeId) {
     
     return $result->num_rows > 0;
 }
+
 function getWishlistCount($conn, $userId) {
     $stmt = $conn->prepare("SELECT COUNT(*) as count FROM wishlist WHERE user_id = ?");
     $stmt->bind_param("i", $userId);
@@ -665,5 +703,34 @@ function checkGoogleUser($conn, $email, $uid) {
             'data' => null
         ];
     }
+}
+
+// Function to get database connection
+function getDbConnection() {
+    global $servername, $username, $password, $dbname, $port;
+    
+    try {
+        $conn = new mysqli($servername, $username, $password, $dbname, $port);
+        
+        if ($conn->connect_error) {
+            error_log("Database connection failed: " . $conn->connect_error);
+            return null;
+             return $conn;
+    } catch (Exception $e) {
+        error_log("Database connection exception: " . $e->getMessage());
+        return null;
+    }
+}
+
+// Function to close database connection
+function closeDbConnection($conn) {
+    if ($conn) {
+        $conn->close();
+    }
+}
+
+// Check if this file is being accessed directly
+if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
+    echo "Database setup complete.";
 }
 ?>
