@@ -3,12 +3,11 @@ $log_file = '/var/www/html/database_setup.log';
 
 // Check if the log file is writable
 if (is_writable($log_file)) {
-    // Write to the log file if it's writable
-    file_put_contents($log_file, "Log entry here\n", FILE_APPEND);
+    file_put_contents($log_file, "Starting database setup\n", FILE_APPEND);
 } else {
-    // Log an error if the log file is not writable
     error_log("Cannot write to log file: " . $log_file);
 }
+
 // Session Management
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -19,11 +18,11 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // PostgreSQL Database connection details
-$host = 'dpg-cvojjammcj7s73867eog-a.oregon-postgres.render.com';  // Render PostgreSQL hostname
-$port = '5432';  // Default PostgreSQL port
-$dbname = 'yards_of_grace_db';  // Database name
-$username = 'yards_of_grace_db_user';  // Username
-$password = 'tJtozPTnA3QgFvz9Bor27YGwSJazMvZs';  // Password
+$host = 'dpg-cvojjammcj7s73867eog-a.oregon-postgres.render.com';
+$port = '5432';
+$dbname = 'yards_of_grace_db';
+$username = 'yards_of_grace_db_user';
+$password = 'tJtozPTnA3QgFvz9Bor27YGwSJazMvZs';
 
 // Logging Function
 function logDatabaseSetup($message, $type = 'info') {
@@ -31,305 +30,278 @@ function logDatabaseSetup($message, $type = 'info') {
     $timestamp = date('Y-m-d H:i:s');
     $logEntry = "[{$timestamp}] [{$type}] {$message}" . PHP_EOL;
     
-    // Check if file is writable, if not, change permissions
     if (is_writable($logFile) || is_writable(dirname($logFile))) {
         file_put_contents($logFile, $logEntry, FILE_APPEND);
     } else {
-        // If not writable, log to default error log
         error_log($logEntry);
     }
 }
 
-// Improved Connection Handling with PostgreSQL and Comprehensive Error Management
+// Improved Connection Handling with PostgreSQL
 try {
     // Create PostgreSQL connection
     $conn = pg_connect("host=$host port=$port dbname=$dbname user=$username password=$password");
 
-    // Enhanced connection error checking
     if (!$conn) {
-        // Log connection error
         logDatabaseSetup("Database Connection Failed: " . pg_last_error(), 'error');
         throw new Exception("Database Connection Failed: " . pg_last_error());
     }
 
-    // Log successful connection
     logDatabaseSetup("Database connection established successfully");
 
-    // Table Creation Queries with Improved Error Handling
+    // Table Creation Queries with PostgreSQL syntax
     $tables = [
         'users' => "CREATE TABLE IF NOT EXISTS users (
-                id SERIAL PRIMARY KEY,
-                username VARCHAR(50) NOT NULL UNIQUE,
-                email VARCHAR(100) NOT NULL,
-                password VARCHAR(255) NOT NULL,
-                phoneno VARCHAR(15) NOT NULL,
-                address VARCHAR(255) DEFAULT NULL,
-                role VARCHAR(20) NOT NULL DEFAULT 'user',
-                reset_token VARCHAR(255) DEFAULT NULL,
-                token_expiry TIMESTAMP DEFAULT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                last_login TIMESTAMP NULL DEFAULT NULL,
-                profile_pic VARCHAR(255),
-                google_uid VARCHAR(128) NULL,
-                photo_url VARCHAR(255) NULL,
-                display_name VARCHAR(100) NULL
-            )",
+            id SERIAL PRIMARY KEY,
+            username VARCHAR(50) NOT NULL UNIQUE,
+            email VARCHAR(100) NOT NULL,
+            password VARCHAR(255) NOT NULL,
+            phoneno VARCHAR(15) NOT NULL,
+            address VARCHAR(255) DEFAULT NULL,
+            role VARCHAR(20) NOT NULL DEFAULT 'user',
+            reset_token VARCHAR(255) DEFAULT NULL,
+            token_expiry TIMESTAMP DEFAULT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            last_login TIMESTAMP NULL DEFAULT NULL,
+            profile_pic VARCHAR(255),
+            google_uid VARCHAR(128),
+            photo_url VARCHAR(255),
+            display_name VARCHAR(100)
+        ",
+        
         'logins' => "CREATE TABLE IF NOT EXISTS logins (
-                id SERIAL PRIMARY KEY,
-                user_id INT NOT NULL,
-                username VARCHAR(50) NOT NULL,
-                ip_address VARCHAR(50) NOT NULL,
-                login_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-            )"
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            username VARCHAR(50) NOT NULL,
+            ip_address VARCHAR(50) NOT NULL,
+            login_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )",
+        
+        'categories' => "CREATE TABLE IF NOT EXISTS categories (
+            id SERIAL PRIMARY KEY,
+            category_name VARCHAR(255) NOT NULL UNIQUE,
+            description TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )",
+        
+        'subcategories' => "CREATE TABLE IF NOT EXISTS subcategories (
+            id SERIAL PRIMARY KEY,
+            category_id INTEGER NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+            subcategory_name VARCHAR(255) NOT NULL,
+            description TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )",
+        
+        'sarees' => "CREATE TABLE IF NOT EXISTS sarees (
+            id SERIAL PRIMARY KEY,
+            category_id INTEGER NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+            subcategory_id INTEGER REFERENCES subcategories(id) ON DELETE SET NULL,
+            name VARCHAR(255) NOT NULL,
+            saree_name VARCHAR(255),
+            price DECIMAL(10,2) NOT NULL,
+            stock INTEGER DEFAULT 0,
+            color VARCHAR(255) NOT NULL,
+            image VARCHAR(255) NOT NULL,
+            description TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            last_stock_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )",
+        
+        'product_specifications' => "CREATE TABLE IF NOT EXISTS product_specifications (
+            id SERIAL PRIMARY KEY,
+            saree_id INTEGER NOT NULL REFERENCES sarees(id) ON DELETE CASCADE,
+            material VARCHAR(255) NOT NULL,
+            style VARCHAR(255) NOT NULL,
+            saree_length DECIMAL(5, 2) NOT NULL,
+            blouse_length DECIMAL(5, 2) NOT NULL,
+            wash_care VARCHAR(255) NOT NULL,
+            description TEXT NOT NULL
+        )",
+        
+        'saree_stock_history' => "CREATE TABLE IF NOT EXISTS saree_stock_history (
+            id SERIAL PRIMARY KEY,
+            saree_id INTEGER NOT NULL REFERENCES sarees(id) ON DELETE CASCADE,
+            stock_added INTEGER NOT NULL,
+            previous_stock INTEGER NOT NULL,
+            new_stock INTEGER NOT NULL,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_by INTEGER NOT NULL REFERENCES users(id)
+        )",
+        
+        'orders' => "CREATE TABLE IF NOT EXISTS orders (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER NOT NULL REFERENCES users(id),
+            name VARCHAR(255) NOT NULL,
+            total_amount DECIMAL(10, 2) NOT NULL,
+            order_status VARCHAR(20) DEFAULT 'pending',
+            address TEXT NOT NULL,
+            payment_method VARCHAR(50) NOT NULL,
+            payment_status VARCHAR(20) DEFAULT 'pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )",
+        
+        'order_details' => "CREATE TABLE IF NOT EXISTS order_details (
+            id SERIAL PRIMARY KEY,
+            order_id INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+            saree_id INTEGER REFERENCES sarees(id) ON DELETE SET NULL,
+            product_id INTEGER REFERENCES wedding_products(id) ON DELETE SET NULL,
+            quantity INTEGER NOT NULL,
+            price DECIMAL(10, 2) NOT NULL
+        )",
+        
+        'payments' => "CREATE TABLE IF NOT EXISTS payments (
+            id SERIAL PRIMARY KEY,
+            order_id INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+            payment_method VARCHAR(50) NOT NULL,
+            transaction_id VARCHAR(255),
+            amount DECIMAL(10, 2) NOT NULL,
+            status VARCHAR(20) DEFAULT 'pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )",
+        
+        'wishlist' => "CREATE TABLE IF NOT EXISTS wishlist (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            saree_id INTEGER NOT NULL REFERENCES sarees(id) ON DELETE CASCADE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE (user_id, saree_id)
+        )",
+        
+        'cart' => "CREATE TABLE IF NOT EXISTS cart (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            saree_id INTEGER NOT NULL REFERENCES sarees(id) ON DELETE CASCADE,
+            quantity INTEGER NOT NULL DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )",
+        
+        'wedding_categories' => "CREATE TABLE IF NOT EXISTS wedding_categories (
+            id SERIAL PRIMARY KEY,
+            category_name VARCHAR(255) NOT NULL UNIQUE,
+            description TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )",
+        
+        'wedding_products' => "CREATE TABLE IF NOT EXISTS wedding_products (
+            id SERIAL PRIMARY KEY,
+            wedding_category_id INTEGER NOT NULL REFERENCES wedding_categories(id) ON DELETE CASCADE,
+            name VARCHAR(255) NOT NULL,
+            description TEXT,
+            price DECIMAL(10,2) NOT NULL,
+            stock INTEGER DEFAULT 0,
+            color VARCHAR(255) NOT NULL,
+            image VARCHAR(255) NOT NULL,
+            material VARCHAR(255),
+            style VARCHAR(255),
+            occasion VARCHAR(255),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )",
+        
+        'wedding_specifications' => "CREATE TABLE IF NOT EXISTS wedding_specifications (
+            id SERIAL PRIMARY KEY,
+            product_id INTEGER NOT NULL REFERENCES wedding_products(id) ON DELETE CASCADE,
+            blouse_details VARCHAR(255),
+            saree_length DECIMAL(5, 2),
+            blouse_length DECIMAL(5, 2),
+            wash_care VARCHAR(255),
+            additional_details TEXT
+        )",
+        
+        'wedding_details' => "CREATE TABLE IF NOT EXISTS wedding_details (
+            id SERIAL PRIMARY KEY,
+            wedding_product_id INTEGER NOT NULL REFERENCES wedding_products(id) ON DELETE CASCADE,
+            fabric VARCHAR(255) NOT NULL,
+            design_type VARCHAR(255) NOT NULL,
+            length DECIMAL(5, 2) NOT NULL,
+            width DECIMAL(5, 2) NOT NULL,
+            care_instructions VARCHAR(255) NOT NULL,
+            description TEXT NOT NULL
+        )"
     ];
 
-    // Execute table creation with detailed error reporting
+    // Execute table creation
     foreach ($tables as $tableName => $createTableQuery) {
         $result = pg_query($conn, $createTableQuery);
         if (!$result) {
-            // Log table creation error
             logDatabaseSetup("Error creating {$tableName} table: " . pg_last_error($conn), 'error');
             throw new Exception("Error creating {$tableName} table: " . pg_last_error($conn));
-        } else {
-            // Log successful table creation
-            logDatabaseSetup("Table {$tableName} created or already exists");
         }
+        logDatabaseSetup("Table {$tableName} created or already exists");
     }
 
-    // Log successful database setup
+    // Check and add wedding_category_id column to sarees table if needed
+    $checkColumnQuery = "SELECT column_name 
+                        FROM information_schema.columns 
+                        WHERE table_name='sarees' AND column_name='wedding_category_id'";
+    $result = pg_query($conn, $checkColumnQuery);
+    
+    if (pg_num_rows($result) == 0) {
+        $addColumnQuery = "ALTER TABLE sarees 
+                          ADD COLUMN wedding_category_id INTEGER REFERENCES wedding_categories(id) ON DELETE SET NULL";
+        if (!pg_query($conn, $addColumnQuery)) {
+            throw new Exception("Error adding wedding_category_id column: " . pg_last_error($conn));
+        }
+        logDatabaseSetup("Added wedding_category_id column to sarees table");
+    }
+
     logDatabaseSetup("Database setup completed successfully");
 
 } catch (Exception $e) {
-    // Centralized error handling with logging
     logDatabaseSetup("Critical Database Setup Error: " . $e->getMessage(), 'critical');
-    
-    // In production, you might want to redirect to an error page
     die("A critical database setup error occurred. Please contact support.");
 }
-$categoriesTable = "CREATE TABLE IF NOT EXISTS categories (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    category_name VARCHAR(255) NOT NULL UNIQUE,
-    description TEXT DEFAULT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)";
 
-if ($conn->query($categoriesTable) !== TRUE) {
-    logDatabaseSetup("Error creating categories table: " . $conn->error, 'error');
-    throw new Exception("Error creating categories table: " . $conn->error);
-} else {
-    logDatabaseSetup("Table 'categories' created or already exists");
-}
-
-// Create Subcategories Table
-$subcategoriesTable = "CREATE TABLE IF NOT EXISTS subcategories (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    category_id INT(11) NOT NULL,
-    subcategory_name VARCHAR(255) NOT NULL,
-    description TEXT DEFAULT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
-)";
-
-if ($conn->query($subcategoriesTable) !== TRUE) {
-    logDatabaseSetup("Error creating subcategories table: " . $conn->error, 'error');
-    throw new Exception("Error creating subcategories table: " . $conn->error);
-} else {
-    logDatabaseSetup("Table 'subcategories' created or already exists");
-}
-$sareesTable = "CREATE TABLE IF NOT EXISTS sarees (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    category_id INT(11) NOT NULL,
-    subcategory_id INT(11) DEFAULT NULL,
-    name VARCHAR(255) NOT NULL,  -- ✅ Added 'name' for sorting
-    saree_name VARCHAR(255)  NULL,
-    price DECIMAL(10,2) NOT NULL,
-    stock INT(11) DEFAULT 0,  -- ✅ Optional: Add stock tracking
-    color VARCHAR(255)NOT NULL,
-    image VARCHAR(255)NOT NULL,
-    description TEXT DEFAULT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_stock_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
-    FOREIGN KEY (subcategory_id) REFERENCES subcategories(id) ON DELETE SET NULL
-)";//ALTER TABLE sarees ADD COLUMN last_stock_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
-
-if ($conn->query($sareesTable) !== TRUE) {
-    logDatabaseSetup("Error creating sarees table: " . $conn->error, 'error');
-    throw new Exception("Error creating sarees table: " . $conn->error);
-} else {
-    logDatabaseSetup("Table 'sarees' created or already exists");
-}
-// Product Specifications Table
-$productSpecificationsTable = "CREATE TABLE IF NOT EXISTS product_specifications (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    saree_id INT(11) NOT NULL,
-    material VARCHAR(255) NOT NULL,
-    style VARCHAR(255) NOT NULL,
-    saree_length DECIMAL(5, 2) NOT NULL,
-    blouse_length DECIMAL(5, 2) NOT NULL,
-    wash_care VARCHAR(255) NOT NULL,
-    description TEXT NOT NULL,
-    FOREIGN KEY (saree_id) REFERENCES sarees(id) ON DELETE CASCADE
-)";
-
-if ($conn->query($productSpecificationsTable) !== TRUE) {
-    logDatabaseSetup("Error creating product_specifications table: " . $conn->error, 'error');
-    throw new Exception("Error creating product_specifications table: " . $conn->error);
-} else {
-    logDatabaseSetup("Table 'product_specifications' created or already exists");
-}
-//ALTER TABLE users ADD COLUMN profile_pic VARCHAR(255) DEFAULT NULL;
-$sareeStockHistoryTable = "CREATE TABLE IF NOT EXISTS saree_stock_history (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    saree_id INT(11) NOT NULL,
-    stock_added INT(11) NOT NULL,
-    previous_stock INT(11) NOT NULL,
-    new_stock INT(11) NOT NULL,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_by INT(11) NOT NULL,
-    FOREIGN KEY (saree_id) REFERENCES sarees(id) ON DELETE CASCADE,
-    FOREIGN KEY (updated_by) REFERENCES users(id)
-)";
-
-if ($conn->query($sareeStockHistoryTable) !== TRUE) {
-    logDatabaseSetup("Error creating saree_stock_history table: " . $conn->error, 'error');
-    throw new Exception("Error creating saree_stock_history table: " . $conn->error);
-} else {
-    logDatabaseSetup("Table 'saree_stock_history' created or already exists");
-}
-// SQL query for creating the 'orders' table
-$ordersTable = "CREATE TABLE IF NOT EXISTS orders (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    user_id INT(11) NOT NULL, -- Assuming you have a users table
-    name VARCHAR(255) NOT NULL, -- Add the name field
-    total_amount DECIMAL(10, 2) NOT NULL,
-    order_status VARCHAR(20) DEFAULT 'pending',
-    address TEXT NOT NULL,
-    payment_method VARCHAR(50) NOT NULL,
-    payment_status VARCHAR(20) DEFAULT 'pending', -- Added payment_status column
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-)";
-
-
-
-// Execute the query for 'orders' table
-if ($conn->query($ordersTable) !== TRUE) {
-    logDatabaseSetup("Error creating orders table: " . $conn->error, 'error');
-    throw new Exception("Error creating orders table: " . $conn->error);
-} else {
-    logDatabaseSetup("Table 'orders' created or already exists");
-}
-
-// SQL query for creating the 'order_details' table
-$orderDetailsTable = "CREATE TABLE IF NOT EXISTS order_details (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    order_id INT(11) NOT NULL,
-    saree_id INT(11) DEFAULT NULL,  -- Allow NULL for saree_id
-    product_id INT(11) DEFAULT NULL,  -- Allow NULL for product_id
-    quantity INT(11) NOT NULL,
-    price DECIMAL(10, 2) NOT NULL,
-    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
-    FOREIGN KEY (saree_id) REFERENCES sarees(id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES wedding_products(id) ON DELETE CASCADE
-)";
-
-// Execute the query for 'order_details' table
-if ($conn->query($orderDetailsTable) !== TRUE) {
-    logDatabaseSetup("Error creating order_details table: " . $conn->error, 'error');
-    throw new Exception("Error creating order_details table: " . $conn->error);
-} else {
-    logDatabaseSetup("Table 'order_details' created or already exists");
-}
-$paymentsTable = "CREATE TABLE IF NOT EXISTS payments (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    order_id INT(11) NOT NULL,
-    payment_method VARCHAR(50) NOT NULL,
-    transaction_id VARCHAR(255), -- For UPI or card transactions
-    amount DECIMAL(10, 2) NOT NULL,
-    status ENUM('pending', 'completed', 'failed') DEFAULT 'pending',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
-)";
-
-// Execute the query for 'payments' table
-if ($conn->query($paymentsTable) !== TRUE) {
-    logDatabaseSetup("Error creating payments table: " . $conn->error, 'error');
-    throw new Exception("Error creating payments table: " . $conn->error);
-} else {
-    logDatabaseSetup("Table 'payments' created or already exists");
-}
-$wishlistTable = "CREATE TABLE IF NOT EXISTS wishlist (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    user_id INT(11) NOT NULL,
-    saree_id INT(11) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (saree_id) REFERENCES sarees(id) ON DELETE CASCADE,
-    UNIQUE KEY unique_wishlist (user_id, saree_id)
-)";
-
-if ($conn->query($wishlistTable) !== TRUE) {
-    logDatabaseSetup("Error creating wishlist table: " . $conn->error, 'error');
-    throw new Exception("Error creating wishlist table: " . $conn->error);
-} else {
-    logDatabaseSetup("Table 'wishlist' created or already exists");
-}
-
-// Function to add item to wishlist
+// PostgreSQL versions of the functions
 function addToWishlist($conn, $userId, $sareeId) {
-    // First check if the item is already in the wishlist
-    $checkStmt = $conn->prepare("SELECT id FROM wishlist WHERE user_id = ? AND saree_id = ?");
-    $checkStmt->bind_param("ii", $userId, $sareeId);
-    $checkStmt->execute();
-    $result = $checkStmt->get_result();
+    // Check if item already exists in wishlist
+    $checkQuery = "SELECT id FROM wishlist WHERE user_id = $1 AND saree_id = $2";
+    $checkResult = pg_query_params($conn, $checkQuery, [$userId, $sareeId]);
     
-    if ($result->num_rows > 0) {
+    if (pg_num_rows($checkResult) > 0) {
         return ["success" => false, "message" => "Item already in wishlist"];
     }
     
     // Add to wishlist
-    $stmt = $conn->prepare("INSERT INTO wishlist (user_id, saree_id) VALUES (?, ?)");
-    $stmt->bind_param("ii", $userId, $sareeId);
+    $insertQuery = "INSERT INTO wishlist (user_id, saree_id) VALUES ($1, $2)";
+    $insertResult = pg_query_params($conn, $insertQuery, [$userId, $sareeId]);
     
-    if ($stmt->execute()) {
+    if ($insertResult) {
         return ["success" => true, "message" => "Added to wishlist successfully"];
     } else {
-        return ["success" => false, "message" => "Error adding to wishlist: " . $stmt->error];
+        return ["success" => false, "message" => "Error adding to wishlist: " . pg_last_error($conn)];
     }
 }
 
-// Function to remove item from wishlist
 function removeFromWishlist($conn, $userId, $sareeId) {
-    $stmt = $conn->prepare("DELETE FROM wishlist WHERE user_id = ? AND saree_id = ?");
-    $stmt->bind_param("ii", $userId, $sareeId);
+    $query = "DELETE FROM wishlist WHERE user_id = $1 AND saree_id = $2";
+    $result = pg_query_params($conn, $query, [$userId, $sareeId]);
     
-    if ($stmt->execute()) {
+    if ($result) {
         return ["success" => true, "message" => "Removed from wishlist successfully"];
     } else {
-        return ["success" => false, "message" => "Error removing from wishlist: " . $stmt->error];
+        return ["success" => false, "message" => "Error removing from wishlist: " . pg_last_error($conn)];
     }
 }
 
-// Function to get all wishlist items for a user
 function getUserWishlist($conn, $userId) {
-    $stmt = $conn->prepare("
+    $query = "
         SELECT w.id as wishlist_id, s.*, c.category_name, sc.subcategory_name
         FROM wishlist w
         JOIN sarees s ON w.saree_id = s.id
         JOIN categories c ON s.category_id = c.id
         LEFT JOIN subcategories sc ON s.subcategory_id = sc.id
-        WHERE w.user_id = ?
+        WHERE w.user_id = $1
         ORDER BY w.created_at DESC
-    ");
-    $stmt->bind_param("i", $userId);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    ";
     
+    $result = pg_query_params($conn, $query, [$userId]);
     $wishlistItems = [];
-    while ($row = $result->fetch_assoc()) {
+    
+    while ($row = pg_fetch_assoc($result)) {
         $wishlistItems[] = $row;
     }
     
@@ -337,52 +309,42 @@ function getUserWishlist($conn, $userId) {
 }
 
 function isInWishlist($conn, $userId, $sareeId) {
-    $stmt = $conn->prepare("SELECT id FROM wishlist WHERE user_id = ? AND saree_id = ?");
-    $stmt->bind_param("ii", $userId, $sareeId);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    return $result->num_rows > 0;
+    $query = "SELECT id FROM wishlist WHERE user_id = $1 AND saree_id = $2";
+    $result = pg_query_params($conn, $query, [$userId, $sareeId]);
+    return pg_num_rows($result) > 0;
 }
+
 function getWishlistCount($conn, $userId) {
-    $stmt = $conn->prepare("SELECT COUNT(*) as count FROM wishlist WHERE user_id = ?");
-    $stmt->bind_param("i", $userId);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
-    
-    return $row['count'];
+    $query = "SELECT COUNT(*) as count FROM wishlist WHERE user_id = $1";
+    $result = pg_query_params($conn, $query, [$userId]);
+    $row = pg_fetch_assoc($result);
+    return $row['count'] ?? 0;
 }
 
 // Cart functions
 function addToCart($conn, $userId, $sareeId, $quantity = 1) {
     try {
         // Check if item already exists in cart
-        $checkSql = "SELECT id, quantity FROM cart WHERE user_id = ? AND saree_id = ?";
-        $checkStmt = $conn->prepare($checkSql);
-        $checkStmt->bind_param("ii", $userId, $sareeId);
-        $checkStmt->execute();
-        $result = $checkStmt->get_result();
+        $checkQuery = "SELECT id, quantity FROM cart WHERE user_id = $1 AND saree_id = $2";
+        $checkResult = pg_query_params($conn, $checkQuery, [$userId, $sareeId]);
 
-        if ($result->num_rows > 0) {
+        if (pg_num_rows($checkResult) > 0) {
             // Update existing cart item
-            $row = $result->fetch_assoc();
+            $row = pg_fetch_assoc($checkResult);
             $newQuantity = $row['quantity'] + $quantity;
             
-            $updateSql = "UPDATE cart SET quantity = ? WHERE id = ?";
-            $updateStmt = $conn->prepare($updateSql);
-            $updateStmt->bind_param("ii", $newQuantity, $row['id']);
+            $updateQuery = "UPDATE cart SET quantity = $1 WHERE id = $2";
+            $updateResult = pg_query_params($conn, $updateQuery, [$newQuantity, $row['id']]);
             
-            if ($updateStmt->execute()) {
+            if ($updateResult) {
                 return ["success" => true, "message" => "Cart updated successfully"];
             }
         } else {
             // Add new item to cart
-            $insertSql = "INSERT INTO cart (user_id, saree_id, quantity) VALUES (?, ?, ?)";
-            $insertStmt = $conn->prepare($insertSql);
-            $insertStmt->bind_param("iii", $userId, $sareeId, $quantity);
+            $insertQuery = "INSERT INTO cart (user_id, saree_id, quantity) VALUES ($1, $2, $3)";
+            $insertResult = pg_query_params($conn, $insertQuery, [$userId, $sareeId, $quantity]);
             
-            if ($insertStmt->execute()) {
+            if ($insertResult) {
                 return ["success" => true, "message" => "Item added to cart"];
             }
         }
@@ -396,7 +358,7 @@ function addToCart($conn, $userId, $sareeId, $quantity = 1) {
 }
 
 function getCartItems($conn, $userId) {
-    $sql = "SELECT 
+    $query = "SELECT 
                 c.id as cart_id, 
                 c.saree_id, 
                 c.quantity, 
@@ -410,16 +372,13 @@ function getCartItems($conn, $userId) {
             JOIN sarees s ON c.saree_id = s.id 
             JOIN categories cat ON s.category_id = cat.id
             LEFT JOIN subcategories sc ON s.subcategory_id = sc.id
-            WHERE c.user_id = ?";
+            WHERE c.user_id = $1";
             
     try {
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $userId);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        $result = pg_query_params($conn, $query, [$userId]);
         $cartItems = [];
         
-        while ($row = $result->fetch_assoc()) {
+        while ($row = pg_fetch_assoc($result)) {
             $cartItems[] = $row;
         }
         
@@ -433,11 +392,10 @@ function getCartItems($conn, $userId) {
 
 function removeFromCart($conn, $userId, $sareeId) {
     try {
-        $sql = "DELETE FROM cart WHERE user_id = ? AND saree_id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ii", $userId, $sareeId);
+        $query = "DELETE FROM cart WHERE user_id = $1 AND saree_id = $2";
+        $result = pg_query_params($conn, $query, [$userId, $sareeId]);
         
-        if ($stmt->execute()) {
+        if ($result) {
             return ["success" => true, "message" => "Item removed from cart"];
         }
         
@@ -451,11 +409,10 @@ function removeFromCart($conn, $userId, $sareeId) {
 
 function updateCartQuantity($conn, $userId, $sareeId, $quantity) {
     try {
-        $sql = "UPDATE cart SET quantity = ? WHERE user_id = ? AND saree_id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("iii", $quantity, $userId, $sareeId);
+        $query = "UPDATE cart SET quantity = $1 WHERE user_id = $2 AND saree_id = $3";
+        $result = pg_query_params($conn, $query, [$quantity, $userId, $sareeId]);
         
-        if ($stmt->execute()) {
+        if ($result) {
             return ["success" => true, "message" => "Quantity updated"];
         }
         
@@ -469,13 +426,9 @@ function updateCartQuantity($conn, $userId, $sareeId, $quantity) {
 
 function getCartCount($conn, $userId) {
     try {
-        $sql = "SELECT SUM(quantity) as count FROM cart WHERE user_id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $userId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $row = $result->fetch_assoc();
-        
+        $query = "SELECT SUM(quantity) as count FROM cart WHERE user_id = $1";
+        $result = pg_query_params($conn, $query, [$userId]);
+        $row = pg_fetch_assoc($result);
         return $row['count'] ?? 0;
         
     } catch (Exception $e) {
@@ -484,145 +437,13 @@ function getCartCount($conn, $userId) {
     }
 }
 
-$cartTable = "CREATE TABLE IF NOT EXISTS cart (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    user_id INT(11) NOT NULL,
-    saree_id INT(11) NOT NULL,
-    quantity INT(11) NOT NULL DEFAULT 1,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (saree_id) REFERENCES sarees(id) ON DELETE CASCADE
-)";
-
-// Execute the query for 'cart' table
-if ($conn->query($cartTable) !== TRUE) {
-    logDatabaseSetup("Error creating cart table: " . $conn->error, 'error');
-    throw new Exception("Error creating cart table: " . $conn->error);
-} else {
-    logDatabaseSetup("Table 'cart' created or already exists");
-}
-
-/// Create Wedding Collection Categories Table
-$weddingCategoriesTable = "CREATE TABLE IF NOT EXISTS wedding_categories (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    category_name VARCHAR(255) NOT NULL UNIQUE,
-    description TEXT DEFAULT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-)";
-
-if ($conn->query($weddingCategoriesTable) !== TRUE) {
-    logDatabaseSetup("Error creating wedding_categories table: " . $conn->error, 'error');
-    throw new Exception("Error creating wedding_categories table: " . $conn->error);
-} else {
-    logDatabaseSetup("Table 'wedding_categories' created or already exists");
-}
-
-// Verify wedding_category_id column exists in sarees table
-$checkColumnQuery = "SHOW COLUMNS FROM sarees LIKE 'wedding_category_id'";
-$columnResult = $conn->query($checkColumnQuery);
-
-if ($columnResult->num_rows == 0) {
-    // Column doesn't exist, add it
-    $addColumnQuery = "ALTER TABLE sarees 
-        ADD COLUMN wedding_category_id INT(11),
-        ADD FOREIGN KEY (wedding_category_id) REFERENCES wedding_categories(id) ON DELETE SET NULL";
-    
-    if (!$conn->query($addColumnQuery)) {
-        die("Error adding wedding_category_id column: " . $conn->error);
-    }
-}
-
-// Create Wedding Collection Products Table
-$weddingProductsTable = "CREATE TABLE IF NOT EXISTS wedding_products (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    wedding_category_id INT(11) NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    description TEXT DEFAULT NULL,
-    price DECIMAL(10,2) NOT NULL,
-    stock INT(11) DEFAULT 0,
-    color VARCHAR(255) NOT NULL,
-    image VARCHAR(255) NOT NULL,
-    material VARCHAR(255) DEFAULT NULL,
-    style VARCHAR(255) DEFAULT NULL,
-    occasion VARCHAR(255) DEFAULT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (wedding_category_id) REFERENCES wedding_categories(id) ON DELETE CASCADE
-)";
-
-if ($conn->query($weddingProductsTable) !== TRUE) {
-    logDatabaseSetup("Error creating wedding_products table: " . $conn->error, 'error');
-    throw new Exception("Error creating wedding_products table: " . $conn->error);
-} else {
-    logDatabaseSetup("Table 'wedding_products' created or already exists");
-}
-
-// Create Wedding Collection Specifications Table
-$weddingSpecificationsTable = "CREATE TABLE IF NOT EXISTS wedding_specifications (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    product_id INT(11) NOT NULL,
-    blouse_details TEXT DEFAULT NULL,
-    saree_length DECIMAL(5,2) DEFAULT NULL,
-    blouse_length DECIMAL(5,2) DEFAULT NULL,
-    wash_care TEXT DEFAULT NULL,
-    additional_details TEXT DEFAULT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (product_id) REFERENCES wedding_products(id) ON DELETE CASCADE
-)";
-
-if ($conn->query($weddingSpecificationsTable) !== TRUE) {
-    logDatabaseSetup("Error creating wedding_specifications table: " . $conn->error, 'error');
-    throw new Exception("Error creating wedding_specifications table: " . $conn->error);
-} else {
-    logDatabaseSetup("Table 'wedding_specifications' created or already exists");
-}
-
-$weddingDetailsTable = "CREATE TABLE IF NOT EXISTS wedding_details (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    wedding_product_id INT(11) NOT NULL,
-    fabric VARCHAR(255) NOT NULL,
-    design_type VARCHAR(255) NOT NULL,
-    length DECIMAL(5, 2) NOT NULL,
-    width DECIMAL(5, 2) NOT NULL,
-    care_instructions VARCHAR(255) NOT NULL,
-    description TEXT NOT NULL,
-    FOREIGN KEY (wedding_product_id) REFERENCES wedding_products(id) ON DELETE CASCADE
-)";
-
-if ($conn->query($weddingDetailsTable) !== TRUE) {
-    logDatabaseSetup("Error creating wedding_details table: " . $conn->error, 'error');
-    throw new Exception("Error creating wedding_details table: " . $conn->error);
-} else {
-    logDatabaseSetup("Table 'wedding_details' created or already exists");
-}
-$weddingSpecificationsTable = "CREATE TABLE IF NOT EXISTS wedding_specifications (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    product_id INT(11) NOT NULL,
-    blouse_details VARCHAR(255) DEFAULT NULL,
-    saree_length DECIMAL(5, 2) DEFAULT NULL,
-    blouse_length DECIMAL(5, 2) DEFAULT NULL,
-    wash_care VARCHAR(255) DEFAULT NULL,
-    additional_details TEXT DEFAULT NULL,
-    FOREIGN KEY (product_id) REFERENCES wedding_products(id) ON DELETE CASCADE
-)";
-
-if ($conn->query($weddingSpecificationsTable) !== TRUE) {
-    logDatabaseSetup("Error creating wedding_specifications table: " . $conn->error, 'error');
-    throw new Exception("Error creating wedding_specifications table: " . $conn->error);
-} else {
-    logDatabaseSetup("Table 'wedding_specifications' created or already exists");
-}
-
 function checkGoogleUser($conn, $email, $uid) {
     try {
         // First check if user exists with this email
-        $stmt = $conn->prepare("SELECT id, username, email, google_uid, role FROM users WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        $query = "SELECT id, username, email, google_uid, role FROM users WHERE email = $1";
+        $result = pg_query_params($conn, $query, [$email]);
 
-        if ($result->num_rows === 0) {
+        if (pg_num_rows($result) === 0) {
             // User doesn't exist - they should sign up
             return [
                 'exists' => false,
@@ -631,14 +452,13 @@ function checkGoogleUser($conn, $email, $uid) {
             ];
         }
 
-        $user = $result->fetch_assoc();
+        $user = pg_fetch_assoc($result);
 
         // If user exists, update their Google UID if not set
         if ($user['google_uid'] === null) {
             // Update the user's Google UID
-            $updateStmt = $conn->prepare("UPDATE users SET google_uid = ? WHERE id = ?");
-            $updateStmt->bind_param("si", $uid, $user['id']);
-            $updateStmt->execute();
+            $updateQuery = "UPDATE users SET google_uid = $1 WHERE id = $2";
+            pg_query_params($conn, $updateQuery, [$uid, $user['id']]);
         }
 
         // Return user data for login
