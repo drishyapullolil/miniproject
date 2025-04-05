@@ -9,11 +9,12 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Logging Function
+// Function to log database setup messages
 function logDatabaseSetup($message, $type = 'info') {
     $logFile = __DIR__ . '/database_setup.log';
     $timestamp = date('Y-m-d H:i:s');
     $logEntry = "[{$timestamp}] [{$type}] {$message}" . PHP_EOL;
-    
+
     // Write log to file
     file_put_contents($logFile, $logEntry, FILE_APPEND);
 }
@@ -75,6 +76,12 @@ try {
 
     // Log successful connection
     logDatabaseSetup("✅ Database connection established successfully");
+
+} catch (Exception $e) {
+    // Log the exception error message
+    logDatabaseSetup("Exception: " . $e->getMessage(), 'error');
+    echo "A critical database setup error occurred. Please contact support.";
+}
 
     // Table Creation Queries with Improved Error Handling
     $tables = [
