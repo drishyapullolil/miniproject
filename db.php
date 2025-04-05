@@ -1,4 +1,5 @@
 <?php
+// Session Management
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -7,215 +8,36 @@ if (session_status() == PHP_SESSION_NONE) {
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Improved Logging Function
+// Database Configuration
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "yardsofgrace";
+
+// Logging Function
 function logDatabaseSetup($message, $type = 'info') {
     $logFile = __DIR__ . '/database_setup.log';
     $timestamp = date('Y-m-d H:i:s');
     $logEntry = "[{$timestamp}] [{$type}] {$message}" . PHP_EOL;
-
-    // Write log to file
+    
     file_put_contents($logFile, $logEntry, FILE_APPEND);
-    
-    // Also log to error_log
-    error_log("DB Setup [{$type}]: {$message}");
 }
 
-// ========================================
-// COMPREHENSIVE DATABASE CONNECTION CONFIG
-// ========================================
-
-// Method 1: Standard Railway environment variables
-$servername = getenv("MYSQLHOST") ?: null;
-$username = getenv("MYSQLUSER") ?: null;
-$password = getenv("MYSQLPASSWORD") ?: null;
-$dbname = getenv("MYSQLDATABASE") ?: null;
-$port = getenv("MYSQLPORT") ?: 3306;
-
-// Method 2: Check for MYSQL_URL environment variable
-$mysqlUrl = getenv("MYSQL_URL");
-if ($mysqlUrl && (!$servername || !$username || !$password || !$dbname)) {
-    logDatabaseSetup("Using MYSQL_URL for database connection");
-    $dbComponents = parse_url($mysqlUrl);
-    if ($dbComponents) {
-        $servername = $dbComponents['host'] ?? $servername;
-        $username = $dbComponents['user'] ?? $username;
-        $password = $dbComponents['pass'] ?? $password;
-        $dbname = ltrim($dbComponents['path'] ?? '', '/') ?: $dbname;
-        $port = $dbComponents['port'] ?? $port;
-    }
-}
-
-// Method 3: Check for DATABASE_URL
-$databaseUrl = getenv("DATABASE_URL");
-if ($databaseUrl && (!$servername || !$username || !$password || !$dbname)) {
-    logDatabaseSetup("Using DATABASE_URL for database connection");
-    $dbComponents = parse_url($databaseUrl);
-    if ($dbComponents) {
-        $servername = $dbComponents['host'] ?? $servername;
-        $username = $dbComponents['user'] ?? $username;
-        $password = $dbComponents['pass'] ?? $password;
-        $dbname = ltrim($dbComponents['path'] ?? '', '/') ?: $dbname;
-        $port = $dbComponents['port'] ?? $port;
-    }
-}
-
-// Method 4: Check Railway specific pattern with containers
-if (!$servername) {
-    $railwayHost = getenv("RAILWAY_TCP_PROXY_DOMAIN") ?: null;
-    $railwayService = getenv("RAILWAY_SERVICE_MYSQL_NAME") ?: "mysql";
-    
-    if ($railwayHost) {
-        $servername = "$railwayService.$railwayHost";
-        logDatabaseSetup("Constructed database host from Railway variables: $servername");
-    }
-}
-
-// Method 5: Fallback values for development
-if (!$servername) $servername = "localhost";
-if (!$username) $username = "root";
-if (!$password) $password = ""; 
-if (!$dbname) $dbname = "sarees_db";
-
-// Log the configuration we're going to use
-logDatabaseSetup("Database connection attempt with: host=$servername, user=$username, db=$dbname, port=$port");
-
-// DNS resolution check
-if ($servername != 'localhost' && $servername != '127.0.0.1') {
-    if (function_exists('gethostbyname')) {
-        $ip = gethostbyname($servername);
-        if ($ip == $servername) {
-            logDatabaseSetup("DNS resolution failed for " . $servername, 'error');
-            logDatabaseSetup("Trying alternative connection methods...");
-        } else {
-            logDatabaseSetup("Resolved " . $servername . " to " . $ip);
-        }
-    }
-}
-
-// Try to determine the socket path for localhost connections
-$socketPath = null;
-if ($servername == 'localhost' || $servername == '127.0.0.1') {
-    // Common socket paths
-    $possibleSocketPaths = [
-        '/var/run/mysqld/mysqld.sock',               // Debian/Ubuntu
-        '/var/lib/mysql/mysql.sock',                 // RHEL/CentOS
-        '/tmp/mysql.sock',                           // macOS & some Linux
-        'C:\\xampp\\mysql\\mysql.sock',              // Windows XAMPP
-        '/Applications/MAMP/tmp/mysql/mysql.sock'    // macOS MAMP
-    ];
-    
-    foreach ($possibleSocketPaths as $path) {
-        if (file_exists($path)) {
-            $socketPath = $path;
-            logDatabaseSetup("Found MySQL socket at: $socketPath");
-            break;
-        }
-    }
-}
-
-// ===============================
-// IMPROVED CONNECTION HANDLING
-// ===============================
-
-// Set reasonable timeouts
-$connectTimeout = 10; // seconds
-$readTimeout = 30; // seconds
-
-// Connection function with multiple fallback methods
-function tryDbConnection($host, $user, $pass, $db, $port, $socket = null) {
-    logDatabaseSetup("Trying connection to $host:$port" . ($socket ? " via socket $socket" : ""));
-    
-    // First attempt: standard connection
-    try {
-        $conn = mysqli_init();
-        $conn->options(MYSQLI_OPT_CONNECT_TIMEOUT, 10);
-        
-        if ($socket) {
-            // Use socket connection for localhost
-            $success = $conn->real_connect($host, $user, $pass, $db, $port, $socket);
-        } else {
-            // Standard TCP connection
-            $success = $conn->real_connect($host, $user, $pass, $db, $port);
-        }
-        
-        if ($success) {
-            logDatabaseSetup("✅ Connection successful!");
-            return $conn;
-        } else {
-            logDatabaseSetup("Connection failed: " . $conn->connect_error . " (Error #" . $conn->connect_errno . ")", 'error');
-        }
-    } catch (Exception $e) {
-        logDatabaseSetup("Connection exception: " . $e->getMessage(), 'error');
-    }
-    
-    return false;
-}
-
-// Try multiple connection methods
-$conn = null;
-
-// Attempt 1: Try with provided details
-$conn = tryDbConnection($servername, $username, $password, $dbname, $port);
-
-// Attempt 2: Try with socket if on localhost
-if (!$conn && $socketPath && ($servername == 'localhost' || $servername == '127.0.0.1')) {
-    $conn = tryDbConnection($servername, $username, $password, $dbname, $port, $socketPath);
-}
-
-// Attempt 3: Try with 127.0.0.1 instead of localhost
-if (!$conn && $servername == 'localhost') {
-    logDatabaseSetup("Trying with 127.0.0.1 instead of localhost");
-    $conn = tryDbConnection('127.0.0.1', $username, $password, $dbname, $port);
-}
-
-// Attempt 4: Try with PDO as a last resort
-if (!$conn) {
-    logDatabaseSetup("Trying PDO connection as fallback");
-    try {
-        // Construct DSN
-        if ($servername == 'localhost' || $servername == '127.0.0.1') {
-            // Try Unix socket connection
-            if ($socketPath) {
-                $dsn = "mysql:unix_socket=$socketPath;dbname=$dbname";
-            } else {
-                $dsn = "mysql:host=$servername;port=$port;dbname=$dbname";
-            }
-        } else {
-            $dsn = "mysql:host=$servername;port=$port;dbname=$dbname";
-        }
-        
-        $pdoConn = new PDO($dsn, $username, $password, [
-            PDO::ATTR_TIMEOUT => $connectTimeout,
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-        ]);
-        
-        logDatabaseSetup("✅ PDO connection successful! Converting to mysqli");
-        
-        // If PDO works, try mysqli again with the same parameters
-        $conn = mysqli_init();
-        if ($socketPath && ($servername == 'localhost' || $servername == '127.0.0.1')) {
-            $conn->real_connect($servername, $username, $password, $dbname, $port, $socketPath);
-        } else {
-            $conn->real_connect($servername, $username, $password, $dbname, $port);
-        }
-        
-    } catch (PDOException $e) {
-        logDatabaseSetup("PDO connection failed: " . $e->getMessage(), 'error');
-    }
-}
-
-// Final check - if all connection attempts failed
-if (!$conn || $conn->connect_errno) {
-    logDatabaseSetup("All connection attempts failed", 'critical');
-    die("Database connection failed after multiple attempts. Please check your database configuration and ensure MySQL is running. See log for details.");
-}
-
-// Successfully connected - configure connection
-$conn->set_charset('utf8mb4');
-$conn->options(MYSQLI_OPT_READ_TIMEOUT, $readTimeout);
-
-
+// Improved Connection Handling with Comprehensive Error Management
 try {
+    // Create connection using exception handling
+    $conn = new mysqli($servername, $username, $password, $dbname);
+    
+    // Enhanced connection error checking
+    if ($conn->connect_errno) {
+        // Log connection error
+        logDatabaseSetup("Database Connection Failed: " . $conn->connect_error, 'error');
+        throw new Exception("Database Connection Failed: " . $conn->connect_error);
+    }
+
+    // Log successful connection
+    logDatabaseSetup("Database connection established successfully");
+
     // Table Creation Queries with Improved Error Handling
     $tables = [
         'users' => "CREATE TABLE IF NOT EXISTS users (
@@ -225,7 +47,6 @@ try {
                 password VARCHAR(255) NOT NULL,
                 phoneno VARCHAR(15) NOT NULL,
                 address VARCHAR(255) DEFAULT NULL,
-                profile_picture VARCHAR(255) DEFAULT NULL,
                 role ENUM('admin', 'user') NOT NULL DEFAULT 'user',
                 reset_token VARCHAR(255) DEFAULT NULL,
                 token_expiry DATETIME DEFAULT NULL,
@@ -246,6 +67,8 @@ try {
             )"
     ];
     
+    
+    
     // Execute table creation with detailed error reporting
     foreach ($tables as $tableName => $createTableQuery) {
         if ($conn->query($createTableQuery) !== TRUE) {
@@ -265,332 +88,186 @@ try {
     // Log successful database setup
     logDatabaseSetup("Database setup completed successfully");
 
-    $categoriesTable = "CREATE TABLE IF NOT EXISTS categories (
-        id INT(11) AUTO_INCREMENT PRIMARY KEY,
-        category_name VARCHAR(255) NOT NULL UNIQUE,
-        description TEXT DEFAULT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )";
-
-    if ($conn->query($categoriesTable) !== TRUE) {
-        logDatabaseSetup("Error creating categories table: " . $conn->error, 'error');
-        throw new Exception("Error creating categories table: " . $conn->error);
-    } else {
-        logDatabaseSetup("Table 'categories' created or already exists");
-    }
-
-    // Create Subcategories Table
-    $subcategoriesTable = "CREATE TABLE IF NOT EXISTS subcategories (
-        id INT(11) AUTO_INCREMENT PRIMARY KEY,
-        category_id INT(11) NOT NULL,
-        subcategory_name VARCHAR(255) NOT NULL,
-        description TEXT DEFAULT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
-    )";
-
-    if ($conn->query($subcategoriesTable) !== TRUE) {
-        logDatabaseSetup("Error creating subcategories table: " . $conn->error, 'error');
-        throw new Exception("Error creating subcategories table: " . $conn->error);
-    } else {
-        logDatabaseSetup("Table 'subcategories' created or already exists");
-    }
-    
-    $sareesTable = "CREATE TABLE IF NOT EXISTS sarees (
-        id INT(11) AUTO_INCREMENT PRIMARY KEY,
-        category_id INT(11) NOT NULL,
-        subcategory_id INT(11) DEFAULT NULL,
-        name VARCHAR(255) NOT NULL,  -- ✅ Added 'name' for sorting
-        saree_name VARCHAR(255)  NULL,
-        price DECIMAL(10,2) NOT NULL,
-        stock INT(11) DEFAULT 0,  -- ✅ Optional: Add stock tracking
-        color VARCHAR(255)NOT NULL,
-        image VARCHAR(255)NOT NULL,
-        description TEXT DEFAULT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        last_stock_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
-        FOREIGN KEY (subcategory_id) REFERENCES subcategories(id) ON DELETE SET NULL
-    )";
-
-    if ($conn->query($sareesTable) !== TRUE) {
-        logDatabaseSetup("Error creating sarees table: " . $conn->error, 'error');
-        throw new Exception("Error creating sarees table: " . $conn->error);
-    } else {
-        logDatabaseSetup("Table 'sarees' created or already exists");
-    }
-    
-    // Product Specifications Table
-    $productSpecificationsTable = "CREATE TABLE IF NOT EXISTS product_specifications (
-        id INT(11) AUTO_INCREMENT PRIMARY KEY,
-        saree_id INT(11) NOT NULL,
-        material VARCHAR(255) NOT NULL,
-        style VARCHAR(255) NOT NULL,
-        saree_length DECIMAL(5, 2) NOT NULL,
-        blouse_length DECIMAL(5, 2) NOT NULL,
-        wash_care VARCHAR(255) NOT NULL,
-        description TEXT NOT NULL,
-        FOREIGN KEY (saree_id) REFERENCES sarees(id) ON DELETE CASCADE
-    )";
-
-    if ($conn->query($productSpecificationsTable) !== TRUE) {
-        logDatabaseSetup("Error creating product_specifications table: " . $conn->error, 'error');
-        throw new Exception("Error creating product_specifications table: " . $conn->error);
-    } else {
-        logDatabaseSetup("Table 'product_specifications' created or already exists");
-    }
-    
-    $sareeStockHistoryTable = "CREATE TABLE IF NOT EXISTS saree_stock_history (
-        id INT(11) AUTO_INCREMENT PRIMARY KEY,
-        saree_id INT(11) NOT NULL,
-        stock_added INT(11) NOT NULL,
-        previous_stock INT(11) NOT NULL,
-        new_stock INT(11) NOT NULL,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_by INT(11) NOT NULL,
-        FOREIGN KEY (saree_id) REFERENCES sarees(id) ON DELETE CASCADE,
-        FOREIGN KEY (updated_by) REFERENCES users(id)
-    )";
-
-    if ($conn->query($sareeStockHistoryTable) !== TRUE) {
-        logDatabaseSetup("Error creating saree_stock_history table: " . $conn->error, 'error');
-        throw new Exception("Error creating saree_stock_history table: " . $conn->error);
-    } else {
-        logDatabaseSetup("Table 'saree_stock_history' created or already exists");
-    }
-    
-    // Create Wedding Categories Table First
-    $weddingCategoriesTable = "CREATE TABLE IF NOT EXISTS wedding_categories (
-        id INT(11) AUTO_INCREMENT PRIMARY KEY,
-        category_name VARCHAR(255) NOT NULL UNIQUE,
-        description TEXT DEFAULT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-    )";
-
-    if ($conn->query($weddingCategoriesTable) !== TRUE) {
-        logDatabaseSetup("Error creating wedding_categories table: " . $conn->error, 'error');
-        throw new Exception("Error creating wedding_categories table: " . $conn->error);
-    } else {
-        logDatabaseSetup("Table 'wedding_categories' created or already exists");
-    }
-    
-    // Create Wedding Products Table Next
-    $weddingProductsTable = "CREATE TABLE IF NOT EXISTS wedding_products (
-        id INT(11) AUTO_INCREMENT PRIMARY KEY,
-        wedding_category_id INT(11) NOT NULL,
-        name VARCHAR(255) NOT NULL,
-        description TEXT DEFAULT NULL,
-        price DECIMAL(10,2) NOT NULL,
-        stock INT(11) DEFAULT 0,
-        color VARCHAR(255) NOT NULL,
-        image VARCHAR(255) NOT NULL,
-        material VARCHAR(255) DEFAULT NULL,
-        style VARCHAR(255) DEFAULT NULL,
-        occasion VARCHAR(255) DEFAULT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY (wedding_category_id) REFERENCES wedding_categories(id) ON DELETE CASCADE
-    )";
-
-    if ($conn->query($weddingProductsTable) !== TRUE) {
-        logDatabaseSetup("Error creating wedding_products table: " . $conn->error, 'error');
-        throw new Exception("Error creating wedding_products table: " . $conn->error);
-    } else {
-        logDatabaseSetup("Table 'wedding_products' created or already exists");
-    }
-    
-    // Now we can create tables that reference wedding_products
-    // SQL query for creating the 'orders' table
-    $ordersTable = "CREATE TABLE IF NOT EXISTS orders (
-        id INT(11) AUTO_INCREMENT PRIMARY KEY,
-        user_id INT(11) NOT NULL, -- Assuming you have a users table
-        name VARCHAR(255) NOT NULL, -- Add the name field
-        total_amount DECIMAL(10, 2) NOT NULL,
-        order_status VARCHAR(20) DEFAULT 'pending',
-        address TEXT NOT NULL,
-        payment_method VARCHAR(50) NOT NULL,
-        payment_status VARCHAR(20) DEFAULT 'pending', -- Added payment_status column
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-    )";
-
-    // Execute the query for 'orders' table
-    if ($conn->query($ordersTable) !== TRUE) {
-        logDatabaseSetup("Error creating orders table: " . $conn->error, 'error');
-        throw new Exception("Error creating orders table: " . $conn->error);
-    } else {
-        logDatabaseSetup("Table 'orders' created or already exists");
-    }
-
-    // SQL query for creating the 'order_details' table - Now wedding_products exists
-    $orderDetailsTable = "CREATE TABLE IF NOT EXISTS order_details (
-        id INT(11) AUTO_INCREMENT PRIMARY KEY,
-        order_id INT(11) NOT NULL,
-        saree_id INT(11) DEFAULT NULL,  -- Allow NULL for saree_id
-        product_id INT(11) DEFAULT NULL,  -- Allow NULL for product_id
-        quantity INT(11) NOT NULL,
-        price DECIMAL(10, 2) NOT NULL,
-        FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
-        FOREIGN KEY (saree_id) REFERENCES sarees(id) ON DELETE CASCADE,
-        FOREIGN KEY (product_id) REFERENCES wedding_products(id) ON DELETE CASCADE
-    )";
-
-    // Execute the query for 'order_details' table
-    if ($conn->query($orderDetailsTable) !== TRUE) {
-        logDatabaseSetup("Error creating order_details table: " . $conn->error, 'error');
-        throw new Exception("Error creating order_details table: " . $conn->error);
-    } else {
-        logDatabaseSetup("Table 'order_details' created or already exists");
-    }
-    
-    $paymentsTable = "CREATE TABLE IF NOT EXISTS payments (
-        id INT(11) AUTO_INCREMENT PRIMARY KEY,
-        order_id INT(11) NOT NULL,
-        payment_method VARCHAR(50) NOT NULL,
-        transaction_id VARCHAR(255), -- For UPI or card transactions
-        amount DECIMAL(10, 2) NOT NULL,
-        status ENUM('pending', 'completed', 'failed') DEFAULT 'pending',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
-    )";
-
-    // Execute the query for 'payments' table
-    if ($conn->query($paymentsTable) !== TRUE) {
-        logDatabaseSetup("Error creating payments table: " . $conn->error, 'error');
-        throw new Exception("Error creating payments table: " . $conn->error);
-    } else {
-        logDatabaseSetup("Table 'payments' created or already exists");
-    }
-    
-    $wishlistTable = "CREATE TABLE IF NOT EXISTS wishlist (
-        id INT(11) AUTO_INCREMENT PRIMARY KEY,
-        user_id INT(11) NOT NULL,
-        saree_id INT(11) NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-        FOREIGN KEY (saree_id) REFERENCES sarees(id) ON DELETE CASCADE,
-        UNIQUE KEY unique_wishlist (user_id, saree_id)
-    )";
-
-    if ($conn->query($wishlistTable) !== TRUE) {
-        logDatabaseSetup("Error creating wishlist table: " . $conn->error, 'error');
-        throw new Exception("Error creating wishlist table: " . $conn->error);
-    } else {
-        logDatabaseSetup("Table 'wishlist' created or already exists");
-    }
-
-    $cartTable = "CREATE TABLE IF NOT EXISTS cart (
-        id INT(11) AUTO_INCREMENT PRIMARY KEY,
-        user_id INT(11) NOT NULL,
-        saree_id INT(11) NOT NULL,
-        quantity INT(11) NOT NULL DEFAULT 1,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-        FOREIGN KEY (saree_id) REFERENCES sarees(id) ON DELETE CASCADE
-    )";
-
-    // Execute the query for 'cart' table
-    if ($conn->query($cartTable) !== TRUE) {
-        logDatabaseSetup("Error creating cart table: " . $conn->error, 'error');
-        throw new Exception("Error creating cart table: " . $conn->error);
-    } else {
-        logDatabaseSetup("Table 'cart' created or already exists");
-    }
-
-    // Verify wedding_category_id column exists in sarees table
-    $checkColumnQuery = "SHOW COLUMNS FROM sarees LIKE 'wedding_category_id'";
-    $columnResult = $conn->query($checkColumnQuery);
-
-    if ($columnResult->num_rows == 0) {
-        // Column doesn't exist, add it
-        $addColumnQuery = "ALTER TABLE sarees 
-            ADD COLUMN wedding_category_id INT(11),
-            ADD FOREIGN KEY (wedding_category_id) REFERENCES wedding_categories(id) ON DELETE SET NULL";
-        
-        if (!$conn->query($addColumnQuery)) {
-            logDatabaseSetup("Error adding wedding_category_id column: " . $conn->error, 'error');
-            throw new Exception("Error adding wedding_category_id column: " . $conn->error);
-        } else {
-            logDatabaseSetup("Column 'wedding_category_id' added to sarees table or already exists");
-        }
-    }
-
-    // Create Wedding Collection Specifications Table
-    $weddingSpecificationsTable = "CREATE TABLE IF NOT EXISTS wedding_specifications (
-        id INT(11) AUTO_INCREMENT PRIMARY KEY,
-        product_id INT(11) NOT NULL,
-        blouse_details TEXT DEFAULT NULL,
-        saree_length DECIMAL(5,2) DEFAULT NULL,
-        blouse_length DECIMAL(5,2) DEFAULT NULL,
-        wash_care TEXT DEFAULT NULL,
-        additional_details TEXT DEFAULT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (product_id) REFERENCES wedding_products(id) ON DELETE CASCADE
-    )";
-
-    if ($conn->query($weddingSpecificationsTable) !== TRUE) {
-        logDatabaseSetup("Error creating wedding_specifications table: " . $conn->error, 'error');
-        throw new Exception("Error creating wedding_specifications table: " . $conn->error);
-    } else {
-        logDatabaseSetup("Table 'wedding_specifications' created or already exists");
-    }
-
-    $weddingDetailsTable = "CREATE TABLE IF NOT EXISTS wedding_details (
-        id INT(11) AUTO_INCREMENT PRIMARY KEY,
-        wedding_product_id INT(11) NOT NULL,
-        fabric VARCHAR(255) NOT NULL,
-        design_type VARCHAR(255) NOT NULL,
-        length DECIMAL(5, 2) NOT NULL,
-        width DECIMAL(5, 2) NOT NULL,
-        care_instructions VARCHAR(255) NOT NULL,
-        description TEXT NOT NULL,
-        FOREIGN KEY (wedding_product_id) REFERENCES wedding_products(id) ON DELETE CASCADE
-    )";
-
-    if ($conn->query($weddingDetailsTable) !== TRUE) {
-        logDatabaseSetup("Error creating wedding_details table: " . $conn->error, 'error');
-        throw new Exception("Error creating wedding_details table: " . $conn->error);
-    } else {
-        logDatabaseSetup("Table 'wedding_details' created or already exists");
-    }
-
-    // Create a database connection config file
-    $configFilePath = __DIR__ . '/db_config.php';
-    $configContent = "<?php
-// Database configuration
-\$DB_CONFIG = [
-    'host' => '{$servername}',
-    'username' => '{$username}',
-    'password' => '{$password}',
-    'database' => '{$dbname}',
-    'port' => {$port}
-];
-
-// Public connection details (if available)
-\$DB_PUBLIC_CONFIG = [
-    'host' => '" . (isset($publicServername) ? $publicServername : "") . "',
-    'port' => '" . (isset($publicPort) ? $publicPort : "") . "'
-];
-?>";
-
-    // Write the config file
-    if (file_put_contents($configFilePath, $configContent)) {
-        logDatabaseSetup("Database configuration file created successfully");
-    } else {
-        logDatabaseSetup("Failed to create database configuration file", 'warning');
-    }
-
 } catch (Exception $e) {
     // Centralized error handling with logging
     logDatabaseSetup("Critical Database Setup Error: " . $e->getMessage(), 'critical');
     
     // In production, you might want to redirect to an error page
-    die("A critical database setup error occurred. Please contact support. Error: " . $e->getMessage());
+    die("A critical database setup error occurred. Please contact support.");
+
+} 
+$categoriesTable = "CREATE TABLE IF NOT EXISTS categories (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    category_name VARCHAR(255) NOT NULL UNIQUE,
+    description TEXT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)";
+
+if ($conn->query($categoriesTable) !== TRUE) {
+    logDatabaseSetup("Error creating categories table: " . $conn->error, 'error');
+    throw new Exception("Error creating categories table: " . $conn->error);
+} else {
+    logDatabaseSetup("Table 'categories' created or already exists");
 }
 
-// Function definitions for cart, wishlist, etc.
+// Create Subcategories Table
+$subcategoriesTable = "CREATE TABLE IF NOT EXISTS subcategories (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    category_id INT(11) NOT NULL,
+    subcategory_name VARCHAR(255) NOT NULL,
+    description TEXT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
+)";
+
+if ($conn->query($subcategoriesTable) !== TRUE) {
+    logDatabaseSetup("Error creating subcategories table: " . $conn->error, 'error');
+    throw new Exception("Error creating subcategories table: " . $conn->error);
+} else {
+    logDatabaseSetup("Table 'subcategories' created or already exists");
+}
+$sareesTable = "CREATE TABLE IF NOT EXISTS sarees (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    category_id INT(11) NOT NULL,
+    subcategory_id INT(11) DEFAULT NULL,
+    name VARCHAR(255) NOT NULL,  -- ✅ Added 'name' for sorting
+    saree_name VARCHAR(255)  NULL,
+    price DECIMAL(10,2) NOT NULL,
+    stock INT(11) DEFAULT 0,  -- ✅ Optional: Add stock tracking
+    color VARCHAR(255)NOT NULL,
+    image VARCHAR(255)NOT NULL,
+    description TEXT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_stock_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
+    FOREIGN KEY (subcategory_id) REFERENCES subcategories(id) ON DELETE SET NULL
+)";//ALTER TABLE sarees ADD COLUMN last_stock_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+if ($conn->query($sareesTable) !== TRUE) {
+    logDatabaseSetup("Error creating sarees table: " . $conn->error, 'error');
+    throw new Exception("Error creating sarees table: " . $conn->error);
+} else {
+    logDatabaseSetup("Table 'sarees' created or already exists");
+}
+// Product Specifications Table
+$productSpecificationsTable = "CREATE TABLE IF NOT EXISTS product_specifications (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    saree_id INT(11) NOT NULL,
+    material VARCHAR(255) NOT NULL,
+    style VARCHAR(255) NOT NULL,
+    saree_length DECIMAL(5, 2) NOT NULL,
+    blouse_length DECIMAL(5, 2) NOT NULL,
+    wash_care VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    FOREIGN KEY (saree_id) REFERENCES sarees(id) ON DELETE CASCADE
+)";
+
+if ($conn->query($productSpecificationsTable) !== TRUE) {
+    logDatabaseSetup("Error creating product_specifications table: " . $conn->error, 'error');
+    throw new Exception("Error creating product_specifications table: " . $conn->error);
+} else {
+    logDatabaseSetup("Table 'product_specifications' created or already exists");
+}
+//ALTER TABLE users ADD COLUMN profile_pic VARCHAR(255) DEFAULT NULL;
+$sareeStockHistoryTable = "CREATE TABLE IF NOT EXISTS saree_stock_history (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    saree_id INT(11) NOT NULL,
+    stock_added INT(11) NOT NULL,
+    previous_stock INT(11) NOT NULL,
+    new_stock INT(11) NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_by INT(11) NOT NULL,
+    FOREIGN KEY (saree_id) REFERENCES sarees(id) ON DELETE CASCADE,
+    FOREIGN KEY (updated_by) REFERENCES users(id)
+)";
+
+if ($conn->query($sareeStockHistoryTable) !== TRUE) {
+    logDatabaseSetup("Error creating saree_stock_history table: " . $conn->error, 'error');
+    throw new Exception("Error creating saree_stock_history table: " . $conn->error);
+} else {
+    logDatabaseSetup("Table 'saree_stock_history' created or already exists");
+}
+// SQL query for creating the 'orders' table
+$ordersTable = "CREATE TABLE IF NOT EXISTS orders (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    user_id INT(11) NOT NULL, -- Assuming you have a users table
+    name VARCHAR(255) NOT NULL, -- Add the name field
+    total_amount DECIMAL(10, 2) NOT NULL,
+    order_status VARCHAR(20) DEFAULT 'pending',
+    address TEXT NOT NULL,
+    payment_method VARCHAR(50) NOT NULL,
+    payment_status VARCHAR(20) DEFAULT 'pending', -- Added payment_status column
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+)";
+
+
+
+// Execute the query for 'orders' table
+if ($conn->query($ordersTable) !== TRUE) {
+    logDatabaseSetup("Error creating orders table: " . $conn->error, 'error');
+    throw new Exception("Error creating orders table: " . $conn->error);
+} else {
+    logDatabaseSetup("Table 'orders' created or already exists");
+}
+
+// SQL query for creating the 'order_details' table
+$orderDetailsTable = "CREATE TABLE IF NOT EXISTS order_details (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    order_id INT(11) NOT NULL,
+    saree_id INT(11) DEFAULT NULL,  -- Allow NULL for saree_id
+    product_id INT(11) DEFAULT NULL,  -- Allow NULL for product_id
+    quantity INT(11) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (saree_id) REFERENCES sarees(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES wedding_products(id) ON DELETE CASCADE
+)";
+
+// Execute the query for 'order_details' table
+if ($conn->query($orderDetailsTable) !== TRUE) {
+    logDatabaseSetup("Error creating order_details table: " . $conn->error, 'error');
+    throw new Exception("Error creating order_details table: " . $conn->error);
+} else {
+    logDatabaseSetup("Table 'order_details' created or already exists");
+}
+$paymentsTable = "CREATE TABLE IF NOT EXISTS payments (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    order_id INT(11) NOT NULL,
+    payment_method VARCHAR(50) NOT NULL,
+    transaction_id VARCHAR(255), -- For UPI or card transactions
+    amount DECIMAL(10, 2) NOT NULL,
+    status ENUM('pending', 'completed', 'failed') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
+)";
+
+// Execute the query for 'payments' table
+if ($conn->query($paymentsTable) !== TRUE) {
+    logDatabaseSetup("Error creating payments table: " . $conn->error, 'error');
+    throw new Exception("Error creating payments table: " . $conn->error);
+} else {
+    logDatabaseSetup("Table 'payments' created or already exists");
+}
+$wishlistTable = "CREATE TABLE IF NOT EXISTS wishlist (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    user_id INT(11) NOT NULL,
+    saree_id INT(11) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (saree_id) REFERENCES sarees(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_wishlist (user_id, saree_id)
+)";
+
+if ($conn->query($wishlistTable) !== TRUE) {
+    logDatabaseSetup("Error creating wishlist table: " . $conn->error, 'error');
+    throw new Exception("Error creating wishlist table: " . $conn->error);
+} else {
+    logDatabaseSetup("Table 'wishlist' created or already exists");
+}
+
+// Function to add item to wishlist
 function addToWishlist($conn, $userId, $sareeId) {
     // First check if the item is already in the wishlist
     $checkStmt = $conn->prepare("SELECT id FROM wishlist WHERE user_id = ? AND saree_id = ?");
@@ -656,7 +333,6 @@ function isInWishlist($conn, $userId, $sareeId) {
     
     return $result->num_rows > 0;
 }
-
 function getWishlistCount($conn, $userId) {
     $stmt = $conn->prepare("SELECT COUNT(*) as count FROM wishlist WHERE user_id = ?");
     $stmt->bind_param("i", $userId);
@@ -797,6 +473,136 @@ function getCartCount($conn, $userId) {
     }
 }
 
+$cartTable = "CREATE TABLE IF NOT EXISTS cart (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    user_id INT(11) NOT NULL,
+    saree_id INT(11) NOT NULL,
+    quantity INT(11) NOT NULL DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (saree_id) REFERENCES sarees(id) ON DELETE CASCADE
+)";
+
+// Execute the query for 'cart' table
+if ($conn->query($cartTable) !== TRUE) {
+    logDatabaseSetup("Error creating cart table: " . $conn->error, 'error');
+    throw new Exception("Error creating cart table: " . $conn->error);
+} else {
+    logDatabaseSetup("Table 'cart' created or already exists");
+}
+
+/// Create Wedding Collection Categories Table
+$weddingCategoriesTable = "CREATE TABLE IF NOT EXISTS wedding_categories (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    category_name VARCHAR(255) NOT NULL UNIQUE,
+    description TEXT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+)";
+
+if ($conn->query($weddingCategoriesTable) !== TRUE) {
+    logDatabaseSetup("Error creating wedding_categories table: " . $conn->error, 'error');
+    throw new Exception("Error creating wedding_categories table: " . $conn->error);
+} else {
+    logDatabaseSetup("Table 'wedding_categories' created or already exists");
+}
+
+// Verify wedding_category_id column exists in sarees table
+$checkColumnQuery = "SHOW COLUMNS FROM sarees LIKE 'wedding_category_id'";
+$columnResult = $conn->query($checkColumnQuery);
+
+if ($columnResult->num_rows == 0) {
+    // Column doesn't exist, add it
+    $addColumnQuery = "ALTER TABLE sarees 
+        ADD COLUMN wedding_category_id INT(11),
+        ADD FOREIGN KEY (wedding_category_id) REFERENCES wedding_categories(id) ON DELETE SET NULL";
+    
+    if (!$conn->query($addColumnQuery)) {
+        die("Error adding wedding_category_id column: " . $conn->error);
+    }
+}
+
+// Create Wedding Collection Products Table
+$weddingProductsTable = "CREATE TABLE IF NOT EXISTS wedding_products (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    wedding_category_id INT(11) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    description TEXT DEFAULT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    stock INT(11) DEFAULT 0,
+    color VARCHAR(255) NOT NULL,
+    image VARCHAR(255) NOT NULL,
+    material VARCHAR(255) DEFAULT NULL,
+    style VARCHAR(255) DEFAULT NULL,
+    occasion VARCHAR(255) DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (wedding_category_id) REFERENCES wedding_categories(id) ON DELETE CASCADE
+)";
+
+if ($conn->query($weddingProductsTable) !== TRUE) {
+    logDatabaseSetup("Error creating wedding_products table: " . $conn->error, 'error');
+    throw new Exception("Error creating wedding_products table: " . $conn->error);
+} else {
+    logDatabaseSetup("Table 'wedding_products' created or already exists");
+}
+
+// Create Wedding Collection Specifications Table
+$weddingSpecificationsTable = "CREATE TABLE IF NOT EXISTS wedding_specifications (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    product_id INT(11) NOT NULL,
+    blouse_details TEXT DEFAULT NULL,
+    saree_length DECIMAL(5,2) DEFAULT NULL,
+    blouse_length DECIMAL(5,2) DEFAULT NULL,
+    wash_care TEXT DEFAULT NULL,
+    additional_details TEXT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (product_id) REFERENCES wedding_products(id) ON DELETE CASCADE
+)";
+
+if ($conn->query($weddingSpecificationsTable) !== TRUE) {
+    logDatabaseSetup("Error creating wedding_specifications table: " . $conn->error, 'error');
+    throw new Exception("Error creating wedding_specifications table: " . $conn->error);
+} else {
+    logDatabaseSetup("Table 'wedding_specifications' created or already exists");
+}
+
+$weddingDetailsTable = "CREATE TABLE IF NOT EXISTS wedding_details (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    wedding_product_id INT(11) NOT NULL,
+    fabric VARCHAR(255) NOT NULL,
+    design_type VARCHAR(255) NOT NULL,
+    length DECIMAL(5, 2) NOT NULL,
+    width DECIMAL(5, 2) NOT NULL,
+    care_instructions VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    FOREIGN KEY (wedding_product_id) REFERENCES wedding_products(id) ON DELETE CASCADE
+)";
+
+if ($conn->query($weddingDetailsTable) !== TRUE) {
+    logDatabaseSetup("Error creating wedding_details table: " . $conn->error, 'error');
+    throw new Exception("Error creating wedding_details table: " . $conn->error);
+} else {
+    logDatabaseSetup("Table 'wedding_details' created or already exists");
+}
+$weddingSpecificationsTable = "CREATE TABLE IF NOT EXISTS wedding_specifications (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    product_id INT(11) NOT NULL,
+    blouse_details VARCHAR(255) DEFAULT NULL,
+    saree_length DECIMAL(5, 2) DEFAULT NULL,
+    blouse_length DECIMAL(5, 2) DEFAULT NULL,
+    wash_care VARCHAR(255) DEFAULT NULL,
+    additional_details TEXT DEFAULT NULL,
+    FOREIGN KEY (product_id) REFERENCES wedding_products(id) ON DELETE CASCADE
+)";
+
+if ($conn->query($weddingSpecificationsTable) !== TRUE) {
+    logDatabaseSetup("Error creating wedding_specifications table: " . $conn->error, 'error');
+    throw new Exception("Error creating wedding_specifications table: " . $conn->error);
+} else {
+    logDatabaseSetup("Table 'wedding_specifications' created or already exists");
+}
+
 function checkGoogleUser($conn, $email, $uid) {
     try {
         // First check if user exists with this email
@@ -845,36 +651,5 @@ function checkGoogleUser($conn, $email, $uid) {
             'data' => null
         ];
     }
-}
-
-// Function to get database connection
-function getDbConnection() {
-    global $servername, $username, $password, $dbname, $port;
-    
-    try {
-        $conn = new mysqli($servername, $username, $password, $dbname, $port);
-        
-        if ($conn->connect_error) {
-            error_log("Database connection failed: " . $conn->connect_error);
-            return null;
-        }
-        
-        return $conn;
-    } catch (Exception $e) {
-        error_log("Database connection exception: " . $e->getMessage());
-        return null;
-    }
-}
-
-// Function to close database connection
-function closeDbConnection($conn) {
-    if ($conn) {
-        $conn->close();
-    }
-}
-
-// Check if this file is being accessed directly
-if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {
-    echo "Database setup complete.";
 }
 ?>
