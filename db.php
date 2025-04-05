@@ -107,63 +107,69 @@ try {
     // In production, you might want to redirect to an error page
     die("A critical database setup error occurred. Please contact support.");
 }
+
+// PostgreSQL version for categories table
 $categoriesTable = "CREATE TABLE IF NOT EXISTS categories (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     category_name VARCHAR(255) NOT NULL UNIQUE,
     description TEXT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )";
 
-if ($conn->query($categoriesTable) !== TRUE) {
-    logDatabaseSetup("Error creating categories table: " . $conn->error, 'error');
-    throw new Exception("Error creating categories table: " . $conn->error);
+// Execute with pg_query instead of $conn->query
+if (!pg_query($conn, $categoriesTable)) {
+    logDatabaseSetup("Error creating categories table: " . pg_last_error($conn), 'error');
+    throw new Exception("Error creating categories table: " . pg_last_error($conn));
 } else {
     logDatabaseSetup("Table 'categories' created or already exists");
 }
 
-// Create Subcategories Table
+// Create Subcategories Table - PostgreSQL version
 $subcategoriesTable = "CREATE TABLE IF NOT EXISTS subcategories (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    category_id INT(11) NOT NULL,
+    id SERIAL PRIMARY KEY,
+    category_id INT NOT NULL,
     subcategory_name VARCHAR(255) NOT NULL,
     description TEXT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
 )";
 
-if ($conn->query($subcategoriesTable) !== TRUE) {
-    logDatabaseSetup("Error creating subcategories table: " . $conn->error, 'error');
-    throw new Exception("Error creating subcategories table: " . $conn->error);
+if (!pg_query($conn, $subcategoriesTable)) {
+    logDatabaseSetup("Error creating subcategories table: " . pg_last_error($conn), 'error');
+    throw new Exception("Error creating subcategories table: " . pg_last_error($conn));
 } else {
     logDatabaseSetup("Table 'subcategories' created or already exists");
 }
+
+// PostgreSQL version for sarees table
 $sareesTable = "CREATE TABLE IF NOT EXISTS sarees (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    category_id INT(11) NOT NULL,
-    subcategory_id INT(11) DEFAULT NULL,
-    name VARCHAR(255) NOT NULL,  -- ✅ Added 'name' for sorting
-    saree_name VARCHAR(255)  NULL,
+    id SERIAL PRIMARY KEY,
+    category_id INT NOT NULL,
+    subcategory_id INT DEFAULT NULL,
+    name VARCHAR(255) NOT NULL,
+    saree_name VARCHAR(255) NULL,
     price DECIMAL(10,2) NOT NULL,
-    stock INT(11) DEFAULT 0,  -- ✅ Optional: Add stock tracking
-    color VARCHAR(255)NOT NULL,
-    image VARCHAR(255)NOT NULL,
+    stock INT DEFAULT 0,
+    color VARCHAR(255) NOT NULL,
+    image VARCHAR(255) NOT NULL,
     description TEXT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_stock_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
     FOREIGN KEY (subcategory_id) REFERENCES subcategories(id) ON DELETE SET NULL
-)";//ALTER TABLE sarees ADD COLUMN last_stock_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+)";
 
-if ($conn->query($sareesTable) !== TRUE) {
-    logDatabaseSetup("Error creating sarees table: " . $conn->error, 'error');
-    throw new Exception("Error creating sarees table: " . $conn->error);
+if (!pg_query($conn, $sareesTable)) {
+    logDatabaseSetup("Error creating sarees table: " . pg_last_error($conn), 'error');
+    throw new Exception("Error creating sarees table: " . pg_last_error($conn));
 } else {
     logDatabaseSetup("Table 'sarees' created or already exists");
 }
-// Product Specifications Table
+
+// Product Specifications Table - PostgreSQL version
 $productSpecificationsTable = "CREATE TABLE IF NOT EXISTS product_specifications (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    saree_id INT(11) NOT NULL,
+    id SERIAL PRIMARY KEY,
+    saree_id INT NOT NULL,
     material VARCHAR(255) NOT NULL,
     style VARCHAR(255) NOT NULL,
     saree_length DECIMAL(5, 2) NOT NULL,
@@ -173,163 +179,160 @@ $productSpecificationsTable = "CREATE TABLE IF NOT EXISTS product_specifications
     FOREIGN KEY (saree_id) REFERENCES sarees(id) ON DELETE CASCADE
 )";
 
-if ($conn->query($productSpecificationsTable) !== TRUE) {
-    logDatabaseSetup("Error creating product_specifications table: " . $conn->error, 'error');
-    throw new Exception("Error creating product_specifications table: " . $conn->error);
+if (!pg_query($conn, $productSpecificationsTable)) {
+    logDatabaseSetup("Error creating product_specifications table: " . pg_last_error($conn), 'error');
+    throw new Exception("Error creating product_specifications table: " . pg_last_error($conn));
 } else {
     logDatabaseSetup("Table 'product_specifications' created or already exists");
 }
-//ALTER TABLE users ADD COLUMN profile_pic VARCHAR(255) DEFAULT NULL;
+
+// Saree Stock History - PostgreSQL version
 $sareeStockHistoryTable = "CREATE TABLE IF NOT EXISTS saree_stock_history (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    saree_id INT(11) NOT NULL,
-    stock_added INT(11) NOT NULL,
-    previous_stock INT(11) NOT NULL,
-    new_stock INT(11) NOT NULL,
+    id SERIAL PRIMARY KEY,
+    saree_id INT NOT NULL,
+    stock_added INT NOT NULL,
+    previous_stock INT NOT NULL,
+    new_stock INT NOT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_by INT(11) NOT NULL,
+    updated_by INT NOT NULL,
     FOREIGN KEY (saree_id) REFERENCES sarees(id) ON DELETE CASCADE,
     FOREIGN KEY (updated_by) REFERENCES users(id)
 )";
 
-if ($conn->query($sareeStockHistoryTable) !== TRUE) {
-    logDatabaseSetup("Error creating saree_stock_history table: " . $conn->error, 'error');
-    throw new Exception("Error creating saree_stock_history table: " . $conn->error);
+if (!pg_query($conn, $sareeStockHistoryTable)) {
+    logDatabaseSetup("Error creating saree_stock_history table: " . pg_last_error($conn), 'error');
+    throw new Exception("Error creating saree_stock_history table: " . pg_last_error($conn));
 } else {
     logDatabaseSetup("Table 'saree_stock_history' created or already exists");
 }
-// SQL query for creating the 'orders' table
+
+// Orders Table - PostgreSQL version
 $ordersTable = "CREATE TABLE IF NOT EXISTS orders (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    user_id INT(11) NOT NULL, -- Assuming you have a users table
-    name VARCHAR(255) NOT NULL, -- Add the name field
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    name VARCHAR(255) NOT NULL,
     total_amount DECIMAL(10, 2) NOT NULL,
     order_status VARCHAR(20) DEFAULT 'pending',
     address TEXT NOT NULL,
     payment_method VARCHAR(50) NOT NULL,
-    payment_status VARCHAR(20) DEFAULT 'pending', -- Added payment_status column
+    payment_status VARCHAR(20) DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )";
 
-
-
-// Execute the query for 'orders' table
-if ($conn->query($ordersTable) !== TRUE) {
-    logDatabaseSetup("Error creating orders table: " . $conn->error, 'error');
-    throw new Exception("Error creating orders table: " . $conn->error);
+if (!pg_query($conn, $ordersTable)) {
+    logDatabaseSetup("Error creating orders table: " . pg_last_error($conn), 'error');
+    throw new Exception("Error creating orders table: " . pg_last_error($conn));
 } else {
     logDatabaseSetup("Table 'orders' created or already exists");
 }
 
-// SQL query for creating the 'order_details' table
+// Order Details - PostgreSQL version
 $orderDetailsTable = "CREATE TABLE IF NOT EXISTS order_details (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    order_id INT(11) NOT NULL,
-    saree_id INT(11) DEFAULT NULL,  -- Allow NULL for saree_id
-    product_id INT(11) DEFAULT NULL,  -- Allow NULL for product_id
-    quantity INT(11) NOT NULL,
+    id SERIAL PRIMARY KEY,
+    order_id INT NOT NULL,
+    saree_id INT DEFAULT NULL,
+    product_id INT DEFAULT NULL,
+    quantity INT NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
     FOREIGN KEY (saree_id) REFERENCES sarees(id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES wedding_products(id) ON DELETE CASCADE
 )";
 
-// Execute the query for 'order_details' table
-if ($conn->query($orderDetailsTable) !== TRUE) {
-    logDatabaseSetup("Error creating order_details table: " . $conn->error, 'error');
-    throw new Exception("Error creating order_details table: " . $conn->error);
+if (!pg_query($conn, $orderDetailsTable)) {
+    logDatabaseSetup("Error creating order_details table: " . pg_last_error($conn), 'error');
+    throw new Exception("Error creating order_details table: " . pg_last_error($conn));
 } else {
     logDatabaseSetup("Table 'order_details' created or already exists");
 }
+
+// Payments Table - PostgreSQL version - Using appropriate PostgreSQL enum syntax
 $paymentsTable = "CREATE TABLE IF NOT EXISTS payments (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    order_id INT(11) NOT NULL,
+    id SERIAL PRIMARY KEY,
+    order_id INT NOT NULL,
     payment_method VARCHAR(50) NOT NULL,
-    transaction_id VARCHAR(255), -- For UPI or card transactions
+    transaction_id VARCHAR(255),
     amount DECIMAL(10, 2) NOT NULL,
-    status ENUM('pending', 'completed', 'failed') DEFAULT 'pending',
+    status VARCHAR(20) CHECK (status IN ('pending', 'completed', 'failed')) DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 )";
 
-// Execute the query for 'payments' table
-if ($conn->query($paymentsTable) !== TRUE) {
-    logDatabaseSetup("Error creating payments table: " . $conn->error, 'error');
-    throw new Exception("Error creating payments table: " . $conn->error);
+if (!pg_query($conn, $paymentsTable)) {
+    logDatabaseSetup("Error creating payments table: " . pg_last_error($conn), 'error');
+    throw new Exception("Error creating payments table: " . pg_last_error($conn));
 } else {
     logDatabaseSetup("Table 'payments' created or already exists");
 }
+
+// Wishlist Table - PostgreSQL version
 $wishlistTable = "CREATE TABLE IF NOT EXISTS wishlist (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    user_id INT(11) NOT NULL,
-    saree_id INT(11) NOT NULL,
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    saree_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (saree_id) REFERENCES sarees(id) ON DELETE CASCADE,
-    UNIQUE KEY unique_wishlist (user_id, saree_id)
+    UNIQUE (user_id, saree_id)
 )";
 
-if ($conn->query($wishlistTable) !== TRUE) {
-    logDatabaseSetup("Error creating wishlist table: " . $conn->error, 'error');
-    throw new Exception("Error creating wishlist table: " . $conn->error);
+if (!pg_query($conn, $wishlistTable)) {
+    logDatabaseSetup("Error creating wishlist table: " . pg_last_error($conn), 'error');
+    throw new Exception("Error creating wishlist table: " . pg_last_error($conn));
 } else {
     logDatabaseSetup("Table 'wishlist' created or already exists");
 }
 
-// Function to add item to wishlist
+// Function to add item to wishlist - PostgreSQL version
 function addToWishlist($conn, $userId, $sareeId) {
     // First check if the item is already in the wishlist
-    $checkStmt = $conn->prepare("SELECT id FROM wishlist WHERE user_id = ? AND saree_id = ?");
-    $checkStmt->bind_param("ii", $userId, $sareeId);
-    $checkStmt->execute();
-    $result = $checkStmt->get_result();
+    $checkSql = "SELECT id FROM wishlist WHERE user_id = $1 AND saree_id = $2";
+    $checkResult = pg_query_params($conn, $checkSql, array($userId, $sareeId));
     
-    if ($result->num_rows > 0) {
+    if (pg_num_rows($checkResult) > 0) {
         return ["success" => false, "message" => "Item already in wishlist"];
     }
     
     // Add to wishlist
-    $stmt = $conn->prepare("INSERT INTO wishlist (user_id, saree_id) VALUES (?, ?)");
-    $stmt->bind_param("ii", $userId, $sareeId);
+    $sql = "INSERT INTO wishlist (user_id, saree_id) VALUES ($1, $2)";
+    $result = pg_query_params($conn, $sql, array($userId, $sareeId));
     
-    if ($stmt->execute()) {
+    if ($result) {
         return ["success" => true, "message" => "Added to wishlist successfully"];
     } else {
-        return ["success" => false, "message" => "Error adding to wishlist: " . $stmt->error];
+        return ["success" => false, "message" => "Error adding to wishlist: " . pg_last_error($conn)];
     }
 }
 
-// Function to remove item from wishlist
+// Function to remove item from wishlist - PostgreSQL version
 function removeFromWishlist($conn, $userId, $sareeId) {
-    $stmt = $conn->prepare("DELETE FROM wishlist WHERE user_id = ? AND saree_id = ?");
-    $stmt->bind_param("ii", $userId, $sareeId);
+    $sql = "DELETE FROM wishlist WHERE user_id = $1 AND saree_id = $2";
+    $result = pg_query_params($conn, $sql, array($userId, $sareeId));
     
-    if ($stmt->execute()) {
+    if ($result) {
         return ["success" => true, "message" => "Removed from wishlist successfully"];
     } else {
-        return ["success" => false, "message" => "Error removing from wishlist: " . $stmt->error];
+        return ["success" => false, "message" => "Error removing from wishlist: " . pg_last_error($conn)];
     }
 }
 
-// Function to get all wishlist items for a user
+// Function to get all wishlist items for a user - PostgreSQL version
 function getUserWishlist($conn, $userId) {
-    $stmt = $conn->prepare("
+    $sql = "
         SELECT w.id as wishlist_id, s.*, c.category_name, sc.subcategory_name
         FROM wishlist w
         JOIN sarees s ON w.saree_id = s.id
         JOIN categories c ON s.category_id = c.id
         LEFT JOIN subcategories sc ON s.subcategory_id = sc.id
-        WHERE w.user_id = ?
+        WHERE w.user_id = $1
         ORDER BY w.created_at DESC
-    ");
-    $stmt->bind_param("i", $userId);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    ";
+    $result = pg_query_params($conn, $sql, array($userId));
     
     $wishlistItems = [];
-    while ($row = $result->fetch_assoc()) {
+    while ($row = pg_fetch_assoc($result)) {
         $wishlistItems[] = $row;
     }
     
@@ -337,52 +340,62 @@ function getUserWishlist($conn, $userId) {
 }
 
 function isInWishlist($conn, $userId, $sareeId) {
-    $stmt = $conn->prepare("SELECT id FROM wishlist WHERE user_id = ? AND saree_id = ?");
-    $stmt->bind_param("ii", $userId, $sareeId);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    $sql = "SELECT id FROM wishlist WHERE user_id = $1 AND saree_id = $2";
+    $result = pg_query_params($conn, $sql, array($userId, $sareeId));
     
-    return $result->num_rows > 0;
+    return pg_num_rows($result) > 0;
 }
+
 function getWishlistCount($conn, $userId) {
-    $stmt = $conn->prepare("SELECT COUNT(*) as count FROM wishlist WHERE user_id = ?");
-    $stmt->bind_param("i", $userId);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
+    $sql = "SELECT COUNT(*) as count FROM wishlist WHERE user_id = $1";
+    $result = pg_query_params($conn, $sql, array($userId));
+    $row = pg_fetch_assoc($result);
     
     return $row['count'];
 }
 
-// Cart functions
+// Cart Table - PostgreSQL version
+$cartTable = "CREATE TABLE IF NOT EXISTS cart (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    saree_id INT NOT NULL,
+    quantity INT NOT NULL DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (saree_id) REFERENCES sarees(id) ON DELETE CASCADE
+)";
+
+if (!pg_query($conn, $cartTable)) {
+    logDatabaseSetup("Error creating cart table: " . pg_last_error($conn), 'error');
+    throw new Exception("Error creating cart table: " . pg_last_error($conn));
+} else {
+    logDatabaseSetup("Table 'cart' created or already exists");
+}
+
+// Cart functions - PostgreSQL version
 function addToCart($conn, $userId, $sareeId, $quantity = 1) {
     try {
         // Check if item already exists in cart
-        $checkSql = "SELECT id, quantity FROM cart WHERE user_id = ? AND saree_id = ?";
-        $checkStmt = $conn->prepare($checkSql);
-        $checkStmt->bind_param("ii", $userId, $sareeId);
-        $checkStmt->execute();
-        $result = $checkStmt->get_result();
+        $checkSql = "SELECT id, quantity FROM cart WHERE user_id = $1 AND saree_id = $2";
+        $checkResult = pg_query_params($conn, $checkSql, array($userId, $sareeId));
 
-        if ($result->num_rows > 0) {
+        if (pg_num_rows($checkResult) > 0) {
             // Update existing cart item
-            $row = $result->fetch_assoc();
+            $row = pg_fetch_assoc($checkResult);
             $newQuantity = $row['quantity'] + $quantity;
             
-            $updateSql = "UPDATE cart SET quantity = ? WHERE id = ?";
-            $updateStmt = $conn->prepare($updateSql);
-            $updateStmt->bind_param("ii", $newQuantity, $row['id']);
+            $updateSql = "UPDATE cart SET quantity = $1 WHERE id = $2";
+            $updateResult = pg_query_params($conn, $updateSql, array($newQuantity, $row['id']));
             
-            if ($updateStmt->execute()) {
+            if ($updateResult) {
                 return ["success" => true, "message" => "Cart updated successfully"];
             }
         } else {
             // Add new item to cart
-            $insertSql = "INSERT INTO cart (user_id, saree_id, quantity) VALUES (?, ?, ?)";
-            $insertStmt = $conn->prepare($insertSql);
-            $insertStmt->bind_param("iii", $userId, $sareeId, $quantity);
+            $insertSql = "INSERT INTO cart (user_id, saree_id, quantity) VALUES ($1, $2, $3)";
+            $insertResult = pg_query_params($conn, $insertSql, array($userId, $sareeId, $quantity));
             
-            if ($insertStmt->execute()) {
+            if ($insertResult) {
                 return ["success" => true, "message" => "Item added to cart"];
             }
         }
@@ -410,16 +423,13 @@ function getCartItems($conn, $userId) {
             JOIN sarees s ON c.saree_id = s.id 
             JOIN categories cat ON s.category_id = cat.id
             LEFT JOIN subcategories sc ON s.subcategory_id = sc.id
-            WHERE c.user_id = ?";
+            WHERE c.user_id = $1";
             
     try {
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $userId);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        $result = pg_query_params($conn, $sql, array($userId));
         $cartItems = [];
         
-        while ($row = $result->fetch_assoc()) {
+        while ($row = pg_fetch_assoc($result)) {
             $cartItems[] = $row;
         }
         
@@ -433,11 +443,10 @@ function getCartItems($conn, $userId) {
 
 function removeFromCart($conn, $userId, $sareeId) {
     try {
-        $sql = "DELETE FROM cart WHERE user_id = ? AND saree_id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ii", $userId, $sareeId);
+        $sql = "DELETE FROM cart WHERE user_id = $1 AND saree_id = $2";
+        $result = pg_query_params($conn, $sql, array($userId, $sareeId));
         
-        if ($stmt->execute()) {
+        if ($result) {
             return ["success" => true, "message" => "Item removed from cart"];
         }
         
@@ -451,11 +460,10 @@ function removeFromCart($conn, $userId, $sareeId) {
 
 function updateCartQuantity($conn, $userId, $sareeId, $quantity) {
     try {
-        $sql = "UPDATE cart SET quantity = ? WHERE user_id = ? AND saree_id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("iii", $quantity, $userId, $sareeId);
+        $sql = "UPDATE cart SET quantity = $1 WHERE user_id = $2 AND saree_id = $3";
+        $result = pg_query_params($conn, $sql, array($quantity, $userId, $sareeId));
         
-        if ($stmt->execute()) {
+        if ($result) {
             return ["success" => true, "message" => "Quantity updated"];
         }
         
@@ -469,12 +477,9 @@ function updateCartQuantity($conn, $userId, $sareeId, $quantity) {
 
 function getCartCount($conn, $userId) {
     try {
-        $sql = "SELECT SUM(quantity) as count FROM cart WHERE user_id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $userId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $row = $result->fetch_assoc();
+        $sql = "SELECT SUM(quantity) as count FROM cart WHERE user_id = $1";
+        $result = pg_query_params($conn, $sql, array($userId));
+        $row = pg_fetch_assoc($result);
         
         return $row['count'] ?? 0;
         
@@ -484,84 +489,69 @@ function getCartCount($conn, $userId) {
     }
 }
 
-$cartTable = "CREATE TABLE IF NOT EXISTS cart (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    user_id INT(11) NOT NULL,
-    saree_id INT(11) NOT NULL,
-    quantity INT(11) NOT NULL DEFAULT 1,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (saree_id) REFERENCES sarees(id) ON DELETE CASCADE
-)";
-
-// Execute the query for 'cart' table
-if ($conn->query($cartTable) !== TRUE) {
-    logDatabaseSetup("Error creating cart table: " . $conn->error, 'error');
-    throw new Exception("Error creating cart table: " . $conn->error);
-} else {
-    logDatabaseSetup("Table 'cart' created or already exists");
-}
-
-/// Create Wedding Collection Categories Table
+// Wedding Categories Table - PostgreSQL version
 $weddingCategoriesTable = "CREATE TABLE IF NOT EXISTS wedding_categories (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     category_name VARCHAR(255) NOT NULL UNIQUE,
     description TEXT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )";
 
-if ($conn->query($weddingCategoriesTable) !== TRUE) {
-    logDatabaseSetup("Error creating wedding_categories table: " . $conn->error, 'error');
-    throw new Exception("Error creating wedding_categories table: " . $conn->error);
+if (!pg_query($conn, $weddingCategoriesTable)) {
+    logDatabaseSetup("Error creating wedding_categories table: " . pg_last_error($conn), 'error');
+    throw new Exception("Error creating wedding_categories table: " . pg_last_error($conn));
 } else {
     logDatabaseSetup("Table 'wedding_categories' created or already exists");
 }
 
-// Verify wedding_category_id column exists in sarees table
-$checkColumnQuery = "SHOW COLUMNS FROM sarees LIKE 'wedding_category_id'";
-$columnResult = $conn->query($checkColumnQuery);
+// Check if wedding_category_id column exists in sarees table - PostgreSQL version
+$checkColumnQuery = "SELECT column_name FROM information_schema.columns 
+                    WHERE table_name = 'sarees' AND column_name = 'wedding_category_id'";
+$columnResult = pg_query($conn, $checkColumnQuery);
 
-if ($columnResult->num_rows == 0) {
+if (pg_num_rows($columnResult) == 0) {
     // Column doesn't exist, add it
     $addColumnQuery = "ALTER TABLE sarees 
-        ADD COLUMN wedding_category_id INT(11),
-        ADD FOREIGN KEY (wedding_category_id) REFERENCES wedding_categories(id) ON DELETE SET NULL";
+        ADD COLUMN wedding_category_id INT,
+        ADD CONSTRAINT fk_wedding_category 
+        FOREIGN KEY (wedding_category_id) 
+        REFERENCES wedding_categories(id) ON DELETE SET NULL";
     
-    if (!$conn->query($addColumnQuery)) {
-        die("Error adding wedding_category_id column: " . $conn->error);
+    if (!pg_query($conn, $addColumnQuery)) {
+        die("Error adding wedding_category_id column: " . pg_last_error($conn));
     }
 }
 
-// Create Wedding Collection Products Table
+// Wedding Products Table - PostgreSQL version
 $weddingProductsTable = "CREATE TABLE IF NOT EXISTS wedding_products (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    wedding_category_id INT(11) NOT NULL,
+    id SERIAL PRIMARY KEY,
+    wedding_category_id INT NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT DEFAULT NULL,
     price DECIMAL(10,2) NOT NULL,
-    stock INT(11) DEFAULT 0,
+    stock INT DEFAULT 0,
     color VARCHAR(255) NOT NULL,
     image VARCHAR(255) NOT NULL,
     material VARCHAR(255) DEFAULT NULL,
     style VARCHAR(255) DEFAULT NULL,
     occasion VARCHAR(255) DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (wedding_category_id) REFERENCES wedding_categories(id) ON DELETE CASCADE
 )";
 
-if ($conn->query($weddingProductsTable) !== TRUE) {
-    logDatabaseSetup("Error creating wedding_products table: " . $conn->error, 'error');
-    throw new Exception("Error creating wedding_products table: " . $conn->error);
+if (!pg_query($conn, $weddingProductsTable)) {
+    logDatabaseSetup("Error creating wedding_products table: " . pg_last_error($conn), 'error');
+    throw new Exception("Error creating wedding_products table: " . pg_last_error($conn));
 } else {
     logDatabaseSetup("Table 'wedding_products' created or already exists");
 }
 
-// Create Wedding Collection Specifications Table
+// Wedding Specifications Table - PostgreSQL version
 $weddingSpecificationsTable = "CREATE TABLE IF NOT EXISTS wedding_specifications (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    product_id INT(11) NOT NULL,
+    id SERIAL PRIMARY KEY,
+    product_id INT NOT NULL,
     blouse_details TEXT DEFAULT NULL,
     saree_length DECIMAL(5,2) DEFAULT NULL,
     blouse_length DECIMAL(5,2) DEFAULT NULL,
@@ -571,16 +561,17 @@ $weddingSpecificationsTable = "CREATE TABLE IF NOT EXISTS wedding_specifications
     FOREIGN KEY (product_id) REFERENCES wedding_products(id) ON DELETE CASCADE
 )";
 
-if ($conn->query($weddingSpecificationsTable) !== TRUE) {
-    logDatabaseSetup("Error creating wedding_specifications table: " . $conn->error, 'error');
-    throw new Exception("Error creating wedding_specifications table: " . $conn->error);
+if (!pg_query($conn, $weddingSpecificationsTable)) {
+    logDatabaseSetup("Error creating wedding_specifications table: " . pg_last_error($conn), 'error');
+    throw new Exception("Error creating wedding_specifications table: " . pg_last_error($conn));
 } else {
     logDatabaseSetup("Table 'wedding_specifications' created or already exists");
 }
 
+// Wedding Details Table - PostgreSQL version
 $weddingDetailsTable = "CREATE TABLE IF NOT EXISTS wedding_details (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    wedding_product_id INT(11) NOT NULL,
+    id SERIAL PRIMARY KEY,
+    wedding_product_id INT NOT NULL,
     fabric VARCHAR(255) NOT NULL,
     design_type VARCHAR(255) NOT NULL,
     length DECIMAL(5, 2) NOT NULL,
@@ -590,39 +581,21 @@ $weddingDetailsTable = "CREATE TABLE IF NOT EXISTS wedding_details (
     FOREIGN KEY (wedding_product_id) REFERENCES wedding_products(id) ON DELETE CASCADE
 )";
 
-if ($conn->query($weddingDetailsTable) !== TRUE) {
-    logDatabaseSetup("Error creating wedding_details table: " . $conn->error, 'error');
-    throw new Exception("Error creating wedding_details table: " . $conn->error);
+if (!pg_query($conn, $weddingDetailsTable)) {
+    logDatabaseSetup("Error creating wedding_details table: " . pg_last_error($conn), 'error');
+    throw new Exception("Error creating wedding_details table: " . pg_last_error($conn));
 } else {
     logDatabaseSetup("Table 'wedding_details' created or already exists");
 }
-$weddingSpecificationsTable = "CREATE TABLE IF NOT EXISTS wedding_specifications (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    product_id INT(11) NOT NULL,
-    blouse_details VARCHAR(255) DEFAULT NULL,
-    saree_length DECIMAL(5, 2) DEFAULT NULL,
-    blouse_length DECIMAL(5, 2) DEFAULT NULL,
-    wash_care VARCHAR(255) DEFAULT NULL,
-    additional_details TEXT DEFAULT NULL,
-    FOREIGN KEY (product_id) REFERENCES wedding_products(id) ON DELETE CASCADE
-)";
 
-if ($conn->query($weddingSpecificationsTable) !== TRUE) {
-    logDatabaseSetup("Error creating wedding_specifications table: " . $conn->error, 'error');
-    throw new Exception("Error creating wedding_specifications table: " . $conn->error);
-} else {
-    logDatabaseSetup("Table 'wedding_specifications' created or already exists");
-}
-
+// Google User Check Function - PostgreSQL version
 function checkGoogleUser($conn, $email, $uid) {
     try {
         // First check if user exists with this email
-        $stmt = $conn->prepare("SELECT id, username, email, google_uid, role FROM users WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        $sql = "SELECT id, username, email, google_uid, role FROM users WHERE email = $1";
+        $result = pg_query_params($conn, $sql, array($email));
 
-        if ($result->num_rows === 0) {
+        if (pg_num_rows($result) === 0) {
             // User doesn't exist - they should sign up
             return [
                 'exists' => false,
@@ -631,14 +604,13 @@ function checkGoogleUser($conn, $email, $uid) {
             ];
         }
 
-        $user = $result->fetch_assoc();
+        $user = pg_fetch_assoc($result);
 
         // If user exists, update their Google UID if not set
         if ($user['google_uid'] === null) {
             // Update the user's Google UID
-            $updateStmt = $conn->prepare("UPDATE users SET google_uid = ? WHERE id = ?");
-            $updateStmt->bind_param("si", $uid, $user['id']);
-            $updateStmt->execute();
+            $updateSql = "UPDATE users SET google_uid = $1 WHERE id = $2";
+            pg_query_params($conn, $updateSql, array($uid, $user['id']));
         }
 
         // Return user data for login
@@ -663,4 +635,4 @@ function checkGoogleUser($conn, $email, $uid) {
         ];
     }
 }
-?> 
+?>
