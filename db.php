@@ -3,13 +3,11 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Enable Error Reporting for Debugging (only for development, disable in production)
-// Comment these out in production
+// Enable Error Reporting for Debugging
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Logging Function
-// Function to log database setup messages
+// Improved Logging Function
 function logDatabaseSetup($message, $type = 'info') {
     $logFile = __DIR__ . '/database_setup.log';
     $timestamp = date('Y-m-d H:i:s');
@@ -22,11 +20,10 @@ function logDatabaseSetup($message, $type = 'info') {
     error_log("DB Setup [{$type}]: {$message}");
 }
 
-// ==========================================
-// IMPROVED DATABASE CONNECTION CONFIGURATION
-// ==========================================
+// ========================================
+// COMPREHENSIVE DATABASE CONNECTION CONFIG
+// ========================================
 
-// Try multiple methods to get database configuration
 // Method 1: Standard Railway environment variables
 $servername = getenv("MYSQLHOST") ?: null;
 $username = getenv("MYSQLUSER") ?: null;
@@ -34,7 +31,7 @@ $password = getenv("MYSQLPASSWORD") ?: null;
 $dbname = getenv("MYSQLDATABASE") ?: null;
 $port = getenv("MYSQLPORT") ?: 3306;
 
-// Method 2: Check for MYSQL_URL environment variable (alternative format)
+// Method 2: Check for MYSQL_URL environment variable
 $mysqlUrl = getenv("MYSQL_URL");
 if ($mysqlUrl && (!$servername || !$username || !$password || !$dbname)) {
     logDatabaseSetup("Using MYSQL_URL for database connection");
@@ -48,7 +45,7 @@ if ($mysqlUrl && (!$servername || !$username || !$password || !$dbname)) {
     }
 }
 
-// Method 3: Check for DATABASE_URL (common in many platforms)
+// Method 3: Check for DATABASE_URL
 $databaseUrl = getenv("DATABASE_URL");
 if ($databaseUrl && (!$servername || !$username || !$password || !$dbname)) {
     logDatabaseSetup("Using DATABASE_URL for database connection");
@@ -73,10 +70,10 @@ if (!$servername) {
     }
 }
 
-// Method 5: Fallback values (NOT RECOMMENDED FOR PRODUCTION)
+// Method 5: Fallback values for development
 if (!$servername) $servername = "localhost";
 if (!$username) $username = "root";
-if (!$password) $password = ""; // Empty password for local development
+if (!$password) $password = ""; 
 if (!$dbname) $dbname = "sarees_db";
 
 // Log the configuration we're going to use
@@ -84,25 +81,35 @@ logDatabaseSetup("Database connection attempt with: host=$servername, user=$user
 
 // DNS resolution check
 if ($servername != 'localhost' && $servername != '127.0.0.1') {
-    $ip = gethostbyname($servername);
-    if ($ip == $servername) {
-        logDatabaseSetup("DNS resolution failed for " . $servername, 'error');
-        // Log alternative hosts to try
-        logDatabaseSetup("Trying alternative connection methods...");
-    } else {
-        logDatabaseSetup("Resolved " . $servername . " to " . $ip);
+    if (function_exists('gethostbyname')) {
+        $ip = gethostbyname($servername);
+        if ($ip == $servername) {
+            logDatabaseSetup("DNS resolution failed for " . $servername, 'error');
+            logDatabaseSetup("Trying alternative connection methods...");
+        } else {
+            logDatabaseSetup("Resolved " . $servername . " to " . $ip);
+        }
     }
 }
 
-// Check for MYSQL_PUBLIC_URL environment variable (for external connections)
-$mysqlPublicUrl = getenv("MYSQL_PUBLIC_URL");
-if ($mysqlPublicUrl) {
-    $dbPublicComponents = parse_url($mysqlPublicUrl);
-    if ($dbPublicComponents) {
-        // Store the public connection details for potential external access
-        $publicServername = $dbPublicComponents['host'] ?? "";
-        $publicPort = $dbPublicComponents['port'] ?? "";
-        logDatabaseSetup("Public database connection available at: {$publicServername}:{$publicPort}");
+// Try to determine the socket path for localhost connections
+$socketPath = null;
+if ($servername == 'localhost' || $servername == '127.0.0.1') {
+    // Common socket paths
+    $possibleSocketPaths = [
+        '/var/run/mysqld/mysqld.sock',               // Debian/Ubuntu
+        '/var/lib/mysql/mysql.sock',                 // RHEL/CentOS
+        '/tmp/mysql.sock',                           // macOS & some Linux
+        'C:\\xampp\\mysql\\mysql.sock',              // Windows XAMPP
+        '/Applications/MAMP/tmp/mysql/mysql.sock'    // macOS MAMP
+    ];
+    
+    foreach ($possibleSocketPaths as $path) {
+        if (file_exists($path)) {
+            $socketPath = $path;
+            logDatabaseSetup("Found MySQL socket at: $socketPath");
+            break;
+        }
     }
 }
 
@@ -110,62 +117,103 @@ if ($mysqlPublicUrl) {
 // IMPROVED CONNECTION HANDLING
 // ===============================
 
-// Set a reasonable timeout for database connection
+// Set reasonable timeouts
 $connectTimeout = 10; // seconds
 $readTimeout = 30; // seconds
 
-// Try to establish a database connection with improved error handling
-try {
-    // Log connection attempt with sanitized details
-    logDatabaseSetup("Attempting database connection to {$servername}:{$port} as {$username}");
-
-    // Create a mysqli object first
-    $conn = mysqli_init();
+// Connection function with multiple fallback methods
+function tryDbConnection($host, $user, $pass, $db, $port, $socket = null) {
+    logDatabaseSetup("Trying connection to $host:$port" . ($socket ? " via socket $socket" : ""));
     
-    // Set options on the connection
-    $conn->options(MYSQLI_OPT_CONNECT_TIMEOUT, $connectTimeout);
-    
-    // Then connect
-    $conn->real_connect($servername, $username, $password, $dbname, $port);
-    
-    // Enhanced connection error checking
-    if ($conn->connect_errno) {
-        // Log connection error
-        logDatabaseSetup("Database Connection Failed: " . $conn->connect_error, 'error');
-        throw new Exception("Database Connection Failed: " . $conn->connect_error);
+    // First attempt: standard connection
+    try {
+        $conn = mysqli_init();
+        $conn->options(MYSQLI_OPT_CONNECT_TIMEOUT, 10);
+        
+        if ($socket) {
+            // Use socket connection for localhost
+            $success = $conn->real_connect($host, $user, $pass, $db, $port, $socket);
+        } else {
+            // Standard TCP connection
+            $success = $conn->real_connect($host, $user, $pass, $db, $port);
+        }
+        
+        if ($success) {
+            logDatabaseSetup("✅ Connection successful!");
+            return $conn;
+        } else {
+            logDatabaseSetup("Connection failed: " . $conn->connect_error . " (Error #" . $conn->connect_errno . ")", 'error');
+        }
+    } catch (Exception $e) {
+        logDatabaseSetup("Connection exception: " . $e->getMessage(), 'error');
     }
-
-    // Configure connection
-    $conn->set_charset('utf8mb4');
     
-    // Set a read timeout
-    $conn->options(MYSQLI_OPT_READ_TIMEOUT, $readTimeout);
-
-    // Log successful connection
-    logDatabaseSetup("✅ Database connection established successfully");
-    
-} catch (Exception $e) {
-    // Handle connection exception
-    logDatabaseSetup("Database connection exception: " . $e->getMessage(), 'error');
-    // You may want to display a user-friendly message or redirect to an error page
-    die("Database connection failed. Please try again later.");
+    return false;
 }
 
-// Create Subcategories Table
-$subcategoriesTable = "CREATE TABLE IF NOT EXISTS subcategories (
-    id INT(11) AUTO_INCREMENT PRIMARY KEY,
-    category_id INT(11) NOT NULL,
-    subcategory_name VARCHAR(255) NOT NULL,
-    description TEXT DEFAULT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
-)";
-if ($conn->query($subcategoriesTable) !== TRUE) {
-    logDatabaseSetup("Error creating subcategories table: " . $conn->error, 'error');
-    throw new Exception("Error creating subcategories table: " . $conn->error);
-} else {
-    logDatabaseSetup("Table 'subcategories' created or already exists");
+// Try multiple connection methods
+$conn = null;
+
+// Attempt 1: Try with provided details
+$conn = tryDbConnection($servername, $username, $password, $dbname, $port);
+
+// Attempt 2: Try with socket if on localhost
+if (!$conn && $socketPath && ($servername == 'localhost' || $servername == '127.0.0.1')) {
+    $conn = tryDbConnection($servername, $username, $password, $dbname, $port, $socketPath);
 }
+
+// Attempt 3: Try with 127.0.0.1 instead of localhost
+if (!$conn && $servername == 'localhost') {
+    logDatabaseSetup("Trying with 127.0.0.1 instead of localhost");
+    $conn = tryDbConnection('127.0.0.1', $username, $password, $dbname, $port);
+}
+
+// Attempt 4: Try with PDO as a last resort
+if (!$conn) {
+    logDatabaseSetup("Trying PDO connection as fallback");
+    try {
+        // Construct DSN
+        if ($servername == 'localhost' || $servername == '127.0.0.1') {
+            // Try Unix socket connection
+            if ($socketPath) {
+                $dsn = "mysql:unix_socket=$socketPath;dbname=$dbname";
+            } else {
+                $dsn = "mysql:host=$servername;port=$port;dbname=$dbname";
+            }
+        } else {
+            $dsn = "mysql:host=$servername;port=$port;dbname=$dbname";
+        }
+        
+        $pdoConn = new PDO($dsn, $username, $password, [
+            PDO::ATTR_TIMEOUT => $connectTimeout,
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+        ]);
+        
+        logDatabaseSetup("✅ PDO connection successful! Converting to mysqli");
+        
+        // If PDO works, try mysqli again with the same parameters
+        $conn = mysqli_init();
+        if ($socketPath && ($servername == 'localhost' || $servername == '127.0.0.1')) {
+            $conn->real_connect($servername, $username, $password, $dbname, $port, $socketPath);
+        } else {
+            $conn->real_connect($servername, $username, $password, $dbname, $port);
+        }
+        
+    } catch (PDOException $e) {
+        logDatabaseSetup("PDO connection failed: " . $e->getMessage(), 'error');
+    }
+}
+
+// Final check - if all connection attempts failed
+if (!$conn || $conn->connect_errno) {
+    logDatabaseSetup("All connection attempts failed", 'critical');
+    die("Database connection failed after multiple attempts. Please check your database configuration and ensure MySQL is running. See log for details.");
+}
+
+// Successfully connected - configure connection
+$conn->set_charset('utf8mb4');
+$conn->options(MYSQLI_OPT_READ_TIMEOUT, $readTimeout);
+
 
 try {
     // Table Creation Queries with Improved Error Handling
