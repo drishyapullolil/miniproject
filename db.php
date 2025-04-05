@@ -83,6 +83,7 @@ try {
     echo "A critical database setup error occurred. Please contact support.";
 }
 
+
     // Table Creation Queries with Improved Error Handling
     $tables = [
         'users' => "CREATE TABLE IF NOT EXISTS users (
