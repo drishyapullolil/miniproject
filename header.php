@@ -1006,7 +1006,7 @@ if ($categoryResult->num_rows > 0) {
                 </span>
                 <span class="header-icon">
                     <?php if (isset($_SESSION['username'])): ?>
-                        <a href="cart.php">🛍 Shopping Bag</a>
+                        <a href="addtocart.php">🛍 Shopping Bag</a>
                     <?php else: ?>
                         <a href="login.php">🛍 Shopping Bag</a>
                     <?php endif; ?>

@@ -26,6 +26,11 @@ if (isset($_POST['add_category'])) {
     try {
         $category = htmlspecialchars($_POST['category']);
         
+        // Validate category name - only allow letters, spaces and hyphens
+        if (!preg_match("/^[a-zA-Z\s-]+$/", $category)) {
+            throw new Exception("Category name can only contain letters, spaces and hyphens");
+        }
+
         // Insert category
         $stmt = $conn->prepare("INSERT INTO categories (category_name) VALUES (?)");
         $stmt->bind_param("s", $category);
@@ -40,6 +45,10 @@ if (isset($_POST['add_category'])) {
                 foreach ($_POST['subcategory'] as $subcategory) {
                     if (!empty($subcategory)) {
                         $subcategory = htmlspecialchars($subcategory);
+                        // Validate subcategory name
+                        if (!preg_match("/^[a-zA-Z\s-]+$/", $subcategory)) {
+                            throw new Exception("Subcategory name can only contain letters, spaces and hyphens");
+                        }
                         $stmt->bind_param("is", $category_id, $subcategory);
                         $stmt->execute();
                     }
@@ -88,6 +97,11 @@ if (isset($_POST['add_new_subcategory'])) {
         $category_id = $_POST['category_id'];
         $new_subcategory = htmlspecialchars($_POST['new_subcategory']);
         
+        // Validate new subcategory name
+        if (!preg_match("/^[a-zA-Z\s-]+$/", $new_subcategory)) {
+            throw new Exception("Subcategory name can only contain letters, spaces and hyphens");
+        }
+
         $stmt = $conn->prepare("INSERT INTO subcategories (category_id, subcategory_name) VALUES (?, ?)");
         $stmt->bind_param("is", $category_id, $new_subcategory);
         
@@ -406,9 +420,14 @@ if ($result) {
                 <a href="Category.php"><li class="active">Category Management</li></a>
                 <a href="subcategory.php"><li>Subcategory Management</li></a>
                 <a href="category_details.php"><li>Product Management</li></a>
+                <a href="wedding_categories.php"><li>Wedding Categories</li></a>
+                <a href="wedding_products.php"><li>Wedding Products</li></a>
+                <a href="wedding_images.php"><li>Wedding Specifications</li></a>
+                <a href="review_of_user.php"><li>Reviews</li></a>
+                <a href="admin_report.php"><li>Reports</li></a>
                 <a href="order_manage.php"><li>Orders</li></a>
                 <a href="#"><li>Products</li></a>
-                <a href="#"><li>Reports</li></a>
+              
                 <a href="#"><li>Settings</li></a>
             </ul>
         </div>

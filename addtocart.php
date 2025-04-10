@@ -72,8 +72,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 // Fetch cart items with product details using JOIN
-$sql = "SELECT c.id as cart_id, c.saree_id, c.quantity, s.name, s.price, s.image, 
-         s.description, cat.category_name, sc.subcategory_name
+// Fetch cart items with product details using JOIN
+$sql = "SELECT c.id as cart_id, c.saree_id, c.quantity, s.name, s.price, 
+         s.image as image_url, s.description, cat.category_name, 
+         sc.subcategory_name, 0 as discount_percentage
         FROM cart c 
         JOIN sarees s ON c.saree_id = s.id 
         JOIN categories cat ON s.category_id = cat.id
@@ -369,7 +371,7 @@ $result = $stmt->get_result();
                     $formatted_final_price = '₹' . number_format($final_price, 0, '.', ',');
                     
                     echo '<div class="cart-item" data-item-id="' . $row['saree_id'] . '">';
-                    echo '<img src="' . htmlspecialchars($row['image_url']) . '" alt="' . htmlspecialchars($row['name']) . '" loading="lazy">';
+                    echo '<img src="' . htmlspecialchars($row['image_url'] ?? '') . '" alt="' . htmlspecialchars($row['name']) . '" loading="lazy">';
                     echo '<div>';
                     echo '<h3>' . htmlspecialchars($row['name']) . '</h3>';
                     

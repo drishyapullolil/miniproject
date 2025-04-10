@@ -13,3 +13,6 @@
 [12-Mar-2025 10:03:18 Europe/Berlin] Invalid action received: update_quantity
 [13-Mar-2025 06:46:35 Europe/Berlin] Processing wishlist request - Action: add, Saree ID: 9, User ID: 3
 [13-Mar-2025 06:52:43 Europe/Berlin] Processing wishlist request - Action: add, Saree ID: 8, User ID: 3
+[09-Apr-2025 07:46:04 Europe/Berlin] Processing wishlist request - Action: remove, Saree ID: 9, User ID: 3
+[09-Apr-2025 07:46:06 Europe/Berlin] Processing wishlist request - Action: add, Saree ID: 9, User ID: 3
+[09-Apr-2025 10:35:17 Europe/Berlin] Processing wishlist request - Action: add, Saree ID: 4, User ID: 3

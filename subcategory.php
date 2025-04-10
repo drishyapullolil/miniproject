@@ -27,6 +27,11 @@ if (isset($_POST['add_subcategory'])) {
         $category_id = $_POST['category_id'];
         $subcategory_name = htmlspecialchars($_POST['subcategory_name']);
         $description = htmlspecialchars($_POST['description']);
+
+        // Validate subcategory name - only allow letters, spaces and hyphens
+        if (!preg_match("/^[a-zA-Z\s-]+$/", $subcategory_name)) {
+            throw new Exception("Subcategory name can only contain letters, spaces and hyphens");
+        }
         
         $stmt = $conn->prepare("INSERT INTO subcategories (category_id, subcategory_name, description) VALUES (?, ?, ?)");
         $stmt->bind_param("iss", $category_id, $subcategory_name, $description);
@@ -393,13 +398,19 @@ if ($result) {
     <div class="dashboard-container">
         <div class="sidebar">
             <ul class="sidebar-menu">
-                <a href="admin.php"><li>Dashboard Overview</li></a>
-                <a href="manage.php"><li>User Management</li></a>
-                <a href="Category.php"><li>Category Management</li></a>
+            <a href="admin.php"><li >Dashboard Overview</li></a>
+                <a href="manage.php"><li >User Management</li></a>
+                <a href="Category.php"><li >Category Management</li></a>
                 <a href="subcategory.php"><li class="active">Subcategory Management</li></a>
                 <a href="category_details.php"><li>Product Management</li></a>
+                <a href="wedding_categories.php"><li>Wedding Categories</li></a>
+                <a href="wedding_products.php"><li>Wedding Products</li></a>
+                <a href="wedding_images.php"><li>Wedding Specifications</li></a>
+                <a href="review_of_user.php"><li>Reviews</li></a>
+                <a href="admin_report.php"><li>Reports</li></a>
                 <a href="order_manage.php"><li>Orders</li></a>
                 <a href="#"><li>Products</li></a>
+              
                 <a href="#"><li>Settings</li></a>
             </ul>
         </div>

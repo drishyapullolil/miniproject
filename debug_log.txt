@@ -124,3 +124,20 @@
 2025-03-28 11:30:12: Token stored in database successfully
 2025-03-28 11:30:16: Reset email sent successfully
 2025-03-28 11:30:42: Checking token: 759164fd74f828590a6d496498aaacd9f55d7a150e3d3bfdcc2bf1edd00cca04
+2025-04-03 09:40:51: Received reset request for email: Drishyajose2027@mca.ajce.in
+2025-04-03 09:40:51: Generated token: 127adb8b24a596e99fe20237eb066517de8c6f9cfca1be1e97f3092cafc348b2
+2025-04-03 09:40:51: Expires at: 2025-04-04 09:40:51
+2025-04-03 09:40:51: Token stored in database successfully
+2025-04-03 09:40:55: Reset email sent successfully
+2025-04-03 09:41:10: Checking token: 127adb8b24a596e99fe20237eb066517de8c6f9cfca1be1e97f3092cafc348b2
+2025-04-03 09:41:25: Checking token: 127adb8b24a596e99fe20237eb066517de8c6f9cfca1be1e97f3092cafc348b2
+2025-04-03 09:43:36: Received reset request for email: drishyajose2027@mca.ajce.in
+2025-04-03 09:43:36: Generated token: 497ca14227926d53af547639b57e9526aa42d225f6d9967d0059a4b7e70d934d
+2025-04-03 09:43:36: Expires at: 2025-04-04 09:43:36
+2025-04-03 09:43:36: Token stored in database successfully
+2025-04-03 09:43:40: Reset email sent successfully
+2025-04-03 09:46:59: Received reset request for email: drishyajose2027@mca.ajce.in
+2025-04-03 09:46:59: Generated token: b5dfd3d593a983e32e6dd1e9584a7c9a2d115221a5f4128edcf7538b694e1220
+2025-04-03 09:46:59: Expires at: 2025-04-04 09:46:59
+2025-04-03 09:46:59: Token stored in database successfully
+2025-04-03 09:47:04: Reset email sent successfully

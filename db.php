@@ -47,7 +47,6 @@ try {
                 password VARCHAR(255) NOT NULL,
                 phoneno VARCHAR(15) NOT NULL,
                 address VARCHAR(255) DEFAULT NULL,
-                profile_picture VARCHAR(255) DEFAULT NULL,
                 role ENUM('admin', 'user') NOT NULL DEFAULT 'user',
                 reset_token VARCHAR(255) DEFAULT NULL,
                 token_expiry DATETIME DEFAULT NULL,

@@ -106,7 +106,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $mail->Host = 'smtp.gmail.com'; // Set the SMTP server to send through
         $mail->SMTPAuth = true; // Enable SMTP authentication
         $mail->Username = 'padanamakkalonix@gmail.com'; // SMTP username
-        $mail->Password = 'shyl ywsq bwel vnvk'; // SMTP password (use App Password if 2FA is enabled)
+        $mail->Password = 'gyof yzjq nlty qcvg'; // SMTP password (use App Password if 2FA is enabled)
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // Enable SSL encryption
         $mail->Port = 465; // TCP port to connect to
 

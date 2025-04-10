@@ -403,21 +403,34 @@ error_log("Breadcrumb data - Category ID: $categoryId, Name: $categoryName, Subc
                 <p class="product-description">
                     <?php echo htmlspecialchars($saree['description']); ?>
                 </p>
-
                 <div class="button-group">
-                    <form method="POST" action="addtocart.php" style="display: inline;">
-                        <input type="hidden" name="saree_id" value="<?php echo $saree['id']; ?>">
-                        <button type="submit" name="add_to_cart" class="button button-primary" aria-label="Add to cart">
-                            ADD TO CART
-                        </button>
-                    </form>
-                    <form method="POST" action="buynow.php" style="display: inline;">
-                        <input type="hidden" name="saree_id" value="<?php echo $saree['id']; ?>">
-                        <button type="submit" name="buy_now" class="button button-primary" aria-label="Buy now">
-                            BUY NOW
-                        </button>
-                    </form>
-                </div>
+                <form method="POST" style="display: inline;">
+        <input type="hidden" name="saree_id" value="<?php echo $saree['id']; ?>">
+        <?php
+        if(isset($_POST['add_to_cart'])) {
+            if(isset($_SESSION['user_id'])) {
+                $result = addToCart($conn, $_SESSION['user_id'], $_POST['saree_id']);
+                if($result['success']) {
+                    echo "<div class='success-message'><i class='fa fa-check-circle'></i> " . $result['message'] . " <a href='addtocart.php'>View Cart</a></div>";
+                } else {
+                    echo "<div class='error-message'><i class='fa fa-exclamation-circle'></i> " . $result['message'] . "</div>";
+                }
+            } else {
+                echo "<div class='error-message'><i class='fa fa-exclamation-circle'></i> Please <a href='login.php'>log in</a> to add items to your cart.</div>";
+            }
+        }
+        ?>
+        <button type="submit" name="add_to_cart" class="button button-primary" aria-label="Add to cart">
+            ADD TO CART
+        </button>
+    </form>
+    <form method="POST" action="buynow.php" style="display: inline;">
+        <input type="hidden" name="saree_id" value="<?php echo $saree['id']; ?>">
+        <button type="submit" name="buy_now" class="button button-primary" aria-label="Buy now">
+            BUY NOW
+        </button>
+    </form>
+</div>
 
                 <?php
                 // Check if user is logged in and if item is in wishlist

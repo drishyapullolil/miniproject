@@ -12,13 +12,34 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 if (isset($_POST['submit_saree'])) {
     try {
         $saree_id = isset($_POST['saree_id']) ? $_POST['saree_id'] : null;
+        
+        // Validate name contains only letters and spaces
+        if (!preg_match("/^[a-zA-Z\s]+$/", $_POST['name'])) {
+            throw new Exception("Name can only contain letters and spaces");
+        }
         $name = htmlspecialchars($_POST['name']);
+        
+        // Validate color contains only letters and spaces  
+        if (!preg_match("/^[a-zA-Z\s]+$/", $_POST['color'])) {
+            throw new Exception("Color can only contain letters and spaces");
+        }
         $color = htmlspecialchars($_POST['color']);
+        
+        // Validate price is numeric
+        if (!is_numeric($_POST['price'])) {
+            throw new Exception("Price must be a number");
+        }
         $price = $_POST['price'];
+        
+        // Validate stock is numeric
+        if (!is_numeric($_POST['stock'])) {
+            throw new Exception("Quantity must be a number"); 
+        }
+        $stock = $_POST['stock'];
+        
         $category_id = $_POST['category_id'];
         $subcategory_id = $_POST['subcategory_id'];
         $description = htmlspecialchars($_POST['description']);
-        $stock = $_POST['stock'];
         
         // Handle image upload
         $image_path = '';
@@ -102,7 +123,17 @@ if (isset($_POST['delete_saree'])) {
 if (isset($_POST['update_saree'])) {
     try {
         $saree_id = $_POST['saree_id'];
+        
+        // Validate new price is numeric
+        if (!is_numeric($_POST['new_price'])) {
+            throw new Exception("Price must be a number");
+        }
         $new_price = $_POST['new_price'];
+        
+        // Validate stock is numeric
+        if (isset($_POST['stock_to_add']) && !is_numeric($_POST['stock_to_add'])) {
+            throw new Exception("Stock quantity must be a number");
+        }
         $stock_to_add = isset($_POST['stock_to_add']) ? (int)$_POST['stock_to_add'] : 0;
         
         // Start transaction
@@ -427,14 +458,19 @@ $sarees = $conn->query("SELECT s.*, c.category_name, sc.subcategory_name
     <div class="dashboard-container">
         <div class="sidebar">
             <ul class="sidebar-menu">
-                <a href="admin.php"><li >Dashboard Overview</li></a>
+            <a href="admin.php"><li >Dashboard Overview</li></a>
                 <a href="manage.php"><li >User Management</li></a>
                 <a href="Category.php"><li >Category Management</li></a>
-                <a href="subcategory.php"><li>Subcategory Management</li></a>
+                <a href="subcategory.php"><li >Subcategory Management</li></a>
                 <a href="category_details.php"><li class="active">Product Management</li></a>
+                <a href="wedding_categories.php"><li>Wedding Categories</li></a>
+                <a href="wedding_products.php"><li>Wedding Products</li></a>
+                <a href="wedding_images.php"><li>Wedding Specifications</li></a>
+                <a href="review_of_user.php"><li>Reviews</li></a>
+                <a href="admin_report.php"><li>Reports</li></a>
                 <a href="order_manage.php"><li>Orders</li></a>
                 <a href="#"><li>Products</li></a>
-                <a href="#"><li>Reports</li></a>
+              
                 <a href="#"><li>Settings</li></a>
             </ul>
         </div>
@@ -465,19 +501,19 @@ $sarees = $conn->query("SELECT s.*, c.category_name, sc.subcategory_name
                 <form method="POST" action="" enctype="multipart/form-data" id="sareeForm">
                     <div class="form-group">
                         <label>Name:</label>
-                        <input type="text" name="name" required>
+                        <input type="text" name="name" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed" required>
                     </div>
                     <div class="form-group">
                         <label>Color:</label>
-                        <input type="text" name="color" required>
+                        <input type="text" name="color" pattern="[A-Za-z\s]+" title="Only letters and spaces allowed" required>
                     </div>
                     <div class="form-group">
                         <label>Price:</label>
-                        <input type="number" name="price" step="0.01" required>
+                        <input type="number" name="price" step="0.01" min="0" required>
                     </div>
                     <div class="form-group">
                         <label>Quantity:</label>
-                        <input type="number" name="stock" required>
+                        <input type="number" name="stock" min="0" required>
                     </div>
                     <div class="form-group">
                         <label>Category:</label>
@@ -535,7 +571,7 @@ $sarees = $conn->query("SELECT s.*, c.category_name, sc.subcategory_name
                                 
                                 <div class="form-group">
     <label>Price (₹):</label>
-    <input type="number" name="new_price" value="<?php echo $saree['price']; ?>" step="0.01" required>
+    <input type="number" name="new_price" value="<?php echo $saree['price']; ?>" step="0.01" min="0" required>
 </div>
 
 <div class="form-group">
